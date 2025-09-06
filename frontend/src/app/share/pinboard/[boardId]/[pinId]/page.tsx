@@ -79,6 +79,12 @@ interface Pinboard {
   views: number
 }
 
+interface TocItem {
+  id: string
+  text: string
+  level: number
+}
+
 // Mock data for pinboards (same as the main pinboard page)
 const mockPinboards: Pinboard[] = [
   {
@@ -549,6 +555,97 @@ function ThemeToggle() {
   )
 }
 
+function TableOfContents({ content, isVisible, onToggle }: { content: string, isVisible: boolean, onToggle: () => void }) {
+  const [tocItems, setTocItems] = useState<TocItem[]>([])
+  const [activeSection, setActiveSection] = useState<string>('')
+
+  useEffect(() => {
+    // Extract headings from markdown content
+    const headingRegex = /^(#{1,6})\s+(.+)$/gm
+    const items: TocItem[] = []
+    let match
+
+    while ((match = headingRegex.exec(content)) !== null) {
+      const level = match[1].length
+      const text = match[2].trim()
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      
+      items.push({ id, text, level })
+    }
+
+    setTocItems(items)
+  }, [content])
+
+  useEffect(() => {
+    // Intersection observer for active section tracking
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id)
+          }
+        })
+      },
+      { rootMargin: '-20% 0% -80% 0%' }
+    )
+
+    // Observe all heading elements
+    tocItems.forEach(item => {
+      const element = document.getElementById(item.id)
+      if (element) observer.observe(element)
+    })
+
+    return () => observer.disconnect()
+  }, [tocItems])
+
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  if (tocItems.length === 0) return null
+
+  return (
+    <>
+      {/* Table of Contents Panel */}
+      {isVisible && (
+        <div className="fixed right-4 top-20 w-64 max-h-[70vh] overflow-y-auto hidden xl:block z-40">
+          <div className="bg-white/95 dark:bg-[#1D1D1D]/95 backdrop-blur-sm border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 shadow-lg">
+            <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-3">
+              Table of Contents
+            </h3>
+            <nav className="space-y-1">
+              {tocItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={cn(
+                    "block w-full text-left text-sm hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors",
+                    "py-1 px-2 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800",
+                    activeSection === item.id
+                      ? "text-neutral-900 dark:text-neutral-100 bg-neutral-100 dark:bg-neutral-800 font-medium"
+                      : "text-neutral-600 dark:text-neutral-400",
+                    item.level === 1 && "font-medium",
+                    item.level === 2 && "pl-4",
+                    item.level === 3 && "pl-6",
+                    item.level === 4 && "pl-8",
+                    item.level === 5 && "pl-10",
+                    item.level === 6 && "pl-12"
+                  )}
+                >
+                  {item.text}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 function AskAI({ pinContent }: { pinContent: string }) {
   const [question, setQuestion] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -661,6 +758,7 @@ export default function SharePinboardPinPage() {
   const [pin, setPin] = useState<Pin | null>(null)
   const [currentPinIndex, setCurrentPinIndex] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [isTocVisible, setIsTocVisible] = useState(false)
 
   useEffect(() => {
     // In real app, this would be an API call
@@ -845,6 +943,15 @@ export default function SharePinboardPinPage() {
                 {getTypeLabel(pin.type)}
               </Badge>
               <AskAI pinContent={pin.content} />
+              <Button
+                onClick={() => setIsTocVisible(!isTocVisible)}
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hidden xl:flex"
+                title={isTocVisible ? "Hide Table of Contents" : "Show Table of Contents"}
+              >
+                {isTocVisible ? <X className="h-4 w-4" /> : <List className="h-4 w-4" />}
+              </Button>
               <ThemeToggle />
               <UserAvatar />
             </div>
@@ -1008,6 +1115,12 @@ export default function SharePinboardPinPage() {
         </Card>
       </main>
 
+      {/* Table of Contents */}
+      <TableOfContents 
+        content={pin.content} 
+        isVisible={isTocVisible}
+        onToggle={() => setIsTocVisible(!isTocVisible)}
+      />
 
       {/* Footer */}
       <footer className="border-t border-neutral-200 dark:border-neutral-800 mt-16">

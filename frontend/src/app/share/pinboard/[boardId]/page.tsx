@@ -574,7 +574,7 @@ export default function SharePinboardPage() {
           {pinboard.pins.map((pin) => (
             <Card 
               key={pin.id} 
-              className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50"
+              className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 bg-white dark:bg-neutral-800 shadow-sm dark:shadow-neutral-800/20"
               onClick={() => handlePinClick(pin)}
             >
               <CardHeader className="pb-3">
