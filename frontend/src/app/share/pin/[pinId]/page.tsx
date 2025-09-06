@@ -43,7 +43,7 @@ interface Pin {
     category?: string
     readTime?: string
     tags?: string[]
-    stats?: Record<string, any>
+    stats?: Record<string, string | number>
   }
 }
 
@@ -982,7 +982,7 @@ export default function SharePinPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold">Pin not found</h1>
-          <p className="text-muted-foreground">The pin you're looking for doesn't exist or has been removed.</p>
+          <p className="text-muted-foreground">The pin you&apos;re looking for doesn&apos;t exist or has been removed.</p>
         </div>
       </div>
     )
