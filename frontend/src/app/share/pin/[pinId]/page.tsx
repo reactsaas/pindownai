@@ -1088,10 +1088,15 @@ export default function SharePinPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="h-8 w-8 bg-foreground text-background rounded-lg flex items-center justify-center">
-                <Pin className="h-4 w-4 rotate-45" />
-              </div>
-              <span className="font-semibold text-lg">pindown.ai</span>
+              <a 
+                href="/"
+                className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+              >
+                <div className="h-8 w-8 bg-foreground text-background rounded-lg flex items-center justify-center">
+                  <Pin className="h-4 w-4 rotate-45" />
+                </div>
+                <span className="font-semibold text-lg">pindown.ai</span>
+              </a>
             </div>
             <div className="flex items-center space-x-3">
               <Badge variant="secondary" className={cn("flex items-center gap-1", getTypeColor(pin.type))}>
