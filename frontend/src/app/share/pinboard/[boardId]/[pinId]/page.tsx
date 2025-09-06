@@ -943,32 +943,6 @@ export default function SharePinboardPinPage() {
             </div>
           </div>
           
-          {/* Bottom Row - Navigation and Pin Info (Mobile) */}
-          <div className="flex items-center justify-center sm:hidden">
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={goToPreviousPin}
-                disabled={currentPinIndex === 0}
-                className="h-7 w-7 p-0"
-              >
-                <ChevronLeft className="h-3 w-3" />
-              </Button>
-              <span className="text-xs text-muted-foreground px-1">
-                {currentPinIndex + 1} of {pinboard.pins.length}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={goToNextPin}
-                disabled={currentPinIndex === pinboard.pins.length - 1}
-                className="h-7 w-7 p-0"
-              >
-                <ChevronRight className="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
           
           {/* Desktop Navigation Row */}
           <div className="hidden sm:flex items-center justify-center">
@@ -1161,6 +1135,38 @@ export default function SharePinboardPinPage() {
         isVisible={isTocVisible}
         onToggle={() => setIsTocVisible(!isTocVisible)}
       />
+
+      {/* Mobile Navigation - Bottom of Page */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-[#1D1D1D]/95 backdrop-blur border-t border-neutral-200 dark:border-neutral-800 z-50">
+        <div className="flex items-center justify-center py-3 px-4">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={goToPreviousPin}
+              disabled={currentPinIndex === 0}
+              className="h-10 w-10 p-0"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <div className="text-center">
+              <div className="text-sm font-medium">{pin.name}</div>
+              <div className="text-xs text-muted-foreground">
+                {currentPinIndex + 1} of {pinboard.pins.length}
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={goToNextPin}
+              disabled={currentPinIndex === pinboard.pins.length - 1}
+              className="h-10 w-10 p-0"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Footer */}
       <footer className="border-t border-neutral-200 dark:border-neutral-800 mt-16">
