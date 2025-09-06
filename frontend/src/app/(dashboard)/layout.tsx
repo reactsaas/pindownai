@@ -56,6 +56,7 @@ export default function DashboardLayout({
             onPageChange={() => {}}
             searchQuery=""
             className="hidden lg:flex"
+            onMobileNavigation={() => {}}
           />
 
           {/* Mobile backdrop */}
@@ -84,6 +85,7 @@ export default function DashboardLayout({
               currentPage="pins"
               onPageChange={() => setIsMobileSidebarOpen(false)}
               searchQuery=""
+              onMobileNavigation={() => setIsMobileSidebarOpen(false)}
             />
           </div>
 

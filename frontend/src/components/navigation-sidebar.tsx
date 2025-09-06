@@ -40,6 +40,7 @@ interface NavigationSidebarProps {
   onPageChange: (page: string) => void
   searchQuery: string
   className?: string
+  onMobileNavigation?: () => void
 }
 
 export function NavigationSidebar({
@@ -50,6 +51,7 @@ export function NavigationSidebar({
   onPageChange,
   searchQuery,
   className = "",
+  onMobileNavigation,
 }: NavigationSidebarProps) {
   const router = useRouter()
   const pathname = usePathname()
@@ -85,7 +87,10 @@ export function NavigationSidebar({
     return (
       <div className="flex items-center justify-between">
         <button
-          onClick={() => router.push('/user')}
+          onClick={() => {
+            router.push('/user')
+            onMobileNavigation?.()
+          }}
           className="flex items-center gap-2 min-w-0 flex-1 hover:bg-sidebar-accent rounded p-1 transition-colors"
         >
           <Avatar className="h-6 w-6">
@@ -154,7 +159,10 @@ export function NavigationSidebar({
         <div className="flex items-center justify-between">
           <div 
             className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => router.push("/")}
+            onClick={() => {
+              router.push("/")
+              onMobileNavigation?.()
+            }}
           >
             <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
               <Pin className="w-4 h-4 text-sidebar-primary-foreground rotate-45" />
@@ -184,6 +192,7 @@ export function NavigationSidebar({
                   onClick={() => {
                     setActiveSection(item.id)
                     router.push(item.route)
+                    onMobileNavigation?.()
                   }}
                 >
                   <item.icon className="w-4 h-4 mr-2" />
