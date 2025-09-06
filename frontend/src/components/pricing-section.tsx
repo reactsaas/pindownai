@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export function PricingSection() {
   const [isAnnual, setIsAnnual] = useState(true)
@@ -117,73 +118,92 @@ export function PricingSection() {
         </div>
       </div>
 
-      {/* Mobile Cards Layout */}
-      <div className="block lg:hidden space-y-3">
-        {plans.map((plan) => (
-          <div key={plan.name} className={`border border-border/50 rounded-lg p-4 ${plan.featured ? 'bg-muted/20 border-primary/20' : 'bg-background'}`}>
-            {plan.featured && (
-              <div className="flex justify-center mb-2">
-                <span className="bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full font-medium">
-                  Recommended
-                </span>
-              </div>
-            )}
-            
-            <div className="text-center mb-4">
-              <h3 className="text-lg font-semibold mb-1">{plan.name}</h3>
-              <p className="text-xs text-muted-foreground mb-2">{plan.description}</p>
-              <div className="text-2xl font-mono font-bold">
-                {isAnnual ? plan.annualMonthlyPrice : plan.monthlyPrice}
-              </div>
-              {isAnnual && plan.annualMonthlyPrice !== "FREE" && (
-                <div className="text-xs text-muted-foreground">
-                  paid annually
+      {/* Mobile Tabs Layout */}
+      <div className="block lg:hidden">
+        <Tabs defaultValue="professional" className="w-full">
+          <TabsList className="grid w-full grid-cols-5 mb-6">
+            <TabsTrigger value="starter" className="text-xs">Starter</TabsTrigger>
+            <TabsTrigger value="hobby" className="text-xs">Hobby</TabsTrigger>
+            <TabsTrigger value="professional" className="text-xs">Pro</TabsTrigger>
+            <TabsTrigger value="startups" className="text-xs">Startups</TabsTrigger>
+            <TabsTrigger value="social" className="text-xs">Social</TabsTrigger>
+          </TabsList>
+          
+          {plans.map((plan) => {
+            const tabValue = plan.name.toLowerCase().replace(' ', '').replace('media', '');
+            return (
+            <TabsContent key={plan.name} value={tabValue} className="mt-0">
+              <div className={`border border-border/50 rounded-lg p-6 ${plan.featured ? 'bg-muted/20 border-primary/20' : 'bg-background'}`}>
+                {plan.featured && (
+                  <div className="flex justify-center mb-4">
+                    <span className="bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-medium">
+                      Recommended
+                    </span>
+                  </div>
+                )}
+                
+                <div className="text-center mb-6">
+                  <h3 className="text-xl font-semibold mb-2">{plan.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-3">{plan.description}</p>
+                  <div className="text-3xl font-mono font-bold mb-1">
+                    {isAnnual ? plan.annualMonthlyPrice : plan.monthlyPrice}
+                  </div>
+                  {isAnnual && plan.annualMonthlyPrice !== "FREE" ? (
+                    <div className="text-sm text-muted-foreground">
+                      paid annually
+                    </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">
+                      forever
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Pins:</span>
-                <span>{plan.features.find(f => f.includes('pins'))?.replace(' pins', '') || '-'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Pinboards:</span>
-                <span>{plan.features.find(f => f.includes('pinboard'))?.replace(' pinboard', '').replace('s', '') || '-'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Updates:</span>
-                <span>{plan.features.find(f => f.includes('update') || f.includes('Live') || f.includes('once')) || '-'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium">API Access:</span>
-                <span>{plan.features.find(f => f.includes('API')) || '-'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Document Intelligence:</span>
-                <span>{plan.features.find(f => f.includes('document intelligence')) || '-'}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Research:</span>
-                <span>{plan.features.find(f => f.includes('research')) || '-'}</span>
-              </div>
-              
-              <div className="pt-2 border-t border-border/30">
-                <div className="font-medium mb-1">Additional Features:</div>
-                <div className="space-y-0.5">
-                  {plan.features
-                    .filter(f => !f.includes('pins') && !f.includes('pinboard') && !f.includes('update') && !f.includes('API') && !f.includes('document intelligence') && !f.includes('research'))
-                    .map((feature, index) => (
-                      <div key={index} className="text-muted-foreground flex items-center">
-                        <span className="w-0.5 h-0.5 bg-muted-foreground rounded-full mr-1.5"></span>
-                        {feature}
-                      </div>
-                    ))}
+                
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between items-center py-2 border-b border-border/20">
+                    <span className="font-medium">Pins:</span>
+                    <span className="font-mono">{plan.features.find(f => f.includes('pins'))?.replace(' pins', '') || '-'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border/20">
+                    <span className="font-medium">Pinboards:</span>
+                    <span className="font-mono">{plan.features.find(f => f.includes('pinboard'))?.replace(' pinboard', '').replace('s', '') || '-'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border/20">
+                    <span className="font-medium">Updates:</span>
+                    <span>{plan.features.find(f => f.includes('update') || f.includes('Live') || f.includes('once')) || '-'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border/20">
+                    <span className="font-medium">API Access:</span>
+                    <span>{plan.features.find(f => f.includes('API')) || '-'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border/20">
+                    <span className="font-medium">Document Intelligence:</span>
+                    <span>{plan.features.find(f => f.includes('document intelligence')) || '-'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-border/20">
+                    <span className="font-medium">Research:</span>
+                    <span>{plan.features.find(f => f.includes('research')) || '-'}</span>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-border/30">
+                    <div className="font-medium mb-3">Additional Features:</div>
+                    <div className="space-y-2">
+                      {plan.features
+                        .filter(f => !f.includes('pins') && !f.includes('pinboard') && !f.includes('update') && !f.includes('API') && !f.includes('document intelligence') && !f.includes('research'))
+                        .map((feature, index) => (
+                          <div key={index} className="text-muted-foreground flex items-center">
+                            <span className="w-1 h-1 bg-muted-foreground rounded-full mr-2"></span>
+                            {feature}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
+            </TabsContent>
+            );
+          })}
+        </Tabs>
       </div>
 
       {/* Desktop Table Layout */}
@@ -215,9 +235,13 @@ export function PricingSection() {
                   <div className="text-base sm:text-lg font-mono font-medium">
                     {isAnnual ? plan.annualMonthlyPrice : plan.monthlyPrice}
                   </div>
-                  {isAnnual && plan.annualMonthlyPrice !== "FREE" && (
+                  {isAnnual && plan.annualMonthlyPrice !== "FREE" ? (
                     <div className="text-xs text-muted-foreground/70 mt-1">
                       paid annually
+                    </div>
+                  ) : (
+                    <div className="text-xs text-muted-foreground/70 mt-1">
+                      forever
                     </div>
                   )}
                 </td>
