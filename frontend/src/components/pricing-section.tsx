@@ -148,13 +148,17 @@ export function PricingSection() {
                   <div className="text-3xl font-mono font-bold mb-1">
                     {isAnnual ? plan.annualMonthlyPrice : plan.monthlyPrice}
                   </div>
-                  {isAnnual && plan.annualMonthlyPrice !== "FREE" ? (
+                  {plan.annualMonthlyPrice === "FREE" ? (
+                    <div className="text-sm text-muted-foreground">
+                      forever
+                    </div>
+                  ) : isAnnual ? (
                     <div className="text-sm text-muted-foreground">
                       paid annually
                     </div>
                   ) : (
                     <div className="text-sm text-muted-foreground">
-                      forever
+                      paid monthly
                     </div>
                   )}
                 </div>
@@ -235,13 +239,17 @@ export function PricingSection() {
                   <div className="text-base sm:text-lg font-mono font-medium">
                     {isAnnual ? plan.annualMonthlyPrice : plan.monthlyPrice}
                   </div>
-                  {isAnnual && plan.annualMonthlyPrice !== "FREE" ? (
+                  {plan.annualMonthlyPrice === "FREE" ? (
+                    <div className="text-xs text-muted-foreground/70 mt-1">
+                      forever
+                    </div>
+                  ) : isAnnual ? (
                     <div className="text-xs text-muted-foreground/70 mt-1">
                       paid annually
                     </div>
                   ) : (
                     <div className="text-xs text-muted-foreground/70 mt-1">
-                      forever
+                      paid monthly
                     </div>
                   )}
                 </td>
