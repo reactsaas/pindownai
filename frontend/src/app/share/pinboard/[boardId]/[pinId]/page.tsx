@@ -944,7 +944,7 @@ export default function SharePinboardPinPage() {
           </div>
           
           {/* Bottom Row - Navigation and Pin Info (Mobile) */}
-          <div className="flex items-center justify-between sm:hidden">
+          <div className="flex items-center justify-center sm:hidden">
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -968,11 +968,6 @@ export default function SharePinboardPinPage() {
                 <ChevronRight className="h-3 w-3" />
               </Button>
             </div>
-            
-            <Badge variant="secondary" className={cn("flex items-center gap-1 text-xs", getTypeColor(pin.type))}>
-              {getTypeIcon(pin.type)}
-              {getTypeLabel(pin.type)}
-            </Badge>
           </div>
           
           {/* Desktop Navigation Row */}
