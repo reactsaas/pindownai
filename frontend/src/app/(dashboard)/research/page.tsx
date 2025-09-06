@@ -207,53 +207,6 @@ export default function ResearchPage() {
               Organize and manage your research materials
             </p>
           </div>
-          <div className="flex gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => {
-                  setAddItemType("folder")
-                  setIsAddModalOpen(true)
-                }}>
-                  <Folder className="w-4 h-4 mr-2" />
-                  New Folder
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  setAddItemType("item")
-                  setNewItem(prev => ({ ...prev, type: "research" }))
-                  setIsAddModalOpen(true)
-                }}>
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Research Item
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  setAddItemType("item")
-                  setNewItem(prev => ({ ...prev, type: "note" }))
-                  setIsAddModalOpen(true)
-                }}>
-                  <FileText className="w-4 h-4 mr-2" />
-                  Note
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  setAddItemType("item")
-                  setNewItem(prev => ({ ...prev, type: "link" }))
-                  setIsAddModalOpen(true)
-                }}>
-                  <Link className="w-4 h-4 mr-2" />
-                  External Link
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
@@ -263,6 +216,10 @@ export default function ResearchPage() {
               className="pl-10"
             />
           </div>
+        </div>
+
+        {/* Filters */}
+        <div className="flex items-center gap-4">
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

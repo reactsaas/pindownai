@@ -221,7 +221,53 @@ export default function BlockEditPage() {
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="p-3 sm:p-4 border-b border-border bg-card">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2 sm:gap-4">
+        {/* Mobile: Only back button and action buttons */}
+        <div className="flex md:hidden items-center justify-between">
+          <Button variant="ghost" size="sm" onClick={handleBack} className="h-8 w-8 p-0 cursor-pointer">
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          
+          <div className="flex items-center gap-1">
+            <div className="flex items-center border rounded-md bg-muted/30">
+              <Button
+                variant={activeView === "edit" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setActiveView("edit")}
+                className="h-8 px-2 rounded-r-none border-r cursor-pointer"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={activeView === "preview" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setActiveView("preview")}
+                className="h-8 px-2 rounded-l-none cursor-pointer"
+              >
+                <Eye className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <Button 
+              size="sm" 
+              onClick={() => setIsAIEditModalOpen(true)} 
+              className="px-2 sm:px-3 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 hover:from-violet-600 hover:via-purple-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer"
+            >
+              <Sparkles className="h-4 w-4 sm:mr-2 animate-pulse fill-current" />
+              <span className="hidden sm:inline">AI Edit</span>
+            </Button>
+
+            <Button variant="outline" size="sm" onClick={handleCopyTemplate} className="px-2 cursor-pointer hover:bg-muted hover:border-muted-foreground/50 transition-colors duration-200">
+              <Copy className="h-4 w-4" />
+            </Button>
+
+            <Button variant="outline" size="sm" onClick={handleSave} className="px-2 cursor-pointer hover:bg-muted hover:border-muted-foreground/50 transition-colors duration-200">
+              <Save className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Desktop: Full information display */}
+        <div className="hidden md:flex flex-col lg:flex-row lg:items-center justify-between gap-2 lg:gap-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" onClick={handleBack} className="h-6 w-6 p-0 cursor-pointer">
@@ -255,7 +301,7 @@ export default function BlockEditPage() {
             </div>
           </div>
 
-          {/* View Toggle and Actions */}
+          {/* View Toggle and Actions - Desktop */}
           <div className="flex items-center gap-1 sm:gap-2">
             <div className="flex items-center border rounded-md bg-muted/30">
               <Button

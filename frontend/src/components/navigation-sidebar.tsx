@@ -21,6 +21,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useAuth } from "@/lib/auth-context"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { LogOut } from "lucide-react"
 
 interface Workflow {
   id: string
@@ -51,6 +54,62 @@ export function NavigationSidebar({
   const router = useRouter()
   const pathname = usePathname()
   const [activeSection, setActiveSection] = useState("workflows")
+
+  // Simple user section component
+  function SidebarUserSection() {
+    const { user, signOut } = useAuth()
+    
+    if (!user) return null
+
+    const getInitials = (name: string | null, email: string | null) => {
+      if (name) {
+        return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+      }
+      if (email) {
+        return email.slice(0, 2).toUpperCase()
+      }
+      return 'U'
+    }
+
+    const initials = getInitials(user.displayName, user.email)
+
+    const handleSignOut = async () => {
+      try {
+        await signOut()
+        router.push('/login')
+      } catch (error) {
+        console.error('Sign out error:', error)
+      }
+    }
+
+    return (
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => router.push('/user')}
+          className="flex items-center gap-2 min-w-0 flex-1 hover:bg-sidebar-accent rounded p-1 transition-colors"
+        >
+          <Avatar className="h-6 w-6">
+            <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
+            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1 text-left">
+            <div className="text-sm font-medium text-sidebar-foreground truncate">
+              {user.displayName || user.email}
+            </div>
+          </div>
+        </button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSignOut}
+          className="h-6 w-6 p-0 hover:bg-sidebar-accent"
+          title="Sign out"
+        >
+          <LogOut className="h-3 w-3" />
+        </Button>
+      </div>
+    )
+  }
 
   const filteredWorkflows = workflows.filter((workflow) =>
     workflow.name.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -140,6 +199,14 @@ export function NavigationSidebar({
           </div>
         ))}
 
+        {/* User Section */}
+        <div className="p-4">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">USER</h3>
+          <div className="space-y-1">
+            <SidebarUserSection />
+          </div>
+        </div>
+
         {/* Current Workflows List - Always shown */}
         <div className="px-4 pb-4">
           <div className="flex items-center justify-between mb-3">
@@ -178,6 +245,8 @@ export function NavigationSidebar({
             </div>
         </div>
       </div>
+
+
     </div>
   )
 }

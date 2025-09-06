@@ -186,14 +186,6 @@ export default function PinboardPage() {
               Your pinned items and quick access workspace
             </p>
           </div>
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            Add to Pinboard
-          </Button>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
@@ -203,6 +195,10 @@ export default function PinboardPage() {
               className="pl-10"
             />
           </div>
+        </div>
+
+        {/* Filters */}
+        <div className="flex items-center gap-4">
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

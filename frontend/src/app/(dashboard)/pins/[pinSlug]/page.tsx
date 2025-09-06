@@ -318,8 +318,81 @@ export default function PinEditPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-border bg-card">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="p-3 sm:p-4 border-b border-border bg-card">
+        {/* Mobile: Compact layout with essential info */}
+        <div className="flex md:hidden flex-col gap-2">
+          {/* First row: Back button, title, and ID */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <Button variant="ghost" size="sm" onClick={handleBack} className="h-8 w-8 p-0 cursor-pointer flex-shrink-0">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <h2 className="font-semibold truncate text-sm">{pinData.name}</h2>
+            </div>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <span className="font-mono text-xs text-muted-foreground">{pinData.id}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={copyPinId}
+                className="h-6 w-6 p-0 hover:bg-muted cursor-pointer"
+              >
+                <Copy className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+          
+          {/* Second row: Tabs and action buttons */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center border rounded-md bg-muted/30">
+              <Button
+                variant={templateTab === "data-sources" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setTemplateTab("data-sources")}
+                className="h-8 px-2 rounded-r-none border-r cursor-pointer"
+              >
+                <Database className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={templateTab === "blocks" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setTemplateTab("blocks")}
+                className="h-8 px-2 rounded-l-none cursor-pointer"
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+            </div>
+          
+                      <div className="flex items-center gap-1">
+              <Select value={selectedVersion} onValueChange={setSelectedVersion}>
+                <SelectTrigger className="w-12 h-8 text-xs bg-muted/50 border-muted-foreground/20 hover:bg-muted cursor-pointer">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="v1.3">v1.3</SelectItem>
+                  <SelectItem value="v1.2">v1.2</SelectItem>
+                  <SelectItem value="v1.1">v1.1</SelectItem>
+                  <SelectItem value="v1.0">v1.0</SelectItem>
+                </SelectContent>
+              </Select>
+              <TemplateSettingsPopover />
+              <SharePopover 
+                templateId={pinData?.id}
+                templateName={pinData?.name}
+                isTemplate={true}
+              />
+              <PublishPopover
+                templateId={pinData?.id}
+                templateName={pinData?.name}
+                isTemplate={true}
+                isPublished={false}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop: Full information display */}
+        <div className="hidden md:flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" onClick={handleBack} className="h-6 w-6 p-0 cursor-pointer">
@@ -346,7 +419,7 @@ export default function PinEditPage() {
             </div>
           </div>
 
-          {/* Tab Toggle and Actions */}
+          {/* Tab Toggle and Actions - Desktop */}
           <div className="flex items-center gap-4">
             <div className="flex items-center border rounded-md bg-muted/30">
               <Button
@@ -397,8 +470,6 @@ export default function PinEditPage() {
               isTemplate={true}
               isPublished={false}
             />
-            
-            <AvatarPopover />
           </div>
         </div>
       </div>
