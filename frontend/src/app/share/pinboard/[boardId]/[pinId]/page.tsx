@@ -887,9 +887,10 @@ export default function SharePinboardPinPage() {
       
       {/* Header */}
       <header className="border-b border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-[#1D1D1D]/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 supports-[backdrop-filter]:dark:bg-[#1D1D1D]/60 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          {/* Top Row - Logo and Essential Actions */}
+          <div className="flex items-center justify-between mb-2 sm:mb-0">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <Button
                 variant="ghost"
                 size="sm"
@@ -900,19 +901,82 @@ export default function SharePinboardPinPage() {
               </Button>
               <a 
                 href="/"
-                className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+                className="flex items-center gap-1 sm:gap-2 cursor-pointer hover:opacity-80 transition-opacity"
               >
-                <div className="h-8 w-8 bg-foreground text-background rounded-lg flex items-center justify-center">
-                  <Grid3X3 className="h-4 w-4" />
+                <div className="h-6 w-6 sm:h-8 sm:w-8 bg-foreground text-background rounded-lg flex items-center justify-center">
+                  <Grid3X3 className="h-3 w-3 sm:h-4 sm:w-4" />
                 </div>
-                <div>
-                  <span className="font-semibold text-lg">pindown.ai</span>
-                  <span className="text-sm text-muted-foreground ml-2">Pinboard</span>
+                <div className="hidden sm:block">
+                  <span className="font-semibold text-base sm:text-lg">pindown.ai</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground ml-1 sm:ml-2">Pinboard</span>
+                </div>
+                <div className="block sm:hidden">
+                  <span className="font-semibold text-sm">pindown.ai</span>
                 </div>
               </a>
             </div>
             
-            {/* Navigation Arrows */}
+            {/* Right side - Essential actions only on mobile */}
+            <div className="flex items-center space-x-2 sm:hidden">
+              <ThemeToggle />
+              <UserAvatar />
+            </div>
+            
+            {/* Desktop right side */}
+            <div className="hidden sm:flex items-center space-x-3">
+              <Badge variant="secondary" className={cn("flex items-center gap-1", getTypeColor(pin.type))}>
+                {getTypeIcon(pin.type)}
+                {getTypeLabel(pin.type)}
+              </Badge>
+              <AskAI pinContent={pin.content} />
+              <Button
+                onClick={() => setIsTocVisible(!isTocVisible)}
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hidden xl:flex"
+                title={isTocVisible ? "Hide Table of Contents" : "Show Table of Contents"}
+              >
+                {isTocVisible ? <X className="h-4 w-4" /> : <List className="h-4 w-4" />}
+              </Button>
+              <ThemeToggle />
+              <UserAvatar />
+            </div>
+          </div>
+          
+          {/* Bottom Row - Navigation and Pin Info (Mobile) */}
+          <div className="flex items-center justify-between sm:hidden">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToPreviousPin}
+                disabled={currentPinIndex === 0}
+                className="h-7 w-7 p-0"
+              >
+                <ChevronLeft className="h-3 w-3" />
+              </Button>
+              <span className="text-xs text-muted-foreground px-1">
+                {currentPinIndex + 1} of {pinboard.pins.length}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToNextPin}
+                disabled={currentPinIndex === pinboard.pins.length - 1}
+                className="h-7 w-7 p-0"
+              >
+                <ChevronRight className="h-3 w-3" />
+              </Button>
+            </div>
+            
+            <Badge variant="secondary" className={cn("flex items-center gap-1 text-xs", getTypeColor(pin.type))}>
+              {getTypeIcon(pin.type)}
+              {getTypeLabel(pin.type)}
+            </Badge>
+          </div>
+          
+          {/* Desktop Navigation Row */}
+          <div className="hidden sm:flex items-center justify-center">
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
@@ -935,25 +999,6 @@ export default function SharePinboardPinPage() {
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <Badge variant="secondary" className={cn("flex items-center gap-1", getTypeColor(pin.type))}>
-                {getTypeIcon(pin.type)}
-                {getTypeLabel(pin.type)}
-              </Badge>
-              <AskAI pinContent={pin.content} />
-              <Button
-                onClick={() => setIsTocVisible(!isTocVisible)}
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0 hidden xl:flex"
-                title={isTocVisible ? "Hide Table of Contents" : "Show Table of Contents"}
-              >
-                {isTocVisible ? <X className="h-4 w-4" /> : <List className="h-4 w-4" />}
-              </Button>
-              <ThemeToggle />
-              <UserAvatar />
             </div>
           </div>
         </div>
