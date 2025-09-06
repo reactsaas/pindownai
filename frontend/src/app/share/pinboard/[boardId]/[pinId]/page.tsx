@@ -1136,21 +1136,21 @@ export default function SharePinboardPinPage() {
         onToggle={() => setIsTocVisible(!isTocVisible)}
       />
 
-      {/* Mobile Navigation - Bottom of Page */}
+      {/* Mobile Navigation - Fixed Bottom */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-[#1D1D1D]/95 backdrop-blur border-t border-neutral-200 dark:border-neutral-800 z-50">
         <div className="flex items-center justify-center py-3 px-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between w-full">
             <Button
               variant="outline"
               size="sm"
               onClick={goToPreviousPin}
               disabled={currentPinIndex === 0}
-              className="h-10 w-10 p-0"
+              className="h-10 w-10 p-0 flex-shrink-0"
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <div className="text-center">
-              <div className="text-sm font-medium">{pin.name}</div>
+            <div className="text-center px-4 min-w-0 flex-1">
+              <div className="text-sm font-medium truncate">{pin.name}</div>
               <div className="text-xs text-muted-foreground">
                 {currentPinIndex + 1} of {pinboard.pins.length}
               </div>
@@ -1160,7 +1160,7 @@ export default function SharePinboardPinPage() {
               size="sm"
               onClick={goToNextPin}
               disabled={currentPinIndex === pinboard.pins.length - 1}
-              className="h-10 w-10 p-0"
+              className="h-10 w-10 p-0 flex-shrink-0"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -1168,8 +1168,8 @@ export default function SharePinboardPinPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-neutral-200 dark:border-neutral-800 mt-16">
+      {/* Footer - Hidden on Mobile */}
+      <footer className="hidden sm:block border-t border-neutral-200 dark:border-neutral-800 mt-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center space-y-2">
             <p className="text-sm text-muted-foreground">
