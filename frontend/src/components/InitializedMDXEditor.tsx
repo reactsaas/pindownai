@@ -52,20 +52,30 @@ export default function InitializedMDXEditor({
         tablePlugin(),
         diffSourcePlugin({ viewMode: 'rich-text' }),
         
-        // Toolbar plugin with simple layout
+        // Toolbar plugin with responsive layout
         toolbarPlugin({
           toolbarContents: () => (
-            <DiffSourceToggleWrapper>
-              <UndoRedo />
-              <BlockTypeSelect />
-              <BoldItalicUnderlineToggles />
-              <CodeToggle />
-              <ListsToggle />
-              <CreateLink />
-              <InsertImage />
-              <InsertTable />
-              <InsertThematicBreak />
-            </DiffSourceToggleWrapper>
+            <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+              <DiffSourceToggleWrapper>
+                <div className="flex items-center gap-1">
+                  <UndoRedo />
+                  <BlockTypeSelect />
+                </div>
+                <div className="flex items-center gap-1">
+                  <BoldItalicUnderlineToggles />
+                  <CodeToggle />
+                </div>
+                <div className="flex items-center gap-1">
+                  <ListsToggle />
+                  <CreateLink />
+                </div>
+                <div className="flex items-center gap-1">
+                  <InsertImage />
+                  <InsertTable />
+                  <InsertThematicBreak />
+                </div>
+              </DiffSourceToggleWrapper>
+            </div>
           )
         })
       ]}

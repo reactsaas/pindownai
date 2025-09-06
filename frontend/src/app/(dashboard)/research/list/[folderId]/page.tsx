@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -47,14 +47,20 @@ interface ResearchItem {
   createdBy: string
 }
 
-export default function ResearchPage() {
+interface ResearchListPageProps {
+  params: {
+    folderId: string
+  }
+}
+
+export default function ResearchListPage({ params }: ResearchListPageProps) {
   const router = useRouter()
-  // No view mode toggle - always use default grid view
+  // No view mode toggle - always use default compact list view
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedFilter, setSelectedFilter] = useState<string>("all")
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [addItemType, setAddItemType] = useState<"folder" | "item">("folder")
-  const [currentFolder, setCurrentFolder] = useState<string | null>(null)
+  const [currentFolder, setCurrentFolder] = useState<string | null>(params.folderId)
 
   const [researchItems, setResearchItems] = useState<ResearchItem[]>([
     {
@@ -175,12 +181,11 @@ export default function ResearchPage() {
   }
 
   const handleFolderClick = (folderId: string) => {
-    // Navigate to /research/list with the folder ID as a path parameter
-    router.push(`/research/list/${folderId}`)
+    setCurrentFolder(folderId)
   }
 
   const handleBackToParent = () => {
-    setCurrentFolder(null)
+    router.push('/research')
   }
 
   const getCurrentFolderName = () => {
@@ -190,232 +195,204 @@ export default function ResearchPage() {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      <div className="p-6 space-y-6 flex-shrink-0">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              {currentFolder && (
-                <Button variant="ghost" size="sm" onClick={handleBackToParent}>
-                  ← Back
-                </Button>
-              )}
-              <h1 className="text-3xl font-bold tracking-tight">{getCurrentFolderName()}</h1>
-            </div>
-            <p className="text-muted-foreground">
-              Organize and manage your research materials
-            </p>
+    <div className="flex-1 space-y-6 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            {currentFolder && (
+              <Button variant="ghost" size="sm" onClick={handleBackToParent}>
+                ← Back
+              </Button>
+            )}
+            <h1 className="text-3xl font-bold tracking-tight">{getCurrentFolderName()}</h1>
           </div>
-          <div className="flex gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => {
-                  setAddItemType("folder")
-                  setIsAddModalOpen(true)
-                }}>
-                  <Folder className="w-4 h-4 mr-2" />
-                  New Folder
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  setAddItemType("item")
-                  setNewItem(prev => ({ ...prev, type: "research" }))
-                  setIsAddModalOpen(true)
-                }}>
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Research Item
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  setAddItemType("item")
-                  setNewItem(prev => ({ ...prev, type: "note" }))
-                  setIsAddModalOpen(true)
-                }}>
-                  <FileText className="w-4 h-4 mr-2" />
-                  Note
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  setAddItemType("item")
-                  setNewItem(prev => ({ ...prev, type: "link" }))
-                  setIsAddModalOpen(true)
-                }}>
-                  <Link className="w-4 h-4 mr-2" />
-                  External Link
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <p className="text-muted-foreground">
+            Organize and manage your research materials
+          </p>
         </div>
-
-        {/* Search and Filters */}
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              placeholder="Search research items..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          
+        <div className="flex gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <Filter className="w-4 h-4 mr-2" />
-                {selectedFilter === "all" ? "All Types" : selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1)}
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add New
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
-                All Types
+              <DropdownMenuItem onClick={() => {
+                setAddItemType("folder")
+                setIsAddModalOpen(true)
+              }}>
+                <Folder className="w-4 h-4 mr-2" />
+                New Folder
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedFilter("folder")}>
-                Folders
+              <DropdownMenuItem onClick={() => {
+                setAddItemType("item")
+                setNewItem(prev => ({ ...prev, type: "research" }))
+                setIsAddModalOpen(true)
+              }}>
+                <BookOpen className="w-4 h-4 mr-2" />
+                Research Item
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedFilter("research")}>
-                Research
+              <DropdownMenuItem onClick={() => {
+                setAddItemType("item")
+                setNewItem(prev => ({ ...prev, type: "note" }))
+                setIsAddModalOpen(true)
+              }}>
+                <FileText className="w-4 h-4 mr-2" />
+                Note
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedFilter("note")}>
-                Notes
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedFilter("link")}>
-                Links
+              <DropdownMenuItem onClick={() => {
+                setAddItemType("item")
+                setNewItem(prev => ({ ...prev, type: "link" }))
+                setIsAddModalOpen(true)
+              }}>
+                <Link className="w-4 h-4 mr-2" />
+                External Link
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
-        </div>
-
-        {/* Results */}
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            {filteredItems.length} items found
-          </p>
         </div>
       </div>
 
-      {/* Scrollable Grid View */}
-      <div className="flex-1 overflow-y-auto px-6 pb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Add Research Item Field */}
+      {/* Search and Filters */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          <Input
+            placeholder="Search research items..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">
+              <Filter className="w-4 h-4 mr-2" />
+              {selectedFilter === "all" ? "All Types" : selectedFilter.charAt(0).toUpperCase() + selectedFilter.slice(1)}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setSelectedFilter("all")}>
+              All Types
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSelectedFilter("folder")}>
+              Folders
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSelectedFilter("research")}>
+              Research
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSelectedFilter("note")}>
+              Notes
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setSelectedFilter("link")}>
+              Links
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+      </div>
+
+      {/* Results */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {filteredItems.length} items found
+        </p>
+      </div>
+
+      {/* Compact List View like Prompts */}
+      <div className="space-y-1">
+        {filteredItems.map((item) => (
           <Card 
-            className="group hover:shadow-lg transition-all duration-200 cursor-pointer border-2 border-dashed border-muted-foreground/30 hover:border-muted-foreground/50 bg-muted/10 hover:bg-muted/20"
-            onClick={() => {
-              setAddItemType("item")
-              setNewItem(prev => ({ ...prev, type: "research" }))
-              setIsAddModalOpen(true)
-            }}
+            key={item.id} 
+            className="hover:shadow-sm transition-shadow border-border/50 cursor-pointer"
+            onClick={() => item.type === 'folder' ? handleFolderClick(item.id) : undefined}
           >
-            <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
-              <div className="w-12 h-12 bg-muted/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-muted/50 transition-colors">
-                <BookOpen className="w-6 h-6 text-muted-foreground" />
-              </div>
-              <div className="text-center">
-                <h3 className="font-medium text-muted-foreground mb-2">Add Research Item</h3>
-                <p className="text-sm text-muted-foreground/70">Click to add a new research item</p>
+            <CardContent className="px-3 py-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-medium text-sm truncate">{item.name}</h3>
+                      <Badge variant="secondary" className="text-[10px] h-4 px-1 flex-shrink-0 bg-muted text-muted-foreground">
+                        {item.type}
+                      </Badge>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground flex-shrink-0">
+                    <div className="flex items-center gap-0.5">
+                      <Clock className="h-2.5 w-2.5" />
+                      <span>{item.lastModified}</span>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      {getTypeIcon(item.type)}
+                      <span>{item.createdBy}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+                  {item.url && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        window.open(item.url, '_blank')
+                      }}
+                      className="h-6 px-1.5 text-[10px]"
+                    >
+                      <Globe className="h-2.5 w-2.5 mr-0.5" />
+                      Open
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      // Handle edit
+                    }}
+                    className="h-6 w-6 p-0"
+                  >
+                    <Edit3 className="h-2.5 w-2.5" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      // Handle delete
+                    }}
+                    className="text-destructive hover:text-destructive h-6 w-6 p-0"
+                  >
+                    <Trash2 className="h-2.5 w-2.5" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
-          
-          {filteredItems.map((item) => (
-            <Card 
-              key={item.id} 
-              className="group hover:shadow-lg transition-all duration-200 cursor-pointer"
-              onClick={() => item.type === 'folder' ? handleFolderClick(item.id) : undefined}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-muted/20 rounded-full flex items-center justify-center">
-                      {getTypeIcon(item.type)}
-                    </div>
-                    <Badge variant="secondary" className="bg-muted text-muted-foreground">
-                      {item.type}
-                    </Badge>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>
-                        <Edit3 className="w-4 h-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Share2 className="w-4 h-4 mr-2" />
-                        Share
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <CardTitle className="text-lg font-semibold">{item.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                {item.description && (
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
-                    {item.description}
-                  </p>
-                )}
-                
-                {item.url && (
-                  <div className="flex items-center gap-1 mb-3 text-sm text-blue-600">
-                    <Globe className="w-3 h-3" />
-                    <span className="truncate">{item.url}</span>
-                  </div>
-                )}
-                
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {item.tags.slice(0, 3).map((tag) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                  {item.tags.length > 3 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{item.tags.length - 3}
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>{item.lastModified}</span>
-                  </div>
-                  <span>{item.createdBy}</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-          {/* Empty State */}
-          {filteredItems.length === 0 && (
-            <div className="text-center py-12">
-              <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No research items found</h3>
-              <p className="text-muted-foreground mb-4">
-                {searchQuery ? "Try adjusting your search terms" : "Start by adding folders and research items"}
-              </p>
-              <Button onClick={() => setIsAddModalOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Research Item
-              </Button>
-            </div>
-          )}
-        </div>
+        ))}
       </div>
+
+      {/* Empty State */}
+      {filteredItems.length === 0 && (
+        <div className="text-center py-12">
+          <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No research items found</h3>
+          <p className="text-muted-foreground mb-4">
+            {searchQuery ? "Try adjusting your search terms" : "Start by adding folders and research items"}
+          </p>
+          <Button onClick={() => setIsAddModalOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add Research Item
+          </Button>
+        </div>
+      )}
 
       {/* Add Item Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>

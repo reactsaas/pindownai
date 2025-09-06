@@ -61,7 +61,7 @@ export function NavigationSidebar({
       id: "workflows",
       title: "PINS",
       items: [
-        { id: "pins", name: "Pins", icon: FileText, count: 12, route: "/pins" },
+        { id: "pins", name: "Pins", icon: Pin, count: 12, route: "/pins" },
         { id: "pinboard", name: "Pinboard", icon: Grid3X3, count: 8, route: "/pinboard" },
         { id: "research", name: "Research", icon: BookOpen, count: 23, route: "/research" },
         { id: "prompts", name: "Prompts", icon: MessageSquare, count: 24, route: "/prompts" },

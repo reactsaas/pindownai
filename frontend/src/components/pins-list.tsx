@@ -22,7 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-interface Template {
+interface Pin {
   id: string
   name: string
   description: string
@@ -30,33 +30,20 @@ interface Template {
   blocksCount: number
 }
 
-interface TemplatesListProps {
-  templates: Template[]
+interface PinsListProps {
+  templates: Pin[]
   onTemplateSelect: (templateId: string) => void
   onCopyTemplateId?: (templateId: string) => void
   onAddPin?: () => void
 }
 
-export function TemplatesList({ templates, onTemplateSelect, onCopyTemplateId, onAddPin }: TemplatesListProps) {
+export function PinsList({ templates, onTemplateSelect, onCopyTemplateId, onAddPin }: PinsListProps) {
   const getStatusColor = () => {
     return "bg-muted text-muted-foreground"
   }
 
   return (
-    <div className="h-full relative">
-      {/* Header - Absolute positioned */}
-      <div className="absolute top-0 left-0 right-0 pb-4 bg-background z-10">
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">Select a pin to edit or create a new one</p>
-          <p className="text-sm text-muted-foreground">
-            {templates.length} pins available
-          </p>
-        </div>
-      </div>
-
-      {/* Scrollable pins list - Grid layout like pinboard */}
-      <div className="absolute top-12 left-0 right-0 bottom-0 overflow-y-auto templates-scroll">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pr-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Add Pin Field */}
           <Card 
             className="group hover:shadow-lg transition-all duration-200 cursor-pointer border-2 border-dashed border-muted-foreground/30 hover:border-muted-foreground/50 bg-muted/10 hover:bg-muted/20"
@@ -160,7 +147,6 @@ export function TemplatesList({ templates, onTemplateSelect, onCopyTemplateId, o
               </CardContent>
             </Card>
           ))}
-        </div>
         
         {/* Empty State */}
         {templates.length === 0 && (
@@ -174,7 +160,6 @@ export function TemplatesList({ templates, onTemplateSelect, onCopyTemplateId, o
             </p>
           </div>
         )}
-      </div>
     </div>
   )
 }

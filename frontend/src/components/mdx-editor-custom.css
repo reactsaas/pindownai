@@ -26,6 +26,76 @@
   background-color: #FAFAFA !important;
   border-bottom: 1px solid hsl(var(--border)) !important;
   padding: 8px 12px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  white-space: nowrap !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 48px !important;
+}
+
+/* Responsive toolbar for mobile */
+@media (max-width: 640px) {
+  .mdxeditor-toolbar {
+    padding: 4px 6px !important;
+    gap: 2px !important;
+    min-height: 36px !important;
+  }
+  
+  .mdxeditor-toolbar button {
+    padding: 3px 4px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    font-size: 11px !important;
+  }
+  
+  /* Make toolbar groups more compact */
+  .mdxeditor-toolbar > div > div {
+    gap: 1px !important;
+  }
+  
+  /* Compact dropdown/select elements */
+  .mdxeditor-toolbar select,
+  .mdxeditor-toolbar [role="combobox"],
+  .mdxeditor-toolbar [data-radix-select-trigger] {
+    min-width: 28px !important;
+    height: 24px !important;
+    font-size: 10px !important;
+    padding: 2px 4px !important;
+  }
+  
+  /* Compact icon sizes */
+  .mdxeditor-toolbar svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .mdxeditor-toolbar {
+    padding: 2px 4px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    min-height: 28px !important;
+  }
+  
+  .mdxeditor-toolbar::-webkit-scrollbar {
+    display: none !important;
+  }
+  
+  .mdxeditor-toolbar button {
+    padding: 2px 3px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    font-size: 10px !important;
+  }
+  
+  .mdxeditor-toolbar svg {
+    width: 10px !important;
+    height: 10px !important;
+  }
 }
 
 /* Dark mode toolbar background */
@@ -372,6 +442,51 @@ html.dark .mdxeditor-toolbar span {
   color: #374151 !important;
 }
 
+/* Fix diff source plugin alignment */
+.mdxeditor-toolbar [class*="_diffSourceToggleWrapper_"],
+.mdxeditor-toolbar [data-toolbar-item] {
+  display: flex !important;
+  align-items: center !important;
+  height: 32px !important;
+}
+
+.mdxeditor-toolbar [class*="_diffSourceToggle_"] {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+.mdxeditor-toolbar [class*="_toolbarToggleItem_"] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 32px !important;
+  line-height: 1 !important;
+}
+
+/* Responsive alignment for mobile */
+@media (max-width: 640px) {
+  .mdxeditor-toolbar [class*="_diffSourceToggleWrapper_"],
+  .mdxeditor-toolbar [data-toolbar-item] {
+    height: 24px !important;
+  }
+  
+  .mdxeditor-toolbar [class*="_toolbarToggleItem_"] {
+    height: 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .mdxeditor-toolbar [class*="_diffSourceToggleWrapper_"],
+  .mdxeditor-toolbar [data-toolbar-item] {
+    height: 20px !important;
+  }
+  
+  .mdxeditor-toolbar [class*="_toolbarToggleItem_"] {
+    height: 20px !important;
+  }
+}
+
 /* Fix diff source plugin styling for dark mode */
 /* Target the specific MDX editor classes */
 html.dark .mdxeditor ._diffSourceToggleWrapper_1e2ox_986,
@@ -473,4 +588,59 @@ html.dark .mdxeditor .cm-lineNumbers {
 html.dark .mdxeditor .cm-foldGutter {
   background-color: hsl(var(--muted)) !important;
   color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Thematic break (horizontal rule) styling for light mode */
+.mdxeditor-rich-text-editor hr,
+.mdxeditor-rich-text-editor .ProseMirror hr,
+.mdxeditor hr,
+.mdxeditor .ProseMirror hr {
+  border: none !important;
+  border-top: 1px solid #d1d5db !important;
+  height: 0px !important;
+  background-color: #d1d5db !important;
+  margin: 1.5rem 0 !important;
+  opacity: 1 !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Ensure light mode visibility with more specific targeting */
+:not(.dark):not(html.dark) .mdxeditor-rich-text-editor hr,
+:not(.dark):not(html.dark) .mdxeditor-rich-text-editor .ProseMirror hr,
+:not(.dark):not(html.dark) .mdxeditor hr,
+:not(.dark):not(html.dark) .mdxeditor .ProseMirror hr {
+  border-top: 1px solid #9ca3af !important;
+  background-color: #9ca3af !important;
+  height: 0px !important;
+  opacity: 1 !important;
+}
+
+/* Dark mode thematic break styling */
+html.dark .mdxeditor-rich-text-editor hr,
+html.dark .mdxeditor-rich-text-editor .ProseMirror hr,
+html.dark .mdxeditor hr,
+html.dark .mdxeditor .ProseMirror hr {
+  background-color: #525252 !important;
+  border: none !important;
+  border-top: 1px solid #525252 !important;
+  height: 0px !important;
+  margin: 1.5rem 0 !important;
+  opacity: 1 !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Additional targeting for thematic break in dark mode with class-based detection */
+.dark .mdxeditor-rich-text-editor hr,
+.dark .mdxeditor-rich-text-editor .ProseMirror hr,
+.dark .mdxeditor hr,
+.dark .mdxeditor .ProseMirror hr {
+  background-color: #525252 !important;
+  border: none !important;
+  border-top: 1px solid #525252 !important;
+  height: 0px !important;
+  opacity: 1 !important;
+  display: block !important;
+  width: 100% !important;
 }

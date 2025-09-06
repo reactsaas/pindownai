@@ -215,37 +215,31 @@ export function APIKeysPage() {
             </p>
           </div>
 
-          <div className="grid gap-6">
+          <div className="grid gap-3">
             {apiKeys.map((apiKey) => (
               <Card key={apiKey.id} className="relative">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="text-2xl">{apiKey.logo}</div>
-                      <div>
-                        <CardTitle className="text-lg">{apiKey.name}</CardTitle>
-                        <p className="text-sm text-muted-foreground">{apiKey.description}</p>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="text-lg">{apiKey.logo}</div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm">{apiKey.name}</CardTitle>
+                        <div className="flex items-center gap-1">
+                          {getStatusBadge(apiKey.isValid, !!apiKey.key)}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.open(apiKey.docsUrl, '_blank')}
+                            className="h-6 w-6 p-0"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center gap-2">
-                      {getStatusBadge(apiKey.isValid, !!apiKey.key)}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => window.open(apiKey.docsUrl, '_blank')}
-                        className="h-8"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </div>
                   </div>
-                </CardHeader>
-                
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">API Key</label>
-                    <div className="flex gap-2">
+                  
+                  <div className="flex gap-1">
                       <div className="flex-1 relative">
                         <Input
                           type={editingKey === apiKey.id ? "text" : "password"}
@@ -256,14 +250,14 @@ export function APIKeysPage() {
                             setEditingKey(apiKey.id)
                             setTempKeys(prev => ({ ...prev, [apiKey.id]: apiKey.key }))
                           }}
-                          className="pr-10"
+                          className="pr-8 h-7 text-xs"
                         />
                         {apiKey.key && (
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => toggleMask(apiKey.id)}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
                           >
                             {apiKey.masked ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                           </Button>
@@ -276,8 +270,9 @@ export function APIKeysPage() {
                             size="sm"
                             onClick={() => handleSaveKey(apiKey.id)}
                             disabled={!tempKeys[apiKey.id]?.trim()}
+                            className="h-7 px-2"
                           >
-                            <Save className="h-4 w-4" />
+                            <Save className="h-3 w-3" />
                           </Button>
                           <Button
                             variant="outline"
@@ -289,6 +284,7 @@ export function APIKeysPage() {
                                 return rest
                               })
                             }}
+                            className="h-7 px-2 text-xs"
                           >
                             Cancel
                           </Button>
@@ -302,27 +298,29 @@ export function APIKeysPage() {
                                 size="sm"
                                 onClick={() => testAPIKey(apiKey.id)}
                                 disabled={testingKeys[apiKey.id]}
+                                className="h-7 w-7 p-0"
                               >
                                 {testingKeys[apiKey.id] ? (
-                                  <RefreshCw className="h-4 w-4 animate-spin" />
+                                  <RefreshCw className="h-3 w-3 animate-spin" />
                                 ) : (
-                                  <CheckCircle className="h-4 w-4" />
+                                  <CheckCircle className="h-3 w-3" />
                                 )}
                               </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => copyToClipboard(apiKey.key)}
+                                className="h-7 w-7 p-0"
                               >
-                                <Copy className="h-4 w-4" />
+                                <Copy className="h-3 w-3" />
                               </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleDeleteKey(apiKey.id)}
-                                className="text-destructive hover:text-destructive"
+                                className="text-destructive hover:text-destructive h-8 w-8 p-0"
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-3 w-3" />
                               </Button>
                             </>
                           )}
@@ -334,47 +332,13 @@ export function APIKeysPage() {
                                 setEditingKey(apiKey.id)
                                 setTempKeys(prev => ({ ...prev, [apiKey.id]: "" }))
                               }}
+                              className="h-7 px-2 text-xs"
                             >
                               Add Key
                             </Button>
                           )}
                         </div>
                       )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center gap-4">
-                      <span>Last checked: {apiKey.lastChecked}</span>
-                      <div className={`flex items-center gap-1 ${getStatusColor(apiKey.isValid, !!apiKey.key)}`}>
-                        {apiKey.key ? (
-                          apiKey.isValid ? (
-                            <>
-                              <CheckCircle className="h-3 w-3" />
-                              <span>Valid and working</span>
-                            </>
-                          ) : (
-                            <>
-                              <AlertCircle className="h-3 w-3" />
-                              <span>Invalid or expired</span>
-                            </>
-                          )
-                        ) : (
-                          <>
-                            <Key className="h-3 w-3" />
-                            <span>No key configured</span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => window.open(apiKey.docsUrl, '_blank')}
-                      className="h-6 text-xs"
-                    >
-                      Get API Key
-                    </Button>
                   </div>
                 </CardContent>
               </Card>

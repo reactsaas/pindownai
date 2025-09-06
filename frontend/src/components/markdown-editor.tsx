@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, Edit, Copy, Database, Clock, ChevronRight, Sparkles, Settings, ArrowLeft, FileText, Github, Share, Upload, Palette, Code, Zap, Bell, Users, Lock } from "lucide-react"
+import { Eye, Edit, Copy, Database, Clock, ChevronRight, Sparkles, Settings, ArrowLeft, FileText, Github, Share, Upload, Palette, Code, Zap, Bell, Users, Lock, Search, Filter, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
@@ -10,10 +10,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { ForwardRefEditor } from "./ForwardRefEditor"
 import { type MDXEditorMethods } from '@mdxeditor/editor'
 import { BlocksList } from "./blocks-list"
-import { TemplatesList } from "./templates-list"
+import { PinsList } from "./pins-list"
 import { TemplateDataSources } from "./template-data-sources"
 import { AIEditModal } from "./ai-edit-modal"
 import { TemplateSettingsPopover } from "./template-settings-popover"
@@ -22,6 +28,7 @@ import { PublishPopover } from "./publish-popover"
 import { AvatarPopover } from "./avatar-popover"
 import { AddPinModal } from "./add-pin-modal"
 import { AIBlockCreationModal } from "./ai-block-creation-modal"
+import { slugify, generateUniqueSlug } from "@/lib/utils/slug"
 
 interface MarkdownEditorProps {
   template: string
@@ -43,12 +50,15 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
   const [isAIEditModalOpen, setIsAIEditModalOpen] = useState(false)
   const [isAddPinModalOpen, setIsAddPinModalOpen] = useState(false)
   const [isAIBlockModalOpen, setIsAIBlockModalOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedFilter, setSelectedFilter] = useState<string>("all")
   const mdxEditorRef = useRef<MDXEditorMethods>(null)
 
   const templates = [
     {
       id: "pin-1",
       name: "User Onboarding Pin",
+      slug: slugify("User Onboarding Pin"),
       description: "Welcome new users with personalized content",
       lastModified: "2 hours ago",
       blocksCount: 4,
@@ -56,6 +66,7 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
     {
       id: "pin-2",
       name: "Order Confirmation Pin",
+      slug: slugify("Order Confirmation Pin"),
       description: "Confirm orders and provide tracking info",
       lastModified: "1 day ago",
       blocksCount: 3,
@@ -63,6 +74,7 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
     {
       id: "pin-3",
       name: "Weekly Report Pin",
+      slug: slugify("Weekly Report Pin"),
       description: "Generate weekly performance reports",
       lastModified: "3 days ago",
       blocksCount: 6,
@@ -70,6 +82,16 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
   ]
 
   const [pins, setPins] = useState(templates)
+
+  // Filter pins based on search query
+  const filteredPins = pins.filter(pin => {
+    const matchesSearch = pin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         pin.description.toLowerCase().includes(searchQuery.toLowerCase())
+    
+    // For now, no type filtering since pins don't have types like pinboard items
+    // We could add categories later if needed
+    return matchesSearch
+  })
 
   
 
@@ -463,9 +485,15 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
     // Generate a unique ID for the new pin
     const newPinId = `pin_${Date.now().toString().slice(-6)}`
     
+    // Generate unique slug
+    const existingSlugs = pins.map(p => p.slug)
+    const baseSlug = slugify(pinData.name)
+    const uniqueSlug = generateUniqueSlug(baseSlug, existingSlugs)
+    
     const newPin = {
       id: newPinId,
       name: pinData.name,
+      slug: uniqueSlug,
       description: pinData.description,
       lastModified: "Just now",
       blocksCount: 1,
@@ -476,6 +504,7 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
     
     // Automatically start editing the new pin
     startEditingTemplate(newPinId)
+    setIsAddPinModalOpen(false)
   }
 
 
@@ -493,24 +522,17 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
   }
 
   const startEditingTemplate = (templateId: string) => {
-    setEditingTemplateId(templateId)
-    setEditingBlockId(null)
-    setTemplateTab("blocks")
-    router.push("/pins/blocks")
+    const pin = pins.find(p => p.id === templateId)
+    if (pin) {
+      router.push(`/pins/${pin.slug}`)
+    }
   }
 
   const startEditingBlock = (blockId: string) => {
-    setEditingBlockId(blockId)
-    setActiveView("edit")
-    const block = blockItems.find((b) => b.id === blockId)
-    if (block) {
-      onTemplateChange(block.template)
-      // Set the markdown content in the MDX editor if available
-      setTimeout(() => {
-        if (mdxEditorRef.current) {
-          mdxEditorRef.current.setMarkdown(block.template)
-        }
-      }, 100)
+    // For now, navigate to the first pin's slug - in real app this would be contextual
+    const currentPin = pins[0] // This should be the currently selected pin
+    if (currentPin) {
+      router.push(`/pins/${currentPin.slug}/${blockId}`)
     }
   }
 
@@ -530,23 +552,11 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 border-b border-border bg-card">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            {!editingTemplateId ? (
-              <>
-                <h2 className="font-semibold">Pins</h2>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <span>{pins.length} pins available</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    <span>Last activity 2 min ago</span>
-                  </div>
-                </div>
-              </>
-            ) : !editingBlockId ? (
+      {editingTemplateId && (
+        <div className="p-4 border-b border-border bg-card">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              {!editingBlockId ? (
               <>
                 <div className="flex items-center gap-2">
                                   <Button variant="ghost" size="sm" onClick={backToPins} className="h-6 w-6 p-0 cursor-pointer">
@@ -603,20 +613,7 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
           </div>
 
           {!editingTemplateId ? (
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="h-8 cursor-pointer">
-                <Settings className="h-4 w-4 mr-2" />
-                Settings
-              </Button>
-              <Button 
-                size="sm" 
-                className="h-8 cursor-pointer"
-                onClick={() => setIsAddPinModalOpen(true)}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Add Pin
-              </Button>
-            </div>
+            <div></div>
           ) : editingTemplateId && !editingBlockId && (
             <div className="flex items-center gap-4">
               <div className="flex items-center border rounded-md bg-muted/30">
@@ -721,19 +718,61 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
             </div>
           )}
         </div>
-      </div>
+        </div>
+      )}
 
-      <div className="flex-1 flex flex-col p-4">
-                {!editingTemplateId && (
-          <TemplatesList
-            templates={pins}
-            onTemplateSelect={startEditingTemplate}
-            onCopyTemplateId={copyTemplateId}
-            onAddPin={() => setIsAddPinModalOpen(true)}
-          />
-        )}
+      {!editingTemplateId && (
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="p-6 space-y-6 flex-shrink-0">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">Pins</h1>
+                <p className="text-muted-foreground">
+                  Manage your reusable pin templates
+                </p>
+              </div>
+              <Button onClick={() => setIsAddPinModalOpen(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Pin
+              </Button>
+            </div>
 
-        {editingTemplateId && !editingBlockId && templateTab === "data-sources" && (
+            {/* Search and Filters */}
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Search pins..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {/* Results */}
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                {filteredPins.length} pins found
+              </p>
+            </div>
+          </div>
+
+          {/* Scrollable Pins Grid */}
+          <div className="flex-1 overflow-y-auto px-6 pb-6">
+            <PinsList
+              templates={filteredPins}
+              onTemplateSelect={startEditingTemplate}
+              onCopyTemplateId={copyTemplateId}
+              onAddPin={() => setIsAddPinModalOpen(true)}
+            />
+          </div>
+        </div>
+      )}
+
+      {editingTemplateId && !editingBlockId && templateTab === "data-sources" && (
+        <div className="flex-1 space-y-6 p-6">
           <TemplateDataSources
             receivedDataEntries={receivedDataEntries}
             integrationsData={integrationsData}
@@ -750,10 +789,11 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
             onDeletePerplexityResearchData={handleDeletePerplexityResearchData}
             onDeleteIntegrationData={handleDeleteIntegrationData}
           />
-        )}
+        </div>
+      )}
 
-        {editingTemplateId && !editingBlockId && templateTab === "blocks" && (
-          <div className="flex-1 min-h-0">
+      {editingTemplateId && !editingBlockId && templateTab === "blocks" && (
+        <div className="flex-1 min-h-0 p-4">
             <BlocksList
               blockItems={blockItems}
               onBlockItemsChange={setBlockItems}
@@ -762,10 +802,10 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
               onCreateBlock={handleCreateBlock}
               onAddBlock={() => setIsAIBlockModalOpen(true)}
             />
-          </div>
-        )}
+        </div>
+      )}
 
-        {editingBlockId && activeView === "edit" && (
+      {editingBlockId && activeView === "edit" && (
           <div className="h-full flex flex-col">
             <ForwardRefEditor
               ref={mdxEditorRef}
@@ -791,7 +831,6 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
             </CardContent>
           </Card>
         )}
-      </div>
 
       {/* AI Edit Modal */}
       <AIEditModal

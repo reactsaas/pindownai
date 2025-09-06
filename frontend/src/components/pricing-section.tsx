@@ -22,13 +22,13 @@ export function PricingSection() {
       description: "For personal projects and side hustles",
       monthlyPrice: "$7/mo",
       annualMonthlyPrice: "$5/mo",
-             features: [
-         "15 pins",
-         "1 pinboard",
-         "once a minute",
-         "Custom templates",
-         "AI document intelligence"
-       ]
+                   features: [
+        "15 pins",
+        "1 pinboard",
+        "Live updates",
+        "Custom templates",
+        "AI document intelligence"
+      ]
     },
     {
       name: "Professional",
@@ -87,7 +87,7 @@ export function PricingSection() {
         return (
     <div className="w-full">
       <h2 className="text-xl sm:text-2xl font-medium text-center mb-6 sm:mb-8">
-        {isAnnual ? "Annual Pricing" : "Monthly Pricing"}
+        Pricing
       </h2>
       
       {/* Billing Toggle */}

@@ -27,7 +27,7 @@ export function PromptsPage() {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingPrompt, setEditingPrompt] = useState<Prompt | null>(null)
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [viewMode, setViewMode] = useState<"list">("list")
 
   const [prompts, setPrompts] = useState<Prompt[]>([
     {
@@ -235,94 +235,11 @@ export function PromptsPage() {
             ))}
           </SelectContent>
         </Select>
-        
-        {/* View Toggle */}
-        <div className="flex items-center border rounded-md bg-muted/30">
-          <Button
-            variant={viewMode === "grid" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setViewMode("grid")}
-            className="h-8 px-3 rounded-r-none border-r"
-          >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === "list" ? "default" : "ghost"}
-            size="sm"
-            onClick={() => setViewMode("list")}
-            className="h-8 px-3 rounded-l-none"
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
       </div>
 
       {/* Prompts Display */}
       <div className="flex-1 overflow-y-auto">
-        {viewMode === "grid" ? (
-          /* Grid View */
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {filteredPrompts.map((prompt) => (
-              <Card key={prompt.id} className="hover:shadow-md transition-shadow flex flex-col h-full">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{prompt.name}</CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">{prompt.description}</p>
-                    </div>
-                    <Badge variant="secondary" className="ml-2">
-                      {prompt.category}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="flex flex-col flex-1 space-y-4">
-                  <div className="bg-muted p-3 rounded-md flex-1">
-                    <p className="text-sm line-clamp-3">{prompt.content}</p>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      <span>{prompt.lastModified}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MessageSquare className="h-3 w-3" />
-                      <span>{prompt.usageCount} uses</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 mt-auto">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyPromptContent(prompt.content)}
-                      className="flex-1"
-                    >
-                      <Copy className="h-3 w-3 mr-2" />
-                      Copy
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEditPrompt(prompt)}
-                    >
-                      <Edit className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeletePrompt(prompt.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          /* List View */
+        {/* List View Only */}
           <div className="space-y-1">
             {filteredPrompts.map((prompt) => (
               <Card key={prompt.id} className="hover:shadow-sm transition-shadow border-border/50">
@@ -382,7 +299,6 @@ export function PromptsPage() {
               </Card>
             ))}
           </div>
-        )}
 
         {filteredPrompts.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12">

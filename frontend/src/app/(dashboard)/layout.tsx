@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Menu, X } from "lucide-react"
 import { NavigationSidebar } from "@/components/navigation-sidebar"
+import { AuthProvider } from "@/lib/auth-context"
 
 // Mock data for workflows - this should come from a context or API
 const mockWorkflows = [
@@ -24,72 +25,74 @@ export default function DashboardLayout({
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
 
   return (
-    <div className="h-screen bg-background overflow-hidden">
-      {/* Mobile header with hamburger menu */}
-      <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
-        <h1 className="text-lg font-semibold">pindown.ai</h1>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-          className="p-2"
-          aria-label="Toggle menu"
-        >
-          {isMobileSidebarOpen ? (
-            <X className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
-        </Button>
-      </div>
+    <AuthProvider requireAuth={true}>
+      <div className="h-screen bg-background overflow-hidden">
+        {/* Mobile header with hamburger menu */}
+        <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
+          <h1 className="text-lg font-semibold">pindown.ai</h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+            className="p-2"
+            aria-label="Toggle menu"
+          >
+            {isMobileSidebarOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
+          </Button>
+        </div>
 
-      {/* Content Container */}
-      <div className="flex h-full lg:h-screen">
-        {/* Desktop Sidebar */}
-        <NavigationSidebar
-          workflows={mockWorkflows}
-          selectedWorkflow={selectedWorkflow}
-          onSelectWorkflow={setSelectedWorkflow}
-          currentPage="pins"
-          onPageChange={() => {}}
-          searchQuery=""
-          className="hidden lg:flex"
-        />
-
-        {/* Mobile backdrop */}
-        {isMobileSidebarOpen && (
-          <div 
-            className="lg:hidden fixed inset-0 bg-black/50 z-40"
-            onClick={() => setIsMobileSidebarOpen(false)}
-          />
-        )}
-
-        {/* Mobile Sidebar */}
-        <div 
-          className={`
-            lg:hidden fixed top-0 bottom-0 left-0 z-50
-            transform transition-transform duration-300 ease-in-out
-            ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          `}
-        >
+        {/* Content Container */}
+        <div className="flex h-full lg:h-screen">
+          {/* Desktop Sidebar */}
           <NavigationSidebar
             workflows={mockWorkflows}
             selectedWorkflow={selectedWorkflow}
-            onSelectWorkflow={(workflow) => {
-              setSelectedWorkflow(workflow)
-              setIsMobileSidebarOpen(false)
-            }}
+            onSelectWorkflow={setSelectedWorkflow}
             currentPage="pins"
-            onPageChange={() => setIsMobileSidebarOpen(false)}
+            onPageChange={() => {}}
             searchQuery=""
+            className="hidden lg:flex"
           />
-        </div>
 
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0">
-          {children}
+          {/* Mobile backdrop */}
+          {isMobileSidebarOpen && (
+            <div 
+              className="lg:hidden fixed inset-0 bg-black/50 z-40"
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
+          )}
+
+          {/* Mobile Sidebar */}
+          <div 
+            className={`
+              lg:hidden fixed top-0 bottom-0 left-0 z-50
+              transform transition-transform duration-300 ease-in-out
+              ${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"}
+            `}
+          >
+            <NavigationSidebar
+              workflows={mockWorkflows}
+              selectedWorkflow={selectedWorkflow}
+              onSelectWorkflow={(workflow) => {
+                setSelectedWorkflow(workflow)
+                setIsMobileSidebarOpen(false)
+              }}
+              currentPage="pins"
+              onPageChange={() => setIsMobileSidebarOpen(false)}
+              searchQuery=""
+            />
+          </div>
+
+          {/* Main Content Area */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {children}
+          </div>
         </div>
       </div>
-    </div>
+    </AuthProvider>
   )
 }

@@ -10,6 +10,7 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 function LiveValue({ value }: { value: string | number }) {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -341,6 +342,138 @@ function ResearchReport() {
   );
 }
 
+function ArticleExample() {
+  const [stats, setStats] = useState({
+    readTime: "8 min read",
+    author: "Sarah Chen",
+    publishDate: "December 2024",
+    category: "Technology Trends",
+    revenue: 45670,
+    customers: 1834,
+    conversion: 12.4,
+    uptime: 99.8
+  });
+
+  useEffect(() => {
+    const articles = [
+      {
+        category: "Technology Trends",
+        author: "Sarah Chen",
+        readTime: "8 min read",
+        revenue: 45670,
+        customers: 1834,
+        conversion: 12.4,
+        uptime: 99.8
+      },
+      {
+        category: "Digital Marketing",
+        author: "Marcus Rodriguez", 
+        readTime: "6 min read",
+        revenue: 38920,
+        customers: 1567,
+        conversion: 9.8,
+        uptime: 99.9
+      },
+      {
+        category: "Product Strategy",
+        author: "Jessica Wu",
+        readTime: "12 min read", 
+        revenue: 52340,
+        customers: 2145,
+        conversion: 15.2,
+        uptime: 99.7
+      }
+    ];
+
+    const interval = setInterval(() => {
+      const randomArticle = articles[Math.floor(Math.random() * articles.length)];
+      setStats(prev => ({
+        ...prev,
+        ...randomArticle,
+        revenue: randomArticle.revenue + Math.floor(Math.random() * 1000 - 500),
+        customers: randomArticle.customers + Math.floor(Math.random() * 50 - 25),
+        conversion: Math.max(0, randomArticle.conversion + (Math.random() * 2 - 1)),
+        uptime: Math.max(99.0, Math.min(100, randomArticle.uptime + (Math.random() * 0.4 - 0.2)))
+      }));
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h1 className="text-2xl font-bold mb-2">The Future of Remote Work: AI-Powered Collaboration</h1>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+              <span>By <LiveValue value={stats.author} /></span>
+              <span>•</span>
+              <span><LiveValue value={stats.readTime} /></span>
+              <span>•</span>
+              <span><LiveValue value={stats.publishDate} /></span>
+            </div>
+            <div className="inline-flex px-3 py-1 bg-muted/30 rounded-full text-xs font-medium">
+              <LiveValue value={stats.category} />
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="w-2 h-2 bg-foreground rounded-full animate-pulse"></div>
+            <span>Live</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="prose prose-sm text-muted-foreground leading-relaxed">
+        <p>
+          As organizations continue to embrace distributed teams, the integration of artificial intelligence 
+          into collaboration tools is reshaping how we work together across time zones and cultures. 
+          Recent studies show that <strong className="text-foreground">AI-enhanced workflows</strong> can 
+          improve team productivity by up to 40% while reducing meeting fatigue.
+        </p>
+        
+        <p>
+          The shift toward <em>asynchronous collaboration</em> is particularly evident in software development, 
+          where AI-powered code review and automated documentation generation are becoming standard practice. 
+          This transformation isn't just about efficiency—it's about creating more inclusive work environments 
+          where diverse perspectives can contribute meaningfully to shared outcomes.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/10 rounded-lg">
+        <div className="text-center">
+          <div className="text-2xl font-bold">
+            $<LiveValue value={stats.revenue.toLocaleString()} />
+          </div>
+          <div className="text-xs text-muted-foreground">Monthly Revenue</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold">
+            <LiveValue value={stats.customers.toLocaleString()} />
+          </div>
+          <div className="text-xs text-muted-foreground">Active Customers</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold">
+            <LiveValue value={stats.conversion.toFixed(1)} />%
+          </div>
+          <div className="text-xs text-muted-foreground">Conversion Rate</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-bold">
+            <LiveValue value={stats.uptime.toFixed(1)} />%
+          </div>
+          <div className="text-xs text-muted-foreground">System Uptime</div>
+        </div>
+      </div>
+
+      <div className="text-sm text-muted-foreground text-center">
+        Business metrics update in real-time • Data from your automation workflows
+      </div>
+    </div>
+  );
+}
+
 function Top5List() {
   const [stats, setStats] = useState({
     category: "Most Active Features",
@@ -487,7 +620,7 @@ function ExampleReports() {
           <h2 className="text-2xl font-medium bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Realtime Dynamic Pins</h2>
         </div>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Transform raw data into beautiful, formatted <strong>pins</strong> using AI-shaped template variables for instant <strong>sharing</strong>.
+          Transform raw data into beautiful, formatted <strong>pins</strong> using template variables and text that is shaped by AI based on your data.
         </p>
       </div>
       
@@ -495,6 +628,7 @@ function ExampleReports() {
         <TabsList className="w-full mb-6">
           <TabsTrigger value="automation" className="flex-1">Automation Outputs</TabsTrigger>
           <TabsTrigger value="research" className="flex-1">Research</TabsTrigger>
+          <TabsTrigger value="article" className="flex-1">Article</TabsTrigger>
           <TabsTrigger value="top5" className="flex-1">Top 5 List</TabsTrigger>
         </TabsList>
         <TabsContent value="automation">
@@ -502,6 +636,9 @@ function ExampleReports() {
         </TabsContent>
         <TabsContent value="research">
           <ResearchReport />
+        </TabsContent>
+        <TabsContent value="article">
+          <ArticleExample />
         </TabsContent>
         <TabsContent value="top5">
           <Top5List />
@@ -554,6 +691,11 @@ export default function Home() {
   
   return (
     <div>
+      {/* Theme Toggle - Fixed in top right */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+      
       {/* Hero section - Full viewport height */}
       <div className="min-h-screen flex items-center justify-center p-8 sm:p-20">
         <div className="flex flex-col gap-8 items-center">
@@ -564,7 +706,7 @@ export default function Home() {
             <h1 className="text-4xl font-bold">pindown.ai</h1>
           </div>
                       <p className="text-xl text-center text-muted-foreground max-w-lg">
-              Pin down your automation outputs. Transform raw data into readable, shareable information that everyone can understand.
+              Pin down your automation outputs. Transform raw data into information that everyone can understand.
             </p>
           
           <div className="flex gap-4 items-center flex-col sm:flex-row mt-8">
@@ -918,6 +1060,7 @@ export default function Home() {
      </div>
 
       {/* Transformation Visualization Section */}
+      {/* 
       <div 
         ref={transformationRef}
         className={`py-16 sm:py-20 px-6 sm:px-12 bg-muted/20 transition-all duration-1000 ease-out ${
@@ -937,6 +1080,7 @@ export default function Home() {
             
             <div className="relative w-full max-w-2xl mx-auto h-80 flex items-center justify-center">
               {/* Center Brain */}
+              {/*
               <div className="flex flex-col items-center z-10">
                 <div className="relative w-28 h-28 bg-muted/20 rounded-full flex items-center justify-center overflow-hidden">
                   <Brain className="w-18 h-18 text-muted-foreground relative z-10" />
@@ -944,56 +1088,69 @@ export default function Home() {
                 </div>
                 <div className="text-sm font-medium text-muted-foreground mt-3">AI Shaping</div>
               </div>
+              */}
               
                              {/* Data Sources arranged in a circle */}
-               {/* Top Left */}
-               <div className="absolute top-8 left-16 flex flex-col items-center p-3">
-                 <FileText className="w-6 h-6 text-muted-foreground mb-1" />
-                 <div className="text-xs text-center text-muted-foreground font-medium">Logs</div>
-               </div>
-               
-               {/* Top Right */}
-               <div className="absolute top-8 right-16 flex flex-col items-center p-3">
-                 <Code className="w-6 h-6 text-muted-foreground mb-1" />
-                 <div className="text-xs text-center text-muted-foreground font-medium">APIs</div>
-               </div>
-               
-               {/* Middle Left */}
-               <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center p-3">
-                 <Bot className="w-6 h-6 text-muted-foreground mb-1" />
-                 <div className="text-xs text-center text-muted-foreground font-medium">Automation</div>
-               </div>
-               
-               {/* Middle Right */}
-               <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center p-3">
-                 <Server className="w-6 h-6 text-muted-foreground mb-1" />
-                 <div className="text-xs text-center text-muted-foreground font-medium">Metrics</div>
-               </div>
-               
-               {/* Bottom Left */}
-               <div className="absolute bottom-8 left-16 flex flex-col items-center p-3">
-                 <Database className="w-6 h-6 text-muted-foreground mb-1" />
-                 <div className="text-xs text-center text-muted-foreground font-medium">Database</div>
-               </div>
-               
-               {/* Bottom Right */}
-               <div className="absolute bottom-8 right-16 flex flex-col items-center p-3">
-                 <Image className="w-6 h-6 text-muted-foreground mb-1" />
-                 <div className="text-xs text-center text-muted-foreground font-medium">Images</div>
-               </div>
-            </div>
-
-            <div className="mt-12 text-center">
-              <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-                <ArrowRight className="w-4 h-4" />
-                <span>Intelligent Processing</span>
-                <ArrowRight className="w-4 h-4" />
-                <span>Clean Reports</span>
+              {/* Top Left */}
+              {/*
+              <div className="absolute top-8 left-16 flex flex-col items-center p-3">
+                <FileText className="w-6 h-6 text-muted-foreground mb-1" />
+                <div className="text-xs text-center text-muted-foreground font-medium">Logs</div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              */}
+              
+              {/* Top Right */}
+              {/*
+              <div className="absolute top-8 right-16 flex flex-col items-center p-3">
+                <Code className="w-6 h-6 text-muted-foreground mb-1" />
+                <div className="text-xs text-center text-muted-foreground font-medium">APIs</div>
+              </div>
+              */}
+              
+              {/* Middle Left */}
+              {/*
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center p-3">
+                <Bot className="w-6 h-6 text-muted-foreground mb-1" />
+                <div className="text-xs text-center text-muted-foreground font-medium">Automation</div>
+              </div>
+              */}
+              
+              {/* Middle Right */}
+              {/*
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center p-3">
+                <Server className="w-6 h-6 text-muted-foreground mb-1" />
+                <div className="text-xs text-center text-muted-foreground font-medium">Metrics</div>
+              </div>
+              */}
+              
+              {/* Bottom Left */}
+              {/*
+              <div className="absolute bottom-8 left-16 flex flex-col items-center p-3">
+                <Database className="w-6 h-6 text-muted-foreground mb-1" />
+                <div className="text-xs text-center text-muted-foreground font-medium">Database</div>
+              </div>
+              */}
+              
+              {/* Bottom Right */}
+              {/*
+              <div className="absolute bottom-8 right-16 flex flex-col items-center p-3">
+                <Image className="w-6 h-6 text-muted-foreground mb-1" />
+                <div className="text-xs text-center text-muted-foreground font-medium">Images</div>
+              </div>
+           </div>
+
+           <div className="mt-12 text-center">
+             <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+               <ArrowRight className="w-4 h-4" />
+               <span>Intelligent Processing</span>
+               <ArrowRight className="w-4 h-4" />
+               <span>Clean Reports</span>
+             </div>
+           </div>
+         </div>
+       </div>
+     </div>
+     */}
 
 
 
@@ -1013,7 +1170,7 @@ export default function Home() {
             <div className="mb-12">
               <h2 className="text-2xl font-medium mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Works with Your Automation Stack</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Connect any automation tool or script output. Transform your workflow data into shareable pins instantly.
+                Connect any automation tool or script output. Transform your workflow data into pins instantly.
               </p>
             </div>
             
@@ -1054,28 +1211,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Perplexity Research Section */}
-      <div 
-        ref={researchRef}
-        className={`py-16 sm:py-20 px-6 sm:px-12 transition-all duration-1000 ease-out ${
-          isResearchInView 
-            ? 'opacity-100 translate-y-0' 
-            : 'opacity-0 translate-y-12'
-        }`}
-      >
-        <div className="flex flex-col items-center">
-          <div className="max-w-4xl w-full text-center mb-12">
-            <h2 className="text-3xl font-medium mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Power Your Pins with Up-to-Date Research</h2>
-            <p className="text-muted-foreground mb-6">Enhance your reports with real-time web research <span className="text-primary font-medium">powered by Perplexity AI</span></p>
-            <div className="flex justify-center">
-              <div className="relative w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center overflow-hidden">
-                <Search className="w-8 h-8 text-primary relative z-10" />
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-[wave_2.5s_ease-in-out_infinite] rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Other sections */}
        <div className="py-20 sm:py-24 px-8 sm:px-20 bg-muted/10">
@@ -1092,7 +1227,26 @@ export default function Home() {
               <PricingSection />
             </div>
 
-
+           {/* Perplexity Research Section */}
+           <div 
+             ref={researchRef}
+             className={`mt-32 max-w-4xl w-full text-center transition-all duration-1000 ease-out ${
+               isResearchInView 
+                 ? 'opacity-100 translate-y-0' 
+                 : 'opacity-0 translate-y-12'
+             }`}
+           >
+             <div className="mb-12">
+               <h2 className="text-3xl font-medium mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Power Your Pins with Up-to-Date Research</h2>
+               <p className="text-muted-foreground mb-6">Enhance your reports with real-time web research <span className="text-primary font-medium">powered by Perplexity AI</span></p>
+               <div className="flex justify-center">
+                 <div className="relative w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center overflow-hidden">
+                   <Search className="w-8 h-8 text-primary relative z-10" />
+                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-[wave_2.5s_ease-in-out_infinite] rounded-full"></div>
+                 </div>
+               </div>
+             </div>
+           </div>
 
            {/* Bring Your Own API Keys Section */}
            <div 
