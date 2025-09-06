@@ -77,7 +77,7 @@ export default function UserPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto p-6 pb-20 sm:pb-6">
         <div className="max-w-2xl mx-auto space-y-6">
           
           {/* Profile Section */}
