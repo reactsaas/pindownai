@@ -1,8 +1,24 @@
 import fastify from 'fastify';
+import dotenv from 'dotenv';
+import type { ZodTypeProvider } from 'fastify-type-provider-zod';
+import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod';
+import firebasePlugin from './plugins/firebase';
+import authPlugin from './plugins/auth';
+import errorHandlerPlugin from './plugins/error-handler';
+import { pinRoutes } from './routes/pins';
+import { workflowDataRoutes } from './routes/workflow-data';
+import { authRoutes } from './routes/auth';
+
+// Load environment variables
+dotenv.config();
 
 const server = fastify({
   logger: true
-});
+}).withTypeProvider<ZodTypeProvider>();
+
+// Set up Zod type provider
+server.setValidatorCompiler(validatorCompiler);
+server.setSerializerCompiler(serializerCompiler);
 
 const PORT = parseInt(process.env.PORT || '8000', 10);
 const HOST = process.env.HOST || '0.0.0.0';
@@ -37,6 +53,11 @@ async function registerSwagger() {
 
 // Register routes after Swagger
 async function registerRoutes() {
+  // Register API routes
+  await server.register(pinRoutes);
+  await server.register(workflowDataRoutes);
+  await server.register(authRoutes);
+  
   // Basic routes with Swagger schemas
   server.get('/', {
     schema: {
@@ -76,43 +97,29 @@ async function registerRoutes() {
     };
   });
 
-  // Example API endpoint
-  server.get('/api/pins', {
-    schema: {
-      description: 'Get all pins',
-      tags: ['Pins'],
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            pins: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number' },
-                  title: { type: 'string' },
-                  content: { type: 'string' }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }, async (request, reply) => {
-    return { 
-      pins: [
-        { id: 1, title: 'Sample Pin', content: 'This is a sample pin' }
-      ]
-    };
-  });
+  // Example API endpoint removed - handled by pinRoutes
+}
+
+// Register plugins
+async function registerPlugins() {
+  // Register Error Handler first
+  await server.register(errorHandlerPlugin);
+  
+  // Register Firebase plugin
+  await server.register(firebasePlugin);
+  
+  // Register Auth plugin
+  await server.register(authPlugin);
 }
 
 // Start server
+
 async function start() {
   try {
-    // Register Swagger first
+    // Register plugins first
+    await registerPlugins();
+    
+    // Register Swagger
     await registerSwagger();
     
     // Then register routes

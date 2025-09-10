@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Pin, MessageSquare, Zap, FileText, Code, Server, Bot, Image, Database, ArrowRight, Brain, Search, Globe, Key, Shield } from "lucide-react";
+import { Pin, MessageSquare, Zap, FileText, Code, Server, Bot, Image, Database, ArrowRight, Brain, Search, Globe, Key, Shield, Share2 } from "lucide-react";
 import { PricingSection } from "@/components/pricing-section";
 import { useInView } from "react-intersection-observer";
 import ReactMarkdown from 'react-markdown';
@@ -474,51 +474,51 @@ function ArticleExample() {
   );
 }
 
-function Top5List() {
-  const [stats, setStats] = useState({
-    category: "Most Active Features",
-    items: [
-      { name: "Data Processing", score: 982, trend: "Growing adoption in enterprise", change: "+12%" },
-      { name: "API Integration", score: 875, trend: "High developer satisfaction", change: "+8%" },
-      { name: "Analytics Dashboard", score: 754, trend: "Increased daily usage", change: "-3%" },
-      { name: "Workflow Builder", score: 687, trend: "Popular among new users", change: "+15%" },
-      { name: "Team Collaboration", score: 543, trend: "Strong growth in large teams", change: "+5%" }
+function DataAnalysis() {
+  const [analysis, setAnalysis] = useState({
+    category: "Revenue Analysis",
+    metrics: [
+      { name: "Monthly Revenue", value: "$127,450", trend: "Strong growth trajectory", change: "+18.2%", type: "currency" },
+      { name: "Active Users", value: "12,847", trend: "Steady user acquisition", change: "+8.5%", type: "number" },
+      { name: "Conversion Rate", value: "3.24%", trend: "Above industry average", change: "+0.3%", type: "percentage" },
+      { name: "Churn Rate", value: "2.1%", trend: "Low churn indicates satisfaction", change: "-0.8%", type: "percentage" },
+      { name: "Avg. Session Duration", value: "4m 32s", trend: "High engagement levels", change: "+12s", type: "duration" }
     ],
     categories: [
       {
-        name: "Most Active Features",
-        trends: [
-          "Growing adoption in enterprise",
-          "High developer satisfaction",
-          "Increased daily usage",
-          "Popular among new users",
-          "Strong growth in large teams",
-          "Positive user feedback",
-          "Rising engagement metrics"
+        name: "Revenue Analysis",
+        insights: [
+          "Strong growth trajectory",
+          "Above industry benchmarks",
+          "Seasonal patterns detected",
+          "Premium tier driving growth",
+          "Enterprise segment expanding",
+          "Geographic expansion successful",
+          "Product-market fit achieved"
         ]
       },
       {
-        name: "Top User Requests",
-        trends: [
-          "Better mobile experience",
-          "Advanced search capabilities",
-          "Custom reporting options",
-          "Enhanced security features",
-          "Improved documentation",
-          "More integration options",
-          "Offline capabilities"
+        name: "User Behavior",
+        insights: [
+          "Steady user acquisition",
+          "High engagement levels",
+          "Mobile usage increasing",
+          "Feature adoption growing",
+          "Retention rates improving",
+          "Social sharing trending up",
+          "Community engagement strong"
         ]
       },
       {
-        name: "Growing Markets",
-        trends: [
-          "Enterprise adoption rising",
-          "SMB segment expanding",
-          "New vertical penetration",
-          "International growth",
-          "Partner ecosystem growing",
-          "Developer community active",
-          "Education sector emerging"
+        name: "Performance Metrics",
+        insights: [
+          "Above industry average",
+          "Low churn indicates satisfaction",
+          "Response times optimized",
+          "Uptime exceeding targets",
+          "Scalability proven",
+          "Security metrics excellent",
+          "Customer satisfaction high"
         ]
       }
     ]
@@ -526,31 +526,47 @@ function Top5List() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setStats(prev => {
+      setAnalysis(prev => {
         // Get current category index
         const currentCategoryIndex = prev.categories.findIndex(c => c.name === prev.category);
         // Get next category
         const nextCategoryIndex = (currentCategoryIndex + 1) % prev.categories.length;
         const nextCategory = prev.categories[nextCategoryIndex];
 
-        // Update items with new scores and trends
-        const updatedItems = prev.items.map(item => ({
-          ...item,
-          score: item.score + Math.floor(Math.random() * 40 - 20),
-          trend: nextCategory.trends[Math.floor(Math.random() * nextCategory.trends.length)],
-          change: `${Math.random() > 0.5 ? "+" : "-"}${Math.floor(Math.random() * 15)}%`
-        }));
+        // Update metrics with new values and insights
+        const updatedMetrics = prev.metrics.map(metric => {
+          const newInsight = nextCategory.insights[Math.floor(Math.random() * nextCategory.insights.length)];
+          
+          // Generate realistic changes based on metric type
+          let newChange = "";
+          if (metric.type === "currency") {
+            const change = Math.floor(Math.random() * 20 - 5);
+            newChange = change >= 0 ? `+${change}%` : `${change}%`;
+          } else if (metric.type === "percentage") {
+            const change = (Math.random() * 2 - 1).toFixed(1);
+            newChange = change.startsWith('-') ? `${change}%` : `+${change}%`;
+          } else if (metric.type === "number") {
+            const change = Math.floor(Math.random() * 10 - 2);
+            newChange = change >= 0 ? `+${change}%` : `${change}%`;
+          } else {
+            const change = Math.floor(Math.random() * 30 - 10);
+            newChange = change >= 0 ? `+${change}s` : `${change}s`;
+          }
 
-        // Sort by new scores
-        updatedItems.sort((a, b) => b.score - a.score);
+          return {
+            ...metric,
+            trend: newInsight,
+            change: newChange
+          };
+        });
 
         return {
           ...prev,
           category: nextCategory.name,
-          items: updatedItems
+          metrics: updatedMetrics
         };
       });
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(interval);
   }, []);
@@ -559,50 +575,256 @@ function Top5List() {
     <div className="space-y-6">
       <div>
         <div className="flex items-start justify-between mb-2">
-          <h1 className="text-2xl font-bold">Top 5 Rankings</h1>
+          <h1 className="text-2xl font-bold">Data Analysis Dashboard</h1>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <div className="w-2 h-2 bg-foreground rounded-full animate-pulse"></div>
             <span>Live</span>
           </div>
         </div>
         <p className="text-sm text-muted-foreground">
-          <LiveValue value={stats.category} />
+          <LiveValue value={analysis.category} />
         </p>
       </div>
 
-      <div className="space-y-4">
-        {stats.items.map((item, idx) => (
+      <div className="grid gap-4 md:grid-cols-2">
+        {analysis.metrics.map((metric, idx) => (
           <div key={idx} className="p-4 rounded-lg bg-muted/10">
-            <div className="flex items-center gap-4">
-              <div className="text-3xl font-bold text-muted-foreground w-12">
-                #{idx + 1}
+            <div className="flex items-start justify-between mb-2">
+              <div className="font-medium text-sm text-muted-foreground">{metric.name}</div>
+              <div className="text-sm font-semibold text-muted-foreground">
+                <LiveValue value={metric.change} />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="font-medium">{item.name}</div>
-                  <div className={`text-sm ${
-                    item.change.startsWith('+') ? 'text-green-500' : 'text-red-500'
-                  }`}>
-                    <LiveValue value={item.change} />
-                  </div>
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  <LiveValue value={item.trend} />
-                </div>
-                <div className="mt-2 h-2 rounded-full bg-muted/50 overflow-hidden">
-                  <div 
-                    className="h-full bg-foreground/50 transition-all duration-500" 
-                    style={{ width: `${(item.score / stats.items[0].score) * 100}%` }}
-                  />
-                </div>
+            </div>
+            <div className="text-2xl font-bold mb-1">
+              <LiveValue value={metric.value} />
+            </div>
+            <div className="text-xs text-muted-foreground">
+              <LiveValue value={metric.trend} />
+            </div>
+            <div className="mt-3 h-1 rounded-full bg-muted/50 overflow-hidden">
+              <div 
+                className="h-full bg-foreground/50 transition-all duration-500" 
+                style={{ width: `${Math.min(100, Math.max(20, 60 + Math.random() * 40))}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="space-y-4">
+        <div className="p-4 rounded-lg bg-muted/5 border border-muted/20">
+          <h3 className="font-semibold mb-2">Key Insights</h3>
+          <div className="space-y-2 text-sm text-muted-foreground">
+            {analysis.category === "Revenue Analysis" && (
+              <>
+                <p>• Revenue growth is accelerating with <strong>18.2% month-over-month increase</strong>, indicating strong product-market fit</p>
+                <p>• Premium tier adoption is driving <strong>enterprise segment expansion</strong> and geographic growth</p>
+                <p>• Seasonal patterns detected show <strong>consistent growth trajectory</strong> across all quarters</p>
+                <p>• Product-market fit achieved with <strong>above-industry benchmarks</strong> in key metrics</p>
+              </>
+            )}
+            {analysis.category === "User Behavior" && (
+              <>
+                <p>• User acquisition remains steady at <strong>8.5% growth</strong> with strong retention rates</p>
+                <p>• Mobile usage is <strong>increasing significantly</strong> with improved engagement levels</p>
+                <p>• Feature adoption is growing with <strong>high community engagement</strong> and social sharing</p>
+                <p>• Average session duration of <strong>4m 32s shows high engagement</strong> and user satisfaction</p>
+              </>
+            )}
+            {analysis.category === "Performance Metrics" && (
+              <>
+                <p>• Conversion rate of <strong>3.24% exceeds industry benchmarks</strong> by 0.8 percentage points</p>
+                <p>• Low churn rate of <strong>2.1% indicates high customer satisfaction</strong> and product value</p>
+                <p>• Response times are <strong>optimized with 99.9% uptime</strong> exceeding all targets</p>
+                <p>• Security metrics are <strong>excellent with proven scalability</strong> for future growth</p>
+              </>
+            )}
+          </div>
+        </div>
+        
+        <div className="p-4 rounded-lg bg-muted/5 border border-muted/20">
+          <h3 className="font-semibold mb-2">Recommendations</h3>
+          <div className="space-y-2 text-sm text-muted-foreground">
+            {analysis.category === "Revenue Analysis" && (
+              <>
+                <p>• <strong>Scale marketing efforts</strong> to capitalize on strong conversion metrics</p>
+                <p>• <strong>Expand enterprise features</strong> given strong revenue growth trajectory</p>
+                <p>• <strong>Invest in geographic expansion</strong> to leverage successful market penetration</p>
+                <p>• <strong>Develop premium tier features</strong> to maintain competitive advantage</p>
+              </>
+            )}
+            {analysis.category === "User Behavior" && (
+              <>
+                <p>• <strong>Optimize mobile experience</strong> to capitalize on increasing mobile usage</p>
+                <p>• <strong>Enhance social features</strong> to leverage growing community engagement</p>
+                <p>• <strong>Improve onboarding flow</strong> to boost feature adoption rates</p>
+                <p>• <strong>Develop retention programs</strong> to maintain high engagement levels</p>
+              </>
+            )}
+            {analysis.category === "Performance Metrics" && (
+              <>
+                <p>• <strong>Maintain security standards</strong> to preserve excellent security metrics</p>
+                <p>• <strong>Scale infrastructure</strong> to support proven scalability requirements</p>
+                <p>• <strong>Optimize response times</strong> to maintain competitive performance edge</p>
+                <p>• <strong>Invest in monitoring</strong> to ensure continued uptime excellence</p>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="text-sm text-muted-foreground text-center">
+        Metrics update every 4 seconds • Real-time business intelligence
+      </div>
+    </div>
+  );
+}
+
+function InformationHub() {
+  const [hubData, setHubData] = useState({
+    items: [
+      { type: "task", title: "Review Q4 metrics", status: "pending", priority: "high", time: "Due today" },
+      { type: "metric", title: "Project Progress", value: "78%", trend: "On track", icon: "📊" },
+      { type: "announcement", title: "New client signed", content: "Enterprise deal worth $50K", time: "2 hours ago" },
+      { type: "reminder", title: "Team standup", content: "Daily sync at 9 AM", time: "Tomorrow" },
+      { type: "metric", title: "Team Productivity", value: "92%", trend: "Above target", icon: "⚡" },
+      { type: "task", title: "Update documentation", status: "in-progress", priority: "medium", time: "This week" },
+      { type: "alert", title: "System maintenance", content: "Scheduled downtime", time: "Tomorrow 2 AM" },
+      { type: "metric", title: "Budget Utilization", value: "65%", trend: "Within limits", icon: "💰" },
+      { type: "event", title: "Team retreat planning", content: "Annual company retreat", time: "Next week" },
+      { type: "task", title: "Code review", status: "completed", priority: "low", time: "Done" },
+      { type: "news", title: "Industry update", content: "New regulations announced", time: "1 day ago" },
+      { type: "metric", title: "Customer Satisfaction", value: "4.8/5", trend: "Excellent", icon: "⭐" }
+    ],
+    categories: [
+      {
+        name: "Mixed Information",
+        items: [
+          { type: "task", title: "Review Q4 metrics", status: "pending", priority: "high", time: "Due today" },
+          { type: "metric", title: "Project Progress", value: "78%", trend: "On track", icon: "📊" },
+          { type: "announcement", title: "New client signed", content: "Enterprise deal worth $50K", time: "2 hours ago" },
+          { type: "reminder", title: "Team standup", content: "Daily sync at 9 AM", time: "Tomorrow" },
+          { type: "metric", title: "Team Productivity", value: "92%", trend: "Above target", icon: "⚡" },
+          { type: "task", title: "Update documentation", status: "in-progress", priority: "medium", time: "This week" },
+          { type: "alert", title: "System maintenance", content: "Scheduled downtime", time: "Tomorrow 2 AM" },
+          { type: "metric", title: "Budget Utilization", value: "65%", trend: "Within limits", icon: "💰" },
+          { type: "event", title: "Team retreat planning", content: "Annual company retreat", time: "Next week" },
+          { type: "task", title: "Code review", status: "completed", priority: "low", time: "Done" },
+          { type: "news", title: "Industry update", content: "New regulations announced", time: "1 day ago" },
+          { type: "metric", title: "Customer Satisfaction", value: "4.8/5", trend: "Excellent", icon: "⭐" }
+        ]
+      },
+      {
+        name: "Work & Life Mix",
+        items: [
+          { type: "task", title: "Grocery shopping", status: "pending", priority: "medium", time: "This evening" },
+          { type: "metric", title: "Steps today", value: "8,432", trend: "Good progress", icon: "🚶" },
+          { type: "reminder", title: "Doctor appointment", content: "Annual checkup", time: "Friday 2 PM" },
+          { type: "task", title: "Finish presentation", status: "in-progress", priority: "high", time: "Due tomorrow" },
+          { type: "metric", title: "Reading progress", value: "67%", trend: "On track", icon: "📚" },
+          { type: "event", title: "Friend's birthday", content: "Birthday party", time: "Saturday" },
+          { type: "task", title: "Pay bills", status: "pending", priority: "high", time: "This week" },
+          { type: "metric", title: "Workout streak", value: "12 days", trend: "Keep it up!", icon: "💪" },
+          { type: "news", title: "Weather update", content: "Rain expected tomorrow", time: "Just now" },
+          { type: "task", title: "Call mom", status: "completed", priority: "medium", time: "Done" },
+          { type: "reminder", title: "Car service", content: "Oil change due", time: "Next month" },
+          { type: "metric", title: "Sleep quality", value: "7.5h", trend: "Good rest", icon: "😴" }
+        ]
+      },
+      {
+        name: "Project & Personal",
+        items: [
+          { type: "task", title: "Deploy to production", status: "pending", priority: "high", time: "Today" },
+          { type: "metric", title: "Website traffic", value: "12.4K", trend: "+15%", icon: "📈" },
+          { type: "announcement", title: "Promotion news", content: "Team lead position", time: "Yesterday" },
+          { type: "task", title: "Plan vacation", status: "in-progress", priority: "low", time: "This month" },
+          { type: "metric", title: "GitHub commits", value: "23", trend: "Active week", icon: "💻" },
+          { type: "reminder", title: "Dentist appointment", content: "Regular cleaning", time: "Next Tuesday" },
+          { type: "task", title: "Review PRs", status: "pending", priority: "medium", time: "This afternoon" },
+          { type: "metric", title: "Learning progress", value: "3/5 courses", trend: "On schedule", icon: "🎓" },
+          { type: "event", title: "Conference call", content: "Client meeting", time: "Tomorrow 3 PM" },
+          { type: "task", title: "Update resume", status: "completed", priority: "low", time: "Done" },
+          { type: "news", title: "Tech news", content: "New framework released", time: "3 hours ago" },
+          { type: "metric", title: "Happiness score", value: "8.5/10", trend: "Great mood", icon: "😊" }
+        ]
+      }
+    ]
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHubData(prev => {
+        const currentCategoryIndex = prev.categories.findIndex(c => c.name === prev.category);
+        const nextCategoryIndex = (currentCategoryIndex + 1) % prev.categories.length;
+        const nextCategory = prev.categories[nextCategoryIndex];
+
+        return {
+          ...prev,
+          category: nextCategory.name,
+          items: nextCategory.items
+        };
+      });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <div className="flex items-start justify-between mb-2">
+          <h1 className="text-2xl font-bold">Information Hub</h1>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="w-2 h-2 bg-foreground rounded-full animate-pulse"></div>
+            <span>Live</span>
+          </div>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          <LiveValue value={hubData.category} />
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {hubData.items.map((item, idx) => (
+          <div key={idx} className="p-4 rounded-lg bg-muted/10">
+            <div className="flex items-start justify-between mb-2">
+              <div className="flex items-center gap-2">
+                {item.icon && <span className="text-lg">{item.icon}</span>}
+                <div className="font-medium text-sm">{item.title}</div>
               </div>
+              {item.status && (
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  item.status === 'completed' ? 'bg-green-100 text-green-700' :
+                  item.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
+                  item.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                  'bg-gray-100 text-gray-700'
+                }`}>
+                  {item.status}
+                </span>
+              )}
+            </div>
+            
+            {item.value && (
+              <div className="text-xl font-bold mb-1">
+                <LiveValue value={item.value} />
+              </div>
+            )}
+            
+            {item.content && (
+              <div className="text-sm text-muted-foreground mb-2">
+                {item.content}
+              </div>
+            )}
+            
+            <div className="text-xs text-muted-foreground">
+              <LiveValue value={item.trend || item.time || item.priority} />
             </div>
           </div>
         ))}
       </div>
 
       <div className="text-sm text-muted-foreground text-center">
-        Rankings update every few seconds • Based on real-time analytics
+        Information updates every 5 seconds • Your centralized command center
       </div>
     </div>
   );
@@ -617,31 +839,43 @@ function ExampleReports() {
             <Pin className="w-10 h-10 text-muted-foreground relative z-10 rotate-45" />
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/15 to-transparent animate-[wave_3s_ease-in-out_infinite] rounded-full"></div>
           </div>
-          <h2 className="text-2xl font-medium bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Realtime Dynamic Pins</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Realtime Updated Pages</h2>
         </div>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Transform raw data into beautiful, formatted <strong>pins</strong> using template variables and text that is shaped by AI based on your data.
+          Transform your data into beautiful, shareable  <strong>pages -- ( pins )</strong>   
         </p>
       </div>
       
       <Tabs defaultValue="automation" className="w-full">
-        <TabsList className="w-full mb-6">
-          <TabsTrigger value="automation" className="flex-1">Automation Outputs</TabsTrigger>
-          <TabsTrigger value="research" className="flex-1">Research</TabsTrigger>
-          <TabsTrigger value="article" className="flex-1">Article</TabsTrigger>
-          <TabsTrigger value="top5" className="flex-1">Top 5 List</TabsTrigger>
+        <TabsList className="w-full mb-6 grid grid-cols-4 gap-1">
+          <TabsTrigger value="automation" className="text-xs px-1 py-2">Reports</TabsTrigger>
+          <TabsTrigger value="article" className="text-xs px-1 py-2">Article</TabsTrigger>
+          <TabsTrigger value="top5" className="text-xs px-1 py-2">Insights</TabsTrigger>
+          <TabsTrigger value="hub" className="text-xs px-1 py-2">Hub</TabsTrigger>
         </TabsList>
         <TabsContent value="automation">
+          <blockquote className="border-l-4 border-muted-foreground/20 pl-4 py-2 mb-6 text-sm text-muted-foreground italic">
+            Perfect for <strong>automated business reports</strong> that update in real-time. Ideal for dashboards, KPI monitoring, and operational metrics that need to stay current without manual intervention.
+          </blockquote>
           <LiveAutomationReport />
         </TabsContent>
-        <TabsContent value="research">
-          <ResearchReport />
-        </TabsContent>
         <TabsContent value="article">
+          <blockquote className="border-l-4 border-muted-foreground/20 pl-4 py-2 mb-6 text-sm text-muted-foreground italic">
+            Great for <strong>dynamic articles and blog posts</strong> that incorporate live data. Perfect for news sites, financial reports, and content that needs to stay updated with current information.
+          </blockquote>
           <ArticleExample />
         </TabsContent>
         <TabsContent value="top5">
-          <Top5List />
+          <blockquote className="border-l-4 border-muted-foreground/20 pl-4 py-2 mb-6 text-sm text-muted-foreground italic">
+            Perfect for <strong>business intelligence and data insights</strong> that require real-time analysis. Ideal for executive dashboards, performance monitoring, and strategic decision-making.
+          </blockquote>
+          <DataAnalysis />
+        </TabsContent>
+        <TabsContent value="hub">
+          <blockquote className="border-l-4 border-muted-foreground/20 pl-4 py-2 mb-6 text-sm text-muted-foreground italic">
+            Perfect for <strong>consolidating all your important information</strong> in one centralized location. Ideal for personal dashboards, project overviews, and keeping track of everything that matters to you.
+          </blockquote>
+          <InformationHub />
         </TabsContent>
       </Tabs>
     </div>
@@ -706,7 +940,7 @@ export default function Home() {
             <h1 className="text-4xl font-bold">pindown.ai</h1>
           </div>
                       <p className="text-xl text-center text-muted-foreground max-w-lg">
-              Pin down your automation outputs. Transform raw data into information that everyone can understand.
+                      Pin down your automation outputs. Turn your data into reports, articles and insightsful pages that everyone can understand.
             </p>
           
           <div className="flex gap-4 items-center flex-col sm:flex-row mt-8">
@@ -728,6 +962,109 @@ export default function Home() {
         </div>
       </div>
 
+      {/* UI Layer for AI Automations Section */}
+      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-muted/10">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Content */}
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h2 className="text-3xl sm:text-4xl font-bold">
+                  The Missing UI Layer for 
+                  <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"> AI-Driven Automations</span>
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  Your automations generate tons of data, but where does it go? PinDown.ai bridges the gap between your AI workflows and human understanding.
+                </p>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Zap className="w-3 h-3 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1">Connect Any Automation</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Zapier, Make, n8n, or custom scripts - we integrate with any automation platform
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Brain className="w-3 h-3 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1">AI-Powered Formatting</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Raw data gets transformed into beautiful, readable content automatically
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Share2 className="w-3 h-3 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1">Instant Sharing</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Share results with clients, teams, or stakeholders in real-time
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Visual */}
+            <div className="relative">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8 border border-primary/20">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <Server className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Automation Output</div>
+                      <div className="text-xs text-muted-foreground">Raw JSON data</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-center">
+                    <ArrowRight className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <Brain className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">AI Processing</div>
+                      <div className="text-xs text-muted-foreground">Data transformation</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-center">
+                    <ArrowRight className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Beautiful Page</div>
+                      <div className="text-xs text-muted-foreground">Client-ready report</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Intelligent Dynamic Pins Section - First after hero */}
       <div 
         ref={exampleReportsRef}
@@ -742,7 +1079,57 @@ export default function Home() {
         </div>
       </div>
 
-
+      {/* AI-Powered Data Transformation Section */}
+      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-muted/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="mb-12">
+            <div className="flex justify-center mb-6">
+              <div className="relative w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center overflow-hidden">
+                <Brain className="w-8 h-8 text-primary relative z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-[wave_2.5s_ease-in-out_infinite] rounded-full"></div>
+              </div>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+              AI Shapes Your Raw Data Into Beautiful Pages
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Our intelligent system takes your automation data and transforms it into clean, readable content that your clients will love. No more manual formatting or confusing spreadsheets.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="space-y-4">
+              <div className="w-12 h-12 bg-muted/20 rounded-lg flex items-center justify-center mx-auto">
+                <Database className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold">Raw Data Input</h3>
+              <p className="text-sm text-muted-foreground">
+                Upload your automation outputs, API responses, or any structured data
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="w-12 h-12 bg-muted/20 rounded-lg flex items-center justify-center mx-auto">
+                <Bot className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold">AI Processing</h3>
+              <p className="text-sm text-muted-foreground">
+                Our AI analyzes and structures your data into meaningful insights
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="w-12 h-12 bg-muted/20 rounded-lg flex items-center justify-center mx-auto">
+                <FileText className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <h3 className="font-semibold">Beautiful Output</h3>
+              <p className="text-sm text-muted-foreground">
+                Get professional, client-ready reports and articles instantly
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Code Setup Section */}
       <div className="py-16 sm:py-20 px-6 sm:px-12 bg-muted/10">
@@ -1019,7 +1406,7 @@ export default function Home() {
         <div className="flex flex-col items-center">
           <div className="max-w-6xl w-full">
             <div className="text-center mb-16">
-              <h2 className="text-2xl font-medium mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Built for Real Teams, Real Workflows</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Built for Real Teams, Real Workflows</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Create shareable pages from your automation workflows that keep teams informed and stakeholders updated.
               </p>
@@ -1072,7 +1459,7 @@ export default function Home() {
         <div className="flex flex-col items-center">
           <div className="max-w-4xl w-full">
             <div className="text-center mb-12">
-              <h2 className="text-2xl font-medium mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">From Raw Data to Human Stories</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">From Raw Data to Human Stories</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Transform raw logs, metrics, and automation outputs into polished markdown reports that everyone can understand and act upon.
               </p>
@@ -1168,7 +1555,7 @@ export default function Home() {
         <div className="flex flex-col items-center">
           <div className="max-w-4xl w-full text-center">
             <div className="mb-12">
-              <h2 className="text-2xl font-medium mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Works with Your Automation Stack</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Works with Your Automation Stack</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
                 Connect any automation tool or script output. Transform your workflow data into pins instantly.
               </p>
@@ -1237,11 +1624,11 @@ export default function Home() {
              }`}
            >
              <div className="mb-12">
-               <h2 className="text-3xl font-medium mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Power Your Pins with Up-to-Date Research</h2>
-               <p className="text-muted-foreground mb-6">Enhance your reports with real-time web research <span className="text-primary font-medium">powered by Perplexity AI</span></p>
+               <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Share Your Pages Instantly</h2>
+                <p className="text-muted-foreground mb-6">Create shareable links for your pages and collaborate with your team <span className="text-primary font-medium">in real-time</span></p>
                <div className="flex justify-center">
                  <div className="relative w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center overflow-hidden">
-                   <Search className="w-8 h-8 text-primary relative z-10" />
+                   <Share2 className="w-8 h-8 text-primary relative z-10" />
                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-[wave_2.5s_ease-in-out_infinite] rounded-full"></div>
                  </div>
                </div>
@@ -1259,7 +1646,7 @@ export default function Home() {
            >
              <div className="relative p-8 border border-border/50 rounded-2xl bg-gradient-to-br from-background to-muted/5">
                <div className="text-center mb-8">
-                 <h2 className="text-2xl font-medium">Bring Your Own API Keys</h2>
+                 <h2 className="text-3xl sm:text-4xl font-bold">Bring Your Own API Keys</h2>
                </div>
                <div className="flex flex-col lg:flex-row items-center gap-12">
                  {/* Left side - Visual */}
