@@ -234,14 +234,14 @@ export function PromptsPage() {
           <Dialog>
             <DialogTrigger asChild>
               <Card 
-                className="group hover:shadow-sm transition-all duration-200 cursor-pointer border-2 border-dashed border-muted-foreground/30 hover:border-muted-foreground/50 bg-muted/5 hover:bg-muted/10"
+                className="group hover:shadow-sm transition-all duration-200 cursor-pointer border-2 border-dashed border-muted-foreground/30 hover:border-muted-foreground/50 bg-muted/5 hover:bg-muted/10 py-1"
                 onClick={() => {
                   setEditingPrompt(null)
                   setNewPrompt({ name: "", description: "", content: "", category: "general" })
                   setIsDialogOpen(true)
                 }}
               >
-                <CardContent className="px-4 py-3">
+                <CardContent className="px-3 py-2">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-muted/30 rounded-full flex items-center justify-center group-hover:bg-muted/50 transition-colors flex-shrink-0">
                       <Plus className="w-4 h-4 text-muted-foreground" />
@@ -262,8 +262,8 @@ export function PromptsPage() {
 
           {/* Existing Prompts */}
           {filteredPrompts.map((prompt) => (
-            <Card key={prompt.id} className="hover:shadow-sm transition-shadow border-border/50">
-              <CardContent className="px-4 py-3">
+            <Card key={prompt.id} className="hover:shadow-sm transition-shadow border-border/50 py-1">
+              <CardContent className="px-3 py-3">
                 {/* Mobile Layout - Stacked */}
                 <div className="block sm:hidden">
                   <div className="flex items-start justify-between mb-2">

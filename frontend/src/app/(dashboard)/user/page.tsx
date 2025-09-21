@@ -238,13 +238,50 @@ export default function UserPage() {
               
               <div className="space-y-3">
                 <p className="text-sm font-medium">Usage This Month</p>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Pins Created</span>
-                    <span>12 / 50</span>
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Pins Created</span>
+                      <span>12 / 50</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full" style={{ width: '24%' }}></div>
+                    </div>
                   </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div className="bg-primary h-2 rounded-full" style={{ width: '24%' }}></div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Datasets Created</span>
+                      <span>8 / 25</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full" style={{ width: '32%' }}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <Separator />
+              
+              <div className="space-y-3">
+                <p className="text-sm font-medium">Overall Limits</p>
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Pinboards</span>
+                      <span>3 / 10</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full" style={{ width: '30%' }}></div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Global Datasets</span>
+                      <span>15 / 100</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div className="bg-primary h-2 rounded-full" style={{ width: '15%' }}></div>
+                    </div>
                   </div>
                 </div>
               </div>

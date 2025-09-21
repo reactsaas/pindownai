@@ -155,7 +155,7 @@ export function PinsList({ templates, onTemplateSelect, onCopyTemplateId, onAddP
                 {/* ID and Copy Button */}
                 <div className="flex items-center gap-2 mb-3 p-2 bg-muted/50 rounded-md">
                   <Hash className="w-3 h-3 text-muted-foreground" />
-                  <span className="font-mono text-xs text-muted-foreground flex-1">{template.id}</span>
+                  <span className="font-mono text-[10px] text-muted-foreground flex-1">{template.id}</span>
                   {onCopyTemplateId && (
                     <Button
                       variant="ghost"
@@ -177,16 +177,6 @@ export function PinsList({ templates, onTemplateSelect, onCopyTemplateId, onAddP
                   )}
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Blocks className="w-3 h-3" />
-                    <span>{template.blocksCount} blocks</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    <span>{template.lastModified}</span>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           ))}

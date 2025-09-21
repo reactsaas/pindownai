@@ -12,10 +12,8 @@ import {
   ChevronRight,
   ScrollText,
   MessageSquare,
-  FolderOpen,
   Key,
   Grid3X3,
-  BookOpen,
   Layers,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -131,9 +129,7 @@ export function NavigationSidebar({
         { id: "pins", name: "Pins", icon: Pin, count: pinsCount, route: "/pins" },
         { id: "pinboard", name: "Pinboard", icon: Grid3X3, count: 8, route: "/pinboard" },
         { id: "datasets", name: "Datasets", icon: Layers, count: 15, route: "/datasets" },
-        { id: "research", name: "Research", icon: BookOpen, count: 23, route: "/research" },
         { id: "prompts", name: "Prompts", icon: MessageSquare, count: 24, route: "/prompts" },
-        { id: "documents", name: "Documents", icon: FolderOpen, count: 156, route: "/documents" },
         { id: "integrations", name: "Integrations", icon: Database, count: 8, route: "/integrations" },
       ],
     },

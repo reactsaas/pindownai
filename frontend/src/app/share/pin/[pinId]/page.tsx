@@ -40,7 +40,7 @@ interface Pin {
   }
   blocks: Array<{
     id: string
-    name: string
+    name: stringw
     type: 'markdown' | 'mermaid' | 'conditional' | 'image' | 'image-steps'
     template: string
     order: number

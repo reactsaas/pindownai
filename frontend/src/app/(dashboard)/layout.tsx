@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react"
 import { NavigationSidebar } from "@/components/navigation-sidebar"
 import { AuthProvider } from "@/lib/auth-context"
 import { PinsProvider } from "@/lib/pins-context"
+import { PinboardProvider } from "@/lib/pinboard-context"
 
 // Mock data for workflows - this should come from a context or API
 const mockWorkflows = [
@@ -28,6 +29,7 @@ export default function DashboardLayout({
   return (
     <AuthProvider requireAuth={true}>
       <PinsProvider>
+        <PinboardProvider>
         <div className="h-screen bg-background overflow-hidden">
         {/* Mobile header with hamburger menu */}
         <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-card">
@@ -97,6 +99,7 @@ export default function DashboardLayout({
           </div>
         </div>
       </div>
+        </PinboardProvider>
       </PinsProvider>
     </AuthProvider>
   )

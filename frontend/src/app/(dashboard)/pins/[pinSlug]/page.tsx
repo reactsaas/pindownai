@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter, useParams, useSearchParams, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Clock, Copy, Database, FileText, Sparkles } from "lucide-react"
+import { ArrowLeft, Clock, Copy, Database, FileText, Sparkles, Layout } from "lucide-react"
 import { BlocksList } from "@/components/blocks-list"
 import { TemplateDataSources } from "@/components/template-data-sources"
 import { TemplateSettingsPopover } from "@/components/template-settings-popover"
@@ -519,7 +519,10 @@ export default function PinEditPage() {
               <Button variant="ghost" size="sm" onClick={handleBack} className="h-8 w-8 p-0 cursor-pointer flex-shrink-0">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <h2 className="font-semibold truncate text-sm">{pinData.metadata.title}</h2>
+              <div className="flex items-center gap-2 min-w-0">
+                <Layout className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <h2 className="font-semibold truncate text-sm">{pinData.metadata.title}</h2>
+              </div>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
               <span className="font-mono text-xs text-muted-foreground">{pinData.id}</span>
@@ -585,7 +588,10 @@ export default function PinEditPage() {
               <Button variant="ghost" size="sm" onClick={handleBack} className="h-6 w-6 p-0 cursor-pointer">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <h2 className="font-semibold">{pinData.metadata.title}</h2>
+              <div className="flex items-center gap-2">
+                <Layout className="h-4 w-4 text-muted-foreground" />
+                <h2 className="font-semibold">{pinData.metadata.title}</h2>
+              </div>
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground ml-8">
               <div className="flex items-center gap-1">
