@@ -117,7 +117,7 @@ export function SharePopover({ templateId, templateName, isTemplate = false, isP
           Share
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 p-0 max-h-[80vh] flex flex-col" align="end">
+      <PopoverContent className="w-96 p-0 max-h-[90vh] flex flex-col" align="end">
         <div className="p-4 border-b flex-shrink-0">
           <h4 className="font-semibold text-sm flex items-center gap-2">
             <Share className="h-4 w-4" />
@@ -134,7 +134,7 @@ export function SharePopover({ templateId, templateName, isTemplate = false, isP
           )}
         </div>
 
-        <div className="p-4 space-y-4 overflow-y-auto flex-1 min-h-0">
+        <div className="p-4 space-y-4 overflow-y-auto flex-1 min-h-0 max-h-[70vh]">
           {/* Share Link */}
           <div>
             <h5 className="text-xs font-medium text-muted-foreground mb-3 flex items-center gap-1">

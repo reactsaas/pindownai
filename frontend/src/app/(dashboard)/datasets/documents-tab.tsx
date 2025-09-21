@@ -210,8 +210,8 @@ export default function DocumentsTab({
   return (
     <div className="h-full flex flex-col overflow-y-auto min-h-0">
       {/* Uploaded Documents Section */}
-      <div className="space-y-4 mb-6">
-        <div className="flex items-center justify-between">
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-lg font-semibold">Uploaded Documents</h3>
             <p className="text-sm text-muted-foreground">
@@ -224,81 +224,99 @@ export default function DocumentsTab({
           </Button>
         </div>
 
-        {/* Drag & Drop Upload Area */}
-        <div
-          {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
-            isDragActive 
-              ? 'border-primary bg-primary/5 border-solid' 
-              : 'border-muted-foreground/25 hover:border-muted-foreground/50'
-          }`}
-        >
-          <input {...getInputProps()} />
-          <div className="flex flex-col items-center gap-3">
-            <Upload className={`h-8 w-8 ${isDragActive ? 'text-primary' : 'text-muted-foreground'}`} />
-            <div>
-              <p className="font-medium">
-                {isDragActive ? 'Drop files here' : 'Drag & drop files here'}
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">
-                or click to browse files • Supports PDF, images, videos, documents
-              </p>
+        {/* Two Column Layout: Uploaded Documents (Left) + Dropzone (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+          {/* Left Column: Uploaded Documents */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm text-muted-foreground">Your Files</h4>
+            {uploadedDocuments.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-h-96 overflow-y-auto">
+                {uploadedDocuments.map((doc) => (
+                  <Card key={doc.id} className="group hover:shadow-sm transition-shadow py-1 px-1">
+                    <CardContent className="p-1">
+                      <div className="flex items-start gap-2">
+                        <div className="flex-shrink-0">
+                          {getFileIcon(doc.type)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-xs font-medium break-words leading-tight" title={doc.name}>{doc.name}</h3>
+                          <p className="text-xs text-muted-foreground">{doc.size}</p>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreHorizontal className="h-3 w-3" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                              <Eye className="w-3 h-3 mr-2" />
+                              View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                              <Download className="w-3 h-3 mr-2" />
+                              Download
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              className="text-red-600"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleDeleteDocument(doc.id)
+                              }}
+                            >
+                              <Trash2 className="w-3 h-3 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 border-2 border-dashed border-muted-foreground/25 rounded-lg">
+                <FileText className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">No files uploaded yet</p>
+                <p className="text-xs text-muted-foreground">Upload files using the dropzone on the right</p>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Drag & Drop Upload Area */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm text-muted-foreground">Upload Files</h4>
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors cursor-pointer min-h-[200px] flex items-center justify-center ${
+                isDragActive 
+                  ? 'border-primary bg-primary/5 border-solid' 
+                  : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+              }`}
+            >
+              <input {...getInputProps()} />
+              <div className="flex flex-col items-center gap-3">
+                <Upload className={`h-6 w-6 ${isDragActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                <div>
+                  <p className="font-medium text-sm">
+                    {isDragActive ? 'Drop files here' : 'Drag & drop files here'}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    or click to browse
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    PDF, images, videos, docs
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Uploaded Documents Grid */}
-        {uploadedDocuments.length > 0 && (
-          <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-            {uploadedDocuments.map((doc) => (
-              <Card key={doc.id} className="group hover:shadow-sm transition-shadow py-3 px-2">
-                <CardContent className="p-1">
-                  <div className="flex items-start gap-2 mb-2">
-                    <div className="flex-shrink-0">
-                      {getFileIcon(doc.type)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-xs font-medium break-words leading-tight" title={doc.name}>{doc.name}</h3>
-                      <p className="text-xs text-muted-foreground">{doc.size}</p>
-                    </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-5 w-5 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <MoreHorizontal className="h-3 w-3" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                          <Eye className="w-3 h-3 mr-2" />
-                          View
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                          <Download className="w-3 h-3 mr-2" />
-                          Download
-                        </DropdownMenuItem>
-                        <DropdownMenuItem 
-                          className="text-red-600"
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleDeleteDocument(doc.id)
-                          }}
-                        >
-                          <Trash2 className="w-3 h-3 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Dataset Templates Section */}
