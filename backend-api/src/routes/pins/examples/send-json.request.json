@@ -1,0 +1,23 @@
+{
+  "wid": "wd_01",
+  "data_type": "json",
+  "content": {
+    "user": { "name": "Test User", "email": "test@example.com" },
+    "revenue": 1500,
+    "status": "active"
+  },
+  "metadata": {
+    "title": "Weekly Report",
+    "description": "Automation output for the weekly report",
+    "tags": ["report", "weekly"],
+    "is_public": false
+  }
+}
+
+
+
+
+
+
+
+

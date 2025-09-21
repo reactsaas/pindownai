@@ -1,0 +1,29 @@
+{
+  "success": true,
+  "pid": "-NvAbCdEfGh12345",
+  "message": "Pin created successfully",
+  "data": {
+    "id": "",
+    "user_id": "dev_user_123",
+    "wid": "wd_01",
+    "data_type": "json",
+    "content": { "example": true },
+    "metadata": {
+      "title": "Weekly Report",
+      "description": "Automation output for the weekly report",
+      "tags": ["report", "weekly"],
+      "workflow_sources": ["wd_01"],
+      "created_at": "2025-09-14T00:00:00.000Z",
+      "is_public": false
+    },
+    "permissions": { "is_public": false, "created_by": "dev_user_123" }
+  }
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,646 @@
+/* Minimal MDXEditor styling fixes */
+
+/* Fix toolbar button styling */
+.mdxeditor-toolbar button {
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 6px !important;
+  color: hsl(var(--foreground)) !important;
+  padding: 6px 8px !important;
+  height: 32px !important;
+  transition: all 0.2s ease !important;
+}
+
+.mdxeditor-toolbar button:hover {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+.mdxeditor-toolbar button[data-active="true"] {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Fix toolbar background */
+.mdxeditor-toolbar {
+  background-color: #FAFAFA !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+  padding: 8px 12px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  white-space: nowrap !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 48px !important;
+}
+
+/* Responsive toolbar for mobile */
+@media (max-width: 640px) {
+  .mdxeditor-toolbar {
+    padding: 4px 6px !important;
+    gap: 2px !important;
+    min-height: 36px !important;
+  }
+  
+  .mdxeditor-toolbar button {
+    padding: 3px 4px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    font-size: 11px !important;
+  }
+  
+  /* Make toolbar groups more compact */
+  .mdxeditor-toolbar > div > div {
+    gap: 1px !important;
+  }
+  
+  /* Compact dropdown/select elements */
+  .mdxeditor-toolbar select,
+  .mdxeditor-toolbar [role="combobox"],
+  .mdxeditor-toolbar [data-radix-select-trigger] {
+    min-width: 28px !important;
+    height: 24px !important;
+    font-size: 10px !important;
+    padding: 2px 4px !important;
+  }
+  
+  /* Compact icon sizes */
+  .mdxeditor-toolbar svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .mdxeditor-toolbar {
+    padding: 2px 4px !important;
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    min-height: 28px !important;
+  }
+  
+  .mdxeditor-toolbar::-webkit-scrollbar {
+    display: none !important;
+  }
+  
+  .mdxeditor-toolbar button {
+    padding: 2px 3px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    font-size: 10px !important;
+  }
+  
+  .mdxeditor-toolbar svg {
+    width: 10px !important;
+    height: 10px !important;
+  }
+}
+
+/* Dark mode toolbar background */
+.dark .mdxeditor-toolbar {
+  background-color: #262626 !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+/* Dark mode toolbar buttons and icons - more aggressive targeting */
+.dark .mdxeditor-toolbar button,
+.dark .mdxeditor-toolbar button *,
+.dark .mdxeditor-toolbar [data-toolbar-item] button,
+.dark .mdxeditor-toolbar [data-toolbar-item] button * {
+  color: #f5f5f5 !important;
+}
+
+.dark .mdxeditor-toolbar svg,
+.dark .mdxeditor-toolbar button svg,
+.dark .mdxeditor-toolbar [data-toolbar-item] svg,
+.dark .mdxeditor-toolbar * svg {
+  color: #f5f5f5 !important;
+  fill: #f5f5f5 !important;
+  stroke: #f5f5f5 !important;
+}
+
+.dark .mdxeditor-toolbar select,
+.dark .mdxeditor-toolbar [role="combobox"],
+.dark .mdxeditor-toolbar [data-radix-select-trigger] {
+  color: #f5f5f5 !important;
+}
+
+/* Nuclear option for dark mode toolbar */
+html.dark .mdxeditor-toolbar * {
+  color: #f5f5f5 !important;
+}
+
+html.dark .mdxeditor-toolbar svg {
+  fill: #f5f5f5 !important;
+  stroke: #f5f5f5 !important;
+}
+
+/* Fix dropdown styling in dark mode */
+.dark .mdxeditor-toolbar [data-radix-select-content],
+.dark [data-radix-select-content] {
+  background-color: #262626 !important;
+  border: 1px solid #404040 !important;
+  color: #f5f5f5 !important;
+}
+
+.dark .mdxeditor-toolbar [data-radix-select-item],
+.dark [data-radix-select-item] {
+  background-color: #262626 !important;
+  color: #f5f5f5 !important;
+}
+
+.dark .mdxeditor-toolbar [data-radix-select-item]:hover,
+.dark [data-radix-select-item]:hover {
+  background-color: #333333 !important;
+  color: #f5f5f5 !important;
+}
+
+.dark .mdxeditor-toolbar [data-radix-select-trigger],
+.dark .mdxeditor-toolbar [data-radix-select-trigger] *,
+.dark .mdxeditor-toolbar [data-radix-select-value],
+.dark .mdxeditor-toolbar [data-placeholder] {
+  color: #f5f5f5 !important;
+}
+
+/* More aggressive dropdown targeting */
+html.dark [data-radix-popper-content-wrapper] {
+  background-color: #262626 !important;
+}
+
+html.dark [data-radix-popper-content-wrapper] * {
+  background-color: #262626 !important;
+  color: #f5f5f5 !important;
+}
+
+/* Fix dropdown placeholder specifically */
+.dark .mdxeditor-toolbar select,
+.dark .mdxeditor-toolbar select option,
+.dark .mdxeditor-toolbar [data-radix-select-trigger] span,
+html.dark .mdxeditor-toolbar [data-radix-select-trigger] span {
+  color: #f5f5f5 !important;
+}
+
+/* Nuclear option for dropdown text in MDX editor toolbar */
+html.dark .mdxeditor-toolbar button[data-state],
+html.dark .mdxeditor-toolbar button[data-state] *,
+html.dark .mdxeditor-toolbar [role="combobox"],
+html.dark .mdxeditor-toolbar [role="combobox"] *,
+html.dark .mdxeditor-toolbar button[aria-haspopup],
+html.dark .mdxeditor-toolbar button[aria-haspopup] * {
+  color: #ffffff !important;
+}
+
+/* Target the specific dropdown button */
+html.dark .mdxeditor .mdxeditor-toolbar button,
+html.dark .mdxeditor .mdxeditor-toolbar button span {
+  color: #ffffff !important;
+}
+
+/* Fix editor background */
+.mdxeditor {
+  background-color: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 8px !important;
+}
+
+/* Fix content area */
+.mdxeditor-rich-text-editor {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+  padding: 16px !important;
+}
+
+/* Proper heading styles - more aggressive targeting */
+.mdxeditor-rich-text-editor h1,
+.mdxeditor-rich-text-editor .ProseMirror h1,
+.mdxeditor h1,
+.mdxeditor .ProseMirror h1,
+.mdxeditor [data-slate-node="element"][data-slate-type="heading"] h1,
+.mdxeditor [data-slate-node="element"][data-slate-type="heading"] {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 1rem !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.mdxeditor-rich-text-editor h2,
+.mdxeditor-rich-text-editor .ProseMirror h2,
+.mdxeditor h2,
+.mdxeditor .ProseMirror h2,
+.mdxeditor [data-slate-node="element"][data-slate-type="heading"] h2 {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin-top: 1.25rem !important;
+  margin-bottom: 0.75rem !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.mdxeditor-rich-text-editor h3,
+.mdxeditor-rich-text-editor .ProseMirror h3 {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin-top: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.mdxeditor-rich-text-editor h4,
+.mdxeditor-rich-text-editor .ProseMirror h4 {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.5rem !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.mdxeditor-rich-text-editor h5,
+.mdxeditor-rich-text-editor .ProseMirror h5 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.5rem !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.mdxeditor-rich-text-editor h6,
+.mdxeditor-rich-text-editor .ProseMirror h6 {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.5rem !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Ensure all text elements are properly colored in dark mode */
+.mdxeditor-rich-text-editor *,
+.mdxeditor-rich-text-editor p,
+.mdxeditor-rich-text-editor h1,
+.mdxeditor-rich-text-editor h2,
+.mdxeditor-rich-text-editor h3,
+.mdxeditor-rich-text-editor h4,
+.mdxeditor-rich-text-editor h5,
+.mdxeditor-rich-text-editor h6,
+.mdxeditor-rich-text-editor span,
+.mdxeditor-rich-text-editor div,
+.mdxeditor-rich-text-editor strong,
+.mdxeditor-rich-text-editor em,
+.mdxeditor-rich-text-editor .ProseMirror * {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Fix placeholder text */
+.mdxeditor-rich-text-editor .ProseMirror p.is-editor-empty:first-child::before {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Fix selection color */
+.mdxeditor-rich-text-editor .ProseMirror ::selection {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+/* Fix code blocks */
+.mdxeditor-rich-text-editor pre,
+.mdxeditor-rich-text-editor code {
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Force white text in dark mode - more specific targeting */
+.dark .mdxeditor-rich-text-editor,
+.dark .mdxeditor-rich-text-editor *,
+.dark .mdxeditor-rich-text-editor p,
+.dark .mdxeditor-rich-text-editor div,
+.dark .mdxeditor-rich-text-editor span,
+.dark .mdxeditor-rich-text-editor strong,
+.dark .mdxeditor-rich-text-editor em,
+.dark .mdxeditor-rich-text-editor .ProseMirror,
+.dark .mdxeditor-rich-text-editor .ProseMirror *,
+.dark .mdxeditor-rich-text-editor .ProseMirror p,
+.dark .mdxeditor-rich-text-editor .ProseMirror div,
+.dark .mdxeditor-rich-text-editor .ProseMirror span {
+  color: #ffffff !important;
+}
+
+/* Dark mode heading styles with proper sizing */
+.dark .mdxeditor-rich-text-editor h1,
+.dark .mdxeditor-rich-text-editor .ProseMirror h1 {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  margin-top: 1.5rem !important;
+  margin-bottom: 1rem !important;
+  color: #ffffff !important;
+}
+
+.dark .mdxeditor-rich-text-editor h2,
+.dark .mdxeditor-rich-text-editor .ProseMirror h2 {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin-top: 1.25rem !important;
+  margin-bottom: 0.75rem !important;
+  color: #ffffff !important;
+}
+
+.dark .mdxeditor-rich-text-editor h3,
+.dark .mdxeditor-rich-text-editor .ProseMirror h3 {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin-top: 1rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #ffffff !important;
+}
+
+.dark .mdxeditor-rich-text-editor h4,
+.dark .mdxeditor-rich-text-editor .ProseMirror h4 {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #ffffff !important;
+}
+
+.dark .mdxeditor-rich-text-editor h5,
+.dark .mdxeditor-rich-text-editor .ProseMirror h5 {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #ffffff !important;
+}
+
+.dark .mdxeditor-rich-text-editor h6,
+.dark .mdxeditor-rich-text-editor .ProseMirror h6 {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #ffffff !important;
+}
+
+/* Even more aggressive targeting for MDX editor default styles */
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror p,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror div,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror span,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror h1,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror h2,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror h3,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror h4,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror h5,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror h6,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror strong,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror em,
+.dark .mdxeditor .mdxeditor-rich-text-editor .ProseMirror * {
+  color: #ffffff !important;
+}
+
+/* Target specific MDX editor content classes */
+.dark [data-editor="rich-text"] *,
+.dark .ProseMirror *,
+.dark .mdxeditor-content *,
+.dark .prosemirror-content * {
+  color: #ffffff !important;
+}
+
+/* Nuclear option - force all text to white in any MDX editor in dark mode, but exclude toolbar */
+html.dark .mdxeditor *:not(.mdxeditor-toolbar):not(.mdxeditor-toolbar *) {
+  color: #ffffff !important;
+}
+
+
+
+html.dark [class*="mdx"] *:not(.mdxeditor-toolbar):not(.mdxeditor-toolbar *) {
+  color: #ffffff !important;
+}
+
+html.dark [class*="prose"] * {
+  color: #ffffff !important;
+}
+
+/* Keep toolbar buttons visible in dark mode */
+html.dark .mdxeditor-toolbar,
+html.dark .mdxeditor-toolbar *,
+html.dark .mdxeditor-toolbar button,
+html.dark .mdxeditor-toolbar button *,
+html.dark .mdxeditor-toolbar svg,
+html.dark .mdxeditor-toolbar span {
+  color: #374151 !important;
+}
+
+/* Fix diff source plugin alignment */
+.mdxeditor-toolbar [class*="_diffSourceToggleWrapper_"],
+.mdxeditor-toolbar [data-toolbar-item] {
+  display: flex !important;
+  align-items: center !important;
+  height: 32px !important;
+}
+
+.mdxeditor-toolbar [class*="_diffSourceToggle_"] {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+.mdxeditor-toolbar [class*="_toolbarToggleItem_"] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 32px !important;
+  line-height: 1 !important;
+}
+
+/* Responsive alignment for mobile */
+@media (max-width: 640px) {
+  .mdxeditor-toolbar [class*="_diffSourceToggleWrapper_"],
+  .mdxeditor-toolbar [data-toolbar-item] {
+    height: 24px !important;
+  }
+  
+  .mdxeditor-toolbar [class*="_toolbarToggleItem_"] {
+    height: 24px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .mdxeditor-toolbar [class*="_diffSourceToggleWrapper_"],
+  .mdxeditor-toolbar [data-toolbar-item] {
+    height: 20px !important;
+  }
+  
+  .mdxeditor-toolbar [class*="_toolbarToggleItem_"] {
+    height: 20px !important;
+  }
+}
+
+/* Fix diff source plugin styling for dark mode */
+/* Target the specific MDX editor classes */
+html.dark .mdxeditor ._diffSourceToggleWrapper_1e2ox_986,
+html.dark .mdxeditor ._diffSourceToggleWrapper_1e2ox_986 *,
+html.dark .mdxeditor ._diffSourceToggleWrapper_1e2ox_986 svg,
+html.dark .mdxeditor ._diffSourceToggleWrapper_1e2ox_986 button,
+html.dark .mdxeditor ._diffSourceToggleWrapper_1e2ox_986 button * {
+  color: #374151 !important;
+  background-color: transparent !important;
+}
+
+/* Target the toggle group */
+html.dark .mdxeditor ._diffSourceToggle_1e2ox_986,
+html.dark .mdxeditor ._diffSourceToggle_1e2ox_986 *,
+html.dark .mdxeditor ._diffSourceToggle_1e2ox_986 svg,
+html.dark .mdxeditor ._diffSourceToggle_1e2ox_986 button,
+html.dark .mdxeditor ._diffSourceToggle_1e2ox_986 button * {
+  color: #374151 !important;
+  background-color: transparent !important;
+}
+
+/* Target the toggle items specifically */
+html.dark .mdxeditor ._toolbarToggleItem_1e2ox_208,
+html.dark .mdxeditor ._toolbarToggleItem_1e2ox_208 *,
+html.dark .mdxeditor ._toolbarToggleItem_1e2ox_208 svg,
+html.dark .mdxeditor ._toolbarToggleItem_1e2ox_208 span,
+html.dark .mdxeditor ._toolbarToggleItem_1e2ox_208 span * {
+  color: #374151 !important;
+  background-color: transparent !important;
+}
+
+/* Target any element with the specific class pattern */
+html.dark .mdxeditor [class*="_diffSourceToggleWrapper_"],
+html.dark .mdxeditor [class*="_diffSourceToggle_"],
+html.dark .mdxeditor [class*="_toolbarToggleItem_"] {
+  color: #374151 !important;
+  background-color: transparent !important;
+}
+
+/* Target any element with the specific class pattern */
+html.dark .mdxeditor [class*="_diffSourceToggleWrapper_"] *,
+html.dark .mdxeditor [class*="_diffSourceToggle_"] *,
+html.dark .mdxeditor [class*="_toolbarToggleItem_"] * {
+  color: #374151 !important;
+  background-color: transparent !important;
+}
+
+/* Hide the diff mode button */
+.mdxeditor button[aria-label="Diff mode"],
+.mdxeditor button[aria-label="Diff mode"] * {
+  display: none !important;
+}
+
+/* Fix CodeMirror source editor for dark mode */
+html.dark .mdxeditor .cm-sourceView,
+html.dark .mdxeditor .cm-editor,
+html.dark .mdxeditor .cm-scroller,
+html.dark .mdxeditor .cm-content,
+html.dark .mdxeditor .cm-line,
+html.dark .mdxeditor .cm-line *,
+html.dark .mdxeditor .cm-gutters,
+html.dark .mdxeditor .cm-gutter,
+html.dark .mdxeditor .cm-gutterElement {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Fix CodeMirror syntax highlighting for dark mode */
+html.dark .mdxeditor .cm-line .ͼ1h,
+html.dark .mdxeditor .cm-line .ͼ1i,
+html.dark .mdxeditor .cm-line .ͼ1j,
+html.dark .mdxeditor .cm-line .ͼ1l {
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Fix active line highlighting */
+html.dark .mdxeditor .cm-activeLine,
+html.dark .mdxeditor .cm-activeLine * {
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Fix cursor and selection */
+html.dark .mdxeditor .cm-cursor {
+  border-color: hsl(var(--foreground)) !important;
+}
+
+html.dark .mdxeditor .cm-selectionBackground {
+  background-color: hsl(var(--accent)) !important;
+}
+
+/* Fix line numbers */
+html.dark .mdxeditor .cm-lineNumbers {
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Fix fold gutter */
+html.dark .mdxeditor .cm-foldGutter {
+  background-color: hsl(var(--muted)) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Thematic break (horizontal rule) styling for light mode */
+.mdxeditor-rich-text-editor hr,
+.mdxeditor-rich-text-editor .ProseMirror hr,
+.mdxeditor hr,
+.mdxeditor .ProseMirror hr {
+  border: none !important;
+  border-top: 1px solid #d1d5db !important;
+  height: 0px !important;
+  background-color: #d1d5db !important;
+  margin: 1.5rem 0 !important;
+  opacity: 1 !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Ensure light mode visibility with more specific targeting */
+:not(.dark):not(html.dark) .mdxeditor-rich-text-editor hr,
+:not(.dark):not(html.dark) .mdxeditor-rich-text-editor .ProseMirror hr,
+:not(.dark):not(html.dark) .mdxeditor hr,
+:not(.dark):not(html.dark) .mdxeditor .ProseMirror hr {
+  border-top: 1px solid #9ca3af !important;
+  background-color: #9ca3af !important;
+  height: 0px !important;
+  opacity: 1 !important;
+}
+
+/* Dark mode thematic break styling */
+html.dark .mdxeditor-rich-text-editor hr,
+html.dark .mdxeditor-rich-text-editor .ProseMirror hr,
+html.dark .mdxeditor hr,
+html.dark .mdxeditor .ProseMirror hr {
+  background-color: #525252 !important;
+  border: none !important;
+  border-top: 1px solid #525252 !important;
+  height: 0px !important;
+  margin: 1.5rem 0 !important;
+  opacity: 1 !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Additional targeting for thematic break in dark mode with class-based detection */
+.dark .mdxeditor-rich-text-editor hr,
+.dark .mdxeditor-rich-text-editor .ProseMirror hr,
+.dark .mdxeditor hr,
+.dark .mdxeditor .ProseMirror hr {
+  background-color: #525252 !important;
+  border: none !important;
+  border-top: 1px solid #525252 !important;
+  height: 0px !important;
+  opacity: 1 !important;
+  display: block !important;
+  width: 100% !important;
+}

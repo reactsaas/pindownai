@@ -1,0 +1,19 @@
+{
+  "wid": "wd_02",
+  "data_type": "markdown",
+  "content": "# Sales Update\n\nTotal: {{wd_02.total | currency}}\n\nTop customer: {{wd_02.top_customer.name}}",
+  "metadata": {
+    "title": "Sales Update",
+    "description": "Markdown template with variables from wd_02",
+    "tags": ["sales", "template"],
+    "is_public": true
+  }
+}
+
+
+
+
+
+
+
+
