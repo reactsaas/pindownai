@@ -115,3 +115,29 @@ export type CreateDatasetRequest = z.infer<typeof createDatasetSchema>;
 export type DatasetIdParams = z.infer<typeof datasetIdParamSchema>;
 export type SuccessResponse = z.infer<typeof successResponseSchema>;
 export type ErrorResponse = z.infer<typeof errorResponseSchema>;
+
+// Pinboard schemas
+export const createPinboardSchema = z.object({
+  name: z.string().min(1, 'Pinboard name is required').max(100, 'Pinboard name too long'),
+  description: z.string().optional(),
+  pins: z.array(z.string()).default([]), // Array of pin IDs
+  is_public: z.boolean().default(false),
+  tags: z.array(z.string()).optional()
+});
+
+export const updatePinboardSchema = z.object({
+  name: z.string().min(1, 'Pinboard name is required').max(100, 'Pinboard name too long').optional(),
+  description: z.string().optional(),
+  pins: z.array(z.string()).optional(),
+  is_public: z.boolean().optional(),
+  tags: z.array(z.string()).optional()
+});
+
+export const pinboardIdParamSchema = z.object({
+  pinboardId: z.string().min(1, 'Pinboard ID is required')
+});
+
+// Pinboard types
+export type CreatePinboardRequest = z.infer<typeof createPinboardSchema>;
+export type UpdatePinboardRequest = z.infer<typeof updatePinboardSchema>;
+export type PinboardIdParams = z.infer<typeof pinboardIdParamSchema>;

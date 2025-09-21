@@ -84,55 +84,31 @@ export const ERRORS = {
 
 // Error Response Format
 export interface ErrorResponse {
-  success: false;
-  error: {
-    code: ErrorCode;
-    type: ErrorType;
-    message: string;
-    details?: any;
-    timestamp: string;
-  };
+  error: string;
+  message: string;
 }
 
 // Create Error Response
 export function createErrorResponse(error: AppError | Error | FastifyError): ErrorResponse {
   if (error instanceof AppError) {
     return {
-      success: false,
-      error: {
-        code: error.code,
-        type: error.type,
-        message: error.message,
-        details: error.details,
-        timestamp: new Date().toISOString()
-      }
+      error: error.message,
+      message: error.code
     };
   }
 
   // Handle Fastify Validation Errors
   if ('validation' in error && error.validation) {
     return {
-      success: false,
-      error: {
-        code: 'VALIDATION_FAILED',
-        type: 'validation',
-        message: 'Request validation failed',
-        details: error.validation,
-        timestamp: new Date().toISOString()
-      }
+      error: 'Request validation failed',
+      message: 'VALIDATION_FAILED'
     };
   }
 
   // Handle generic errors
   return {
-    success: false,
-    error: {
-      code: 'INTERNAL_SERVER_ERROR',
-      type: 'server',
-      message: error.message || 'An internal server error occurred',
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      timestamp: new Date().toISOString()
-    }
+    error: error.message || 'An internal server error occurred',
+    message: 'INTERNAL_SERVER_ERROR'
   };
 }
 

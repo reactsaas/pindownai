@@ -23,6 +23,13 @@ declare module 'fastify' {
       getPinDatasets: (pinId: string) => Promise<any[]>;
       getDataset: (pinId: string, datasetId: string) => Promise<any>;
       deleteDataset: (pinId: string, datasetId: string) => Promise<void>;
+      createPinboard: (pinboardData: any) => Promise<string>;
+      getPinboard: (pinboardId: string) => Promise<any>;
+      getUserPinboards: (userId: string) => Promise<any[]>;
+      updatePinboard: (pinboardId: string, pinboardData: any) => Promise<void>;
+      deletePinboard: (pinboardId: string) => Promise<void>;
+      addPinToPinboard: (pinboardId: string, pinId: string) => Promise<void>;
+      removePinFromPinboard: (pinboardId: string, pinId: string) => Promise<void>;
     };
   }
 }
@@ -278,6 +285,141 @@ const firebasePlugin: FastifyPluginAsync = async (fastify: FastifyInstance<ZodTy
     async deleteDataset(pinId: string, datasetId: string): Promise<void> {
       await db.ref(`pin_datasets/${pinId}/${datasetId}`).remove();
       fastify.log.info(`Deleted dataset: ${datasetId} for pin: ${pinId}`);
+    },
+
+    async createPinboard(pinboardData: any): Promise<string> {
+      const pinboardRef = db.ref('pin_boards').push();
+      const firebaseId = pinboardRef.key!;
+      const pinboardId = `pb-${firebaseId}`;
+      
+      const pinboardWithId = {
+        ...pinboardData,
+        id: pinboardId,
+        pins: pinboardData.pins || [], // Ensure pins array is always present
+        tags: pinboardData.tags || [], // Ensure tags array is always present
+        created_at: { '.sv': 'timestamp' },
+        updated_at: { '.sv': 'timestamp' }
+      };
+      
+      await db.ref(`pin_boards/${pinboardId}`).set(pinboardWithId);
+      
+      // Add to user's pinboards index
+      await db.ref(`user_pinboards/${pinboardData.user_id}/${pinboardId}`).set(true);
+      
+      fastify.log.info(`Created pinboard: ${pinboardId} for user: ${pinboardData.user_id}`);
+      return pinboardId;
+    },
+
+    async getPinboard(pinboardId: string): Promise<any> {
+      const pinboardRef = db.ref(`pin_boards/${pinboardId}`);
+      const snapshot = await pinboardRef.once('value');
+      
+      if (!snapshot.exists()) {
+        return null;
+      }
+      
+      const pinboard = snapshot.val();
+      // Ensure pins and tags arrays are always present
+      return {
+        ...pinboard,
+        pins: pinboard.pins || [],
+        tags: pinboard.tags || []
+      };
+    },
+
+    async getUserPinboards(userId: string): Promise<any[]> {
+      const userPinboardsRef = db.ref(`user_pinboards/${userId}`);
+      const snapshot = await userPinboardsRef.once('value');
+      
+      if (!snapshot.exists()) {
+        return [];
+      }
+
+      const userPinboardsIndex = snapshot.val();
+      const pinboardIds = Object.keys(userPinboardsIndex);
+      
+      if (pinboardIds.length === 0) {
+        return [];
+      }
+
+      // Fetch full pinboard data for each pinboard ID
+      const pinboardsRef = db.ref('pin_boards');
+      const pinboardsSnapshot = await pinboardsRef.once('value');
+      
+      if (!pinboardsSnapshot.exists()) {
+        return [];
+      }
+
+      const allPinboards = pinboardsSnapshot.val();
+      const userPinboards = pinboardIds
+        .filter(pinboardId => allPinboards[pinboardId] && allPinboards[pinboardId].user_id === userId)
+        .map(pinboardId => ({
+          ...allPinboards[pinboardId],
+          pins: allPinboards[pinboardId].pins || [], // Ensure pins array is always present
+          tags: allPinboards[pinboardId].tags || [] // Ensure tags array is always present
+        }));
+
+      return userPinboards;
+    },
+
+    async updatePinboard(pinboardId: string, pinboardData: any): Promise<void> {
+      const updates: Record<string, any> = {};
+      
+      // Add updated_at timestamp
+      const pinboardWithTimestamp = {
+        ...pinboardData,
+        updated_at: { '.sv': 'timestamp' }
+      };
+      
+      Object.keys(pinboardWithTimestamp).forEach(key => {
+        updates[key] = pinboardWithTimestamp[key];
+      });
+      
+      await db.ref(`pin_boards/${pinboardId}`).update(updates);
+      fastify.log.info(`Updated pinboard: ${pinboardId}`);
+    },
+
+    async deletePinboard(pinboardId: string): Promise<void> {
+      // Get pinboard to find user_id for cleanup
+      const pinboard = await this.getPinboard(pinboardId);
+      
+      // Remove from pin_boards
+      await db.ref(`pin_boards/${pinboardId}`).remove();
+      
+      // Remove from user's pinboards index
+      if (pinboard && pinboard.user_id) {
+        await db.ref(`user_pinboards/${pinboard.user_id}/${pinboardId}`).remove();
+      }
+      
+      fastify.log.info(`Deleted pinboard: ${pinboardId}`);
+    },
+
+    async addPinToPinboard(pinboardId: string, pinId: string): Promise<void> {
+      const pinboardRef = db.ref(`pin_boards/${pinboardId}/pins`);
+      const snapshot = await pinboardRef.once('value');
+      
+      let currentPins = snapshot.exists() ? snapshot.val() || [] : [];
+      
+      // Add pin if not already present
+      if (!currentPins.includes(pinId)) {
+        currentPins.push(pinId);
+        await pinboardRef.set(currentPins);
+        await db.ref(`pin_boards/${pinboardId}/updated_at`).set({ '.sv': 'timestamp' });
+        fastify.log.info(`Added pin: ${pinId} to pinboard: ${pinboardId}`);
+      }
+    },
+
+    async removePinFromPinboard(pinboardId: string, pinId: string): Promise<void> {
+      const pinboardRef = db.ref(`pin_boards/${pinboardId}/pins`);
+      const snapshot = await pinboardRef.once('value');
+      
+      if (snapshot.exists()) {
+        let currentPins = snapshot.val() || [];
+        currentPins = currentPins.filter((id: string) => id !== pinId);
+        await pinboardRef.set(currentPins);
+        await db.ref(`pin_boards/${pinboardId}/updated_at`).set({ '.sv': 'timestamp' });
+        fastify.log.info(`Removed pin: ${pinId} from pinboard: ${pinboardId}`);
+      }
     }
   };
 

@@ -6,6 +6,7 @@ import firebasePlugin from './plugins/firebase';
 import authPlugin from './plugins/auth';
 import errorHandlerPlugin from './plugins/error-handler';
 import { pinRoutes } from './routes/pins/index';
+import { pinboardRoutes } from './routes/pinboards/index';
 import { workflowDataRoutes } from './routes/workflow-data';
 import { authRoutes } from './routes/auth';
 import { publicPinRoutes } from './routes/public/pins';
@@ -56,6 +57,7 @@ async function registerSwagger() {
 async function registerRoutes() {
   // Register API routes
   await server.register(pinRoutes);
+  await server.register(pinboardRoutes);
   await server.register(workflowDataRoutes);
   await server.register(authRoutes);
   await server.register(publicPinRoutes);
