@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Pin, MessageSquare, Zap, FileText, Code, Server, Bot, Image, Database, ArrowRight, Brain, Search, Globe, Key, Shield, Share2, Eye } from "lucide-react";
+import { Pin, MessageSquare, Zap, FileText, Code, Server, Bot, Image, Database, ArrowRight, ArrowDown, Brain, Search, Globe, Key, Shield, Share2, Eye, Users } from "lucide-react";
 import { PricingSection } from "@/components/pricing-section";
 import { useInView } from "react-intersection-observer";
 import ReactMarkdown from 'react-markdown';
@@ -876,19 +876,7 @@ function InformationHub() {
 
 function ExampleReports() {
   return (
-    <div className="max-w-3xl w-full">
-      <div className="text-center mb-8">
-        <div className="flex flex-col items-center gap-4 mb-4">
-          <div className="relative w-16 h-16 bg-muted/20 rounded-full flex items-center justify-center overflow-hidden">
-            <Pin className="w-10 h-10 text-muted-foreground relative z-10 rotate-45" />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/15 to-transparent animate-[wave_3s_ease-in-out_infinite] rounded-full"></div>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Realtime Updated Pages</h2>
-        </div>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Transform your data into beautiful, shareable  <strong>pages -- ( pins )</strong>   
-        </p>
-      </div>
+    <div className="max-w-4xl w-full">
       
       <Tabs defaultValue="automation" className="w-full">
         <TabsList className="w-full mb-6 grid grid-cols-4 gap-1">
@@ -1024,89 +1012,276 @@ export default function Home() {
       </nav>
 
       {/* Hero section - Full viewport height */}
-      <div className="min-h-screen flex items-center justify-center p-8 sm:p-20 pt-24">
-        <div className="flex flex-col gap-8 items-center">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center relative overflow-hidden">
-              <Pin className="w-6 h-6 text-primary-foreground animate-[pin-drop_1.2s_ease-out_forwards]" />
-            </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent animate-fade-in">pindown.ai</h1>
-          </div>
-        <p className="text-2xl text-center text-muted-foreground max-w-2xl leading-relaxed">
-          <span className="text-foreground font-semibold">Pin down your data.</span> Turn your automation outputs into 
-          <span className="text-primary font-medium"> reports</span>, 
-          <span className="text-primary font-medium"> articles</span> and 
-          <span className="text-primary font-medium"> insightful pages</span> that everyone can understand.
-        </p>
+      <div className="min-h-screen flex items-center justify-center p-8 sm:p-20 pt-24 bg-gradient-to-b from-background to-gray-50 dark:to-muted/5 relative overflow-hidden">
+        {/* Pin-themed background pattern */}
+        <div className="absolute inset-0 opacity-[0.25] dark:opacity-[0.3]">
+          {/* Pinboard grid pattern - much more visible */}
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              linear-gradient(rgba(0,0,0,0.15) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0,0,0,0.15) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px'
+          }}></div>
           
-          <div className="flex gap-4 items-center flex-col sm:flex-row mt-8">
-            <Link
-              href="/login"
-              className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            >
-              <Pin className="w-4 h-4 rotate-45" />
-              Get Started
-            </Link>
+          {/* Pin dots at grid intersections - more subtle */}
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              radial-gradient(circle at 0px 0px, rgba(0,0,0,0.08) 2px, transparent 2px),
+              radial-gradient(circle at 50px 50px, rgba(0,0,0,0.08) 2px, transparent 2px),
+              radial-gradient(circle at 100px 100px, rgba(0,0,0,0.08) 2px, transparent 2px),
+              radial-gradient(circle at 150px 150px, rgba(0,0,0,0.08) 2px, transparent 2px),
+              radial-gradient(circle at 200px 200px, rgba(0,0,0,0.08) 2px, transparent 2px),
+              radial-gradient(circle at 250px 250px, rgba(0,0,0,0.08) 2px, transparent 2px),
+              radial-gradient(circle at 300px 300px, rgba(0,0,0,0.08) 2px, transparent 2px),
+              radial-gradient(circle at 350px 350px, rgba(0,0,0,0.08) 2px, transparent 2px)
+            `,
+            backgroundSize: '400px 400px'
+          }}></div>
+          
+          {/* Larger decorative pins - more visible */}
+          <div className="absolute top-20 left-20 w-4 h-4 bg-gray-700/30 dark:bg-gray-200/30 rounded-full transform rotate-45 animate-pulse" style={{animationDelay: '0s', animationDuration: '3s'}}></div>
+          <div className="absolute top-32 right-24 w-5 h-5 bg-gray-700/25 dark:bg-gray-200/25 rounded-full transform rotate-45 animate-pulse" style={{animationDelay: '1s', animationDuration: '4s'}}></div>
+          <div className="absolute bottom-28 left-32 w-3 h-3 bg-gray-700/35 dark:bg-gray-200/35 rounded-full transform rotate-45 animate-pulse" style={{animationDelay: '2s', animationDuration: '3.5s'}}></div>
+          <div className="absolute bottom-20 right-20 w-4 h-4 bg-gray-700/28 dark:bg-gray-200/28 rounded-full transform rotate-45 animate-pulse" style={{animationDelay: '0.5s', animationDuration: '4.5s'}}></div>
+          <div className="absolute top-1/2 left-16 w-3.5 h-3.5 bg-gray-700/32 dark:bg-gray-200/32 rounded-full transform rotate-45 animate-pulse" style={{animationDelay: '1.5s', animationDuration: '3.8s'}}></div>
+          <div className="absolute top-2/3 right-16 w-5 h-5 bg-gray-700/26 dark:bg-gray-200/26 rounded-full transform rotate-45 animate-pulse" style={{animationDelay: '2.5s', animationDuration: '4.2s'}}></div>
+          <div className="absolute bottom-1/3 right-1/3 w-3 h-3 bg-gray-700/30 dark:bg-gray-200/30 rounded-full transform rotate-45 animate-pulse" style={{animationDelay: '3s', animationDuration: '3.2s'}}></div>
+          <div className="absolute top-1/4 left-1/3 w-6 h-6 bg-gray-700/22 dark:bg-gray-200/22 rounded-full transform rotate-45 animate-pulse" style={{animationDelay: '0.8s', animationDuration: '4.8s'}}></div>
+        </div>
+        
+        {/* Hero content - positioned above background */}
+        <div className="relative z-10 flex flex-col gap-12 items-center max-w-5xl mx-auto px-4">
+          <div className="flex flex-col items-center gap-6">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center relative overflow-hidden shadow-lg">
+                <Pin className="w-8 h-8 text-primary-foreground animate-[pin-drop_1.2s_ease-out_forwards]" />
+              </div>
+              <h1 className="text-5xl sm:text-6xl font-bold bg-gradient-to-r from-foreground via-primary to-muted-foreground bg-clip-text text-transparent animate-fade-in">
+                pindown.ai
+              </h1>
+            </div>
+            <p className="text-xl sm:text-2xl text-center text-muted-foreground max-w-3xl leading-relaxed font-light">
+              <span className="text-foreground font-semibold">Pin down your data.</span> Transform your automation outputs into 
+              <span className="text-primary font-semibold"> beautiful reports</span>, 
+              <span className="text-primary font-semibold"> engaging articles</span> and 
+              <span className="text-primary font-semibold"> insightful pages</span> that everyone can understand and share.
+            </p>
+          </div>
+          
+          <div className="flex gap-6 items-center flex-col sm:flex-row mt-12">
+           <Link
+             href="/login"
+             className="group relative rounded-full border border-solid border-transparent transition-all duration-300 flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] hover:scale-105 hover:shadow-lg text-sm sm:text-base h-12 sm:h-14 px-6 sm:px-8 overflow-hidden"
+           >
+             {/* Animated background effect */}
+             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+             <Pin className="w-4 h-4 rotate-45 relative z-10" />
+             <span className="relative z-10 font-semibold">Get Started</span>
+           </Link>
             <Link
               href="/chat"
-              className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
+              className="group relative rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-all duration-300 flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent hover:scale-105 hover:shadow-md text-sm sm:text-base h-12 sm:h-14 px-6 sm:px-8"
             >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Docs
+              <MessageSquare className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
+              <span className="font-medium">View Docs</span>
             </Link>
+          </div>
+          
+          {/* Social proof */}
+          <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex -space-x-2">
+              <div className="w-6 h-6 bg-primary/20 rounded-full border-2 border-background flex items-center justify-center">
+                <Pin className="w-3 h-3 text-primary" />
+              </div>
+              <div className="w-6 h-6 bg-primary/20 rounded-full border-2 border-background flex items-center justify-center">
+                <Pin className="w-3 h-3 text-primary" />
+              </div>
+              <div className="w-6 h-6 bg-primary/20 rounded-full border-2 border-background flex items-center justify-center">
+                <Pin className="w-3 h-3 text-primary" />
+              </div>
+            </div>
+            <span>Join 500+ automation teams</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Demo Preview Section */}
+      <div className="py-20 px-6 sm:px-12 bg-gradient-to-b from-gray-50 to-background dark:from-muted/5 dark:to-background">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+              See It In Action
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Watch how your raw automation data transforms into beautiful, shareable pages in seconds.
+            </p>
+          </div>
+          
+          <div className="relative bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-background/90 dark:to-muted/20 rounded-3xl p-8 shadow-2xl border border-border/50 backdrop-blur-sm">
+             {/* Demo content */}
+             <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
+               {/* Input side */}
+               <div className="space-y-3 lg:max-w-md">
+                 <h3 className="text-lg font-semibold text-muted-foreground mb-3">Raw Automation Output</h3>
+                 <div className="bg-muted/20 p-4 rounded-lg font-mono text-sm overflow-auto max-h-48 border border-border/50">
+                   <div className="text-muted-foreground">// Webhook payload from n8n</div>
+                   <div className="text-foreground">{"{"}</div>
+                   <div className="ml-2 text-foreground">"status": "completed",</div>
+                   <div className="ml-2 text-foreground">"recordsProcessed": 1247,</div>
+                   <div className="ml-2 text-foreground">"errors": 3,</div>
+                   <div className="ml-2 text-foreground">"duration": "2m 34s",</div>
+                   <div className="ml-2 text-foreground">"timestamp": "2024-01-15T14:30:00Z"</div>
+                   <div className="text-foreground">{"}"}</div>
+                 </div>
+                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                   <span>Real-time webhook data</span>
+                 </div>
+               </div>
+
+               {/* Live Example - Full Page Layout */}
+               <div className="flex justify-center">
+                 <div className="bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-background/90 dark:to-muted/20 rounded-xl border border-border/50 shadow-lg backdrop-blur-sm max-w-sm w-full overflow-hidden">
+                   {/* Page Header */}
+                   <div className="p-4 border-b border-border/50">
+                     <div className="flex items-center justify-between mb-2">
+                       <h4 className="font-semibold text-base">Daily Automation Report</h4>
+                       <div className="flex items-center gap-2">
+                         <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                         <span className="text-xs font-medium text-primary">Live</span>
+                       </div>
+                     </div>
+                     <p className="text-xs text-muted-foreground">
+                       Generated: Today at 14:30 UTC • Last Update: 0s ago
+                     </p>
+                   </div>
+                   
+                   {/* Page Content */}
+                   <div className="p-4 space-y-4">
+                     {/* Description */}
+                     <p className="text-xs text-muted-foreground leading-relaxed">
+                       Our automated data synchronization is currently active across multiple databases. The n8n integration has processed 100% of records, while MongoDB sync is at 100% completion. The Postgres migration has successfully completed, ensuring all analytics data is ready for processing.
+                     </p>
+                     
+                     {/* Data Processing Section */}
+                     <div className="space-y-3">
+                       <h5 className="text-sm font-medium text-foreground">Data Processing</h5>
+                       <div className="space-y-2">
+                         <div className="flex justify-between items-center">
+                           <span className="text-xs text-muted-foreground">n8n</span>
+                           <span className="text-xs font-medium text-primary">100%</span>
+                         </div>
+                         <div className="flex justify-between items-center">
+                           <span className="text-xs text-muted-foreground">MongoDB</span>
+                           <span className="text-xs font-medium text-primary">100%</span>
+                         </div>
+                         <div className="flex justify-between items-center">
+                           <span className="text-xs text-muted-foreground">Postgres</span>
+                           <span className="text-xs font-medium text-primary">Complete</span>
+                         </div>
+                       </div>
+                     </div>
+                     
+                     {/* Pipeline Status */}
+                     <div className="space-y-3">
+                       <h5 className="text-sm font-medium text-foreground">Pipeline Status</h5>
+                       <div className="grid grid-cols-3 gap-3">
+                         <div className="text-center">
+                           <div className="text-sm font-bold text-primary">1,247</div>
+                           <div className="text-xs text-muted-foreground">Processed</div>
+                         </div>
+                         <div className="text-center">
+                           <div className="text-sm font-bold text-orange-600 dark:text-orange-400">3</div>
+                           <div className="text-xs text-muted-foreground">Queue Size</div>
+                         </div>
+                         <div className="text-center">
+                           <div className="text-sm font-bold">2m 34s</div>
+                           <div className="text-xs text-muted-foreground">Avg Time</div>
+                         </div>
+                       </div>
+                     </div>
+                     
+                     {/* Bottom Description */}
+                     <p className="text-xs text-muted-foreground leading-relaxed">
+                       The data pipeline has successfully processed 1,247 records with an average processing time of 2m 34s per batch. Currently, 3 items remain in the processing queue, indicating a healthy throughput rate.
+                     </p>
+                   </div>
+                 </div>
+               </div>
+
+             </div>
+            
+            {/* Bottom CTA */}
+            <div className="mt-12 text-center">
+              <p className="text-sm text-muted-foreground mb-4">
+                Ready to transform your automation data?
+              </p>
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-full font-semibold hover:bg-primary/90 transition-colors"
+              >
+                <Pin className="w-4 h-4 rotate-45" />
+                Start Building
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
       {/* UI Layer for AI Automations Section */}
-      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-muted/10">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="py-24 sm:py-32 px-6 sm:px-12 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-muted/10 dark:to-muted/20">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Content */}
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-3xl sm:text-4xl font-bold">
+            <div className="space-y-8">
+              <div className="space-y-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-4">
+                  <Zap className="w-4 h-4" />
+                  <span>The Problem</span>
+                </div>
+                <h2 className="text-4xl sm:text-5xl font-bold leading-tight">
                   The Missing UI Layer for 
-                  <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent"> AI-Driven Automations</span>
+                  <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent"> AI-Driven Automations</span>
                 </h2>
-                <p className="text-lg text-muted-foreground">
+                <p className="text-xl text-muted-foreground leading-relaxed">
                   Your automations generate tons of data, but where does it go? PinDown.ai bridges the gap between your AI workflows and human understanding.
                 </p>
               </div>
               
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <Zap className="w-3 h-3 text-primary" />
+              <div className="space-y-6">
+                <div className="group flex items-start gap-4 p-4 rounded-xl hover:bg-background/50 dark:hover:bg-background/20 transition-all duration-300">
+                  <div className="w-10 h-10 bg-muted/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <Zap className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Connect Any Automation</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Zapier, Make, n8n, or custom scripts - we integrate with any automation platform
+                    <h3 className="font-semibold text-lg mb-2">Connect Any Automation</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Zapier, Make, n8n, or custom scripts - we integrate with any automation platform seamlessly
                     </p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <Brain className="w-3 h-3 text-primary" />
+                <div className="group flex items-start gap-4 p-4 rounded-xl hover:bg-background/50 dark:hover:bg-background/20 transition-all duration-300">
+                  <div className="w-10 h-10 bg-muted/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <Brain className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">AI-Powered Formatting</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Raw data gets transformed into beautiful, readable content automatically
+                    <h3 className="font-semibold text-lg mb-2">AI-Powered Formatting</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Raw data gets transformed into beautiful, readable content automatically with intelligent structuring
                     </p>
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <Share2 className="w-3 h-3 text-primary" />
+                <div className="group flex items-start gap-4 p-4 rounded-xl hover:bg-background/50 dark:hover:bg-background/20 transition-all duration-300">
+                  <div className="w-10 h-10 bg-muted/20 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                    <Share2 className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">Instant Sharing</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Share results with clients, teams, or stakeholders in real-time
+                    <h3 className="font-semibold text-lg mb-2">Instant Sharing</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Share results with clients, teams, or stakeholders in real-time with beautiful, professional layouts
                     </p>
                   </div>
                 </div>
@@ -1115,51 +1290,56 @@ export default function Home() {
             
             {/* Visual */}
             <div className="relative">
-              <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-8 border border-primary/20">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                      <Server className="w-4 h-4 text-primary" />
+              <div className="bg-gradient-to-br from-white/80 to-gray-50/80 dark:from-background/80 dark:to-muted/20 rounded-3xl p-10 border border-border/50 shadow-2xl backdrop-blur-sm">
+                <div className="space-y-8">
+                  <div className="group flex items-center gap-4 p-4 rounded-xl bg-gray-50/50 dark:bg-muted/20 transition-all duration-300 group-hover:bg-gray-100/50 dark:group-hover:bg-muted/30">
+                    <div className="w-12 h-12 bg-muted/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Server className="w-6 h-6 text-muted-foreground" />
                     </div>
                     <div>
-                      <div className="font-medium text-sm">Automation Output</div>
-                      <div className="text-xs text-muted-foreground">Raw JSON data</div>
+                      <div className="font-semibold text-base">Automation Output</div>
+                      <div className="text-sm text-muted-foreground">Raw JSON data from your workflows</div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center justify-center">
-                    <ArrowRight className="w-5 h-5 text-muted-foreground" />
-                  </div>
+                   <div className="flex items-center justify-center">
+                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                       <ArrowDown className="w-5 h-5 text-primary animate-pulse" />
+                     </div>
+                   </div>
+                   
+                   <div className="group flex items-center gap-4 p-4 rounded-xl bg-gray-50/50 dark:bg-muted/20 transition-all duration-300 group-hover:bg-gray-100/50 dark:group-hover:bg-muted/30">
+                     <div className="w-12 h-12 bg-muted/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                       <Brain className="w-6 h-6 text-muted-foreground" />
+                     </div>
+                     <div>
+                       <div className="font-semibold text-base">AI Processing</div>
+                       <div className="text-sm text-muted-foreground">Intelligent data transformation</div>
+                     </div>
+                   </div>
+                   
+                   <div className="flex items-center justify-center">
+                     <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                       <ArrowDown className="w-5 h-5 text-primary animate-pulse" />
+                     </div>
+                   </div>
                   
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                      <Brain className="w-4 h-4 text-primary" />
+                  <div className="group flex items-center gap-4 p-4 rounded-xl bg-gray-50/50 dark:bg-muted/20 transition-all duration-300 group-hover:bg-gray-100/50 dark:group-hover:bg-muted/30">
+                    <div className="w-12 h-12 bg-muted/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <FileText className="w-6 h-6 text-muted-foreground" />
                     </div>
                     <div>
-                      <div className="font-medium text-sm">AI Processing</div>
-                      <div className="text-xs text-muted-foreground">Data transformation</div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-center">
-                    <ArrowRight className="w-5 h-5 text-muted-foreground" />
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                      <FileText className="w-4 h-4 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-medium text-sm">Beautiful Page</div>
-                      <div className="text-xs text-muted-foreground">Client-ready report</div>
+                      <div className="font-semibold text-base">Beautiful Page</div>
+                      <div className="text-sm text-muted-foreground">Client-ready report ready to share</div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Pin icon on the right side */}
-                <div className="absolute right-1/6 top-1/2 transform -translate-y-1/2">
-                  <div className="w-20 h-20 bg-primary rounded-xl flex items-center justify-center relative overflow-hidden">
-                    <Pin className="w-10 h-10 text-primary-foreground drop-shadow-lg animate-[pin-drop_1.2s_ease-out_forwards]" />
+                {/* Enhanced Pin icon */}
+                <div className="absolute -right-4 -top-4">
+                  <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center relative overflow-hidden shadow-xl group hover:scale-105 transition-transform duration-300">
+                    <Pin className="w-12 h-12 text-primary-foreground drop-shadow-lg animate-[pin-drop_1.2s_ease-out_forwards] group-hover:rotate-12 transition-transform duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
                   </div>
                 </div>
               </div>
@@ -1171,13 +1351,25 @@ export default function Home() {
       {/* Intelligent Dynamic Pins Section - First after hero */}
       <div 
         ref={exampleReportsRef}
-        className={`py-16 sm:py-20 px-6 sm:px-12 bg-background transition-all duration-1000 ease-out ${
+        className={`py-24 sm:py-32 px-6 sm:px-12 bg-gradient-to-b from-gray-50 to-background dark:from-muted/5 dark:to-background transition-all duration-1000 ease-out ${
           isExampleReportsInView 
             ? 'opacity-100 translate-y-0' 
             : 'opacity-0 translate-y-12'
         }`}
       >
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-6">
+              <Pin className="w-4 h-4 rotate-45" />
+              <span>Live Examples</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent leading-tight">
+              Realtime Updated Pages
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Transform your data into beautiful, shareable <strong>pages -- ( pins )</strong> that update automatically with your automation workflows.
+            </p>
+          </div>
           <ExampleReports />
         </div>
       </div>
@@ -1235,7 +1427,7 @@ export default function Home() {
       </div> */}
 
       {/* Code Setup Section */}
-      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-muted/10">
+      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-gradient-to-b from-background to-gray-100 dark:to-muted/15">
         <div className="flex flex-col items-center">
           <div className="max-w-6xl w-full">
             <div className="grid lg:grid-cols-2 gap-8 items-start">
@@ -1476,49 +1668,67 @@ export default function Home() {
       {/* Built for Real Teams Section */}
       <div 
         ref={pinShareRef}
-        className={`py-20 sm:py-24 px-6 sm:px-12 transition-all duration-1000 ease-out ${
+        className={`py-24 sm:py-32 px-6 sm:px-12 bg-gradient-to-b from-gray-100 to-gray-150 dark:from-muted/10 dark:to-muted/20 transition-all duration-1000 ease-out ${
           isPinShareInView 
             ? 'opacity-100 translate-y-0' 
             : 'opacity-0 translate-y-12'
         }`}
       >
         <div className="flex flex-col items-center">
-          <div className="max-w-6xl w-full">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl sm:text-4xl font-bold mb-4 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">Built for Real Teams, Real Workflows</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Create shareable pages from your automation workflows that keep teams informed and stakeholders updated.
+          <div className="max-w-7xl w-full">
+            <div className="text-center mb-20">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-6">
+                <Users className="w-4 h-4" />
+                <span>For Teams</span>
+              </div>
+              <h2 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent leading-tight">
+                Built for Real Teams, Real Workflows
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Create shareable pages from your automation workflows that keep teams informed and stakeholders updated with beautiful, professional reports.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-             <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-               <div className="flex items-center gap-3 mb-4">
-                 <div className="text-sm font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded">CI</div>
-                 <div className="text-sm font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded">API</div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+             <div className="group p-8 border border-border/50 rounded-2xl hover:border-border hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-background/90 dark:to-muted/20 backdrop-blur-sm">
+               <div className="flex items-center gap-3 mb-6">
+                 <div className="flex gap-2">
+                   <div className="text-xs font-mono text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">CI</div>
+                   <div className="text-xs font-mono text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">API</div>
+                 </div>
                </div>
-               <h3 className="font-medium mb-3 text-lg">For DevOps & SRE Teams</h3>
-               <p className="text-sm text-muted-foreground mb-6"><span className="text-primary font-medium">CI/CD logs</span>, <span className="text-primary font-medium">deployment metrics</span>, and <span className="text-primary font-medium">incident alerts</span>. Stop explaining pipeline outputs to PMs. Get automatic incident summaries that actually make sense.</p>
-
+               <div className="w-12 h-12 bg-muted/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                 <Server className="w-6 h-6 text-muted-foreground" />
+               </div>
+               <h3 className="font-semibold mb-4 text-xl">For DevOps & SRE Teams</h3>
+               <p className="text-muted-foreground leading-relaxed"><span className="text-primary font-semibold">CI/CD logs</span>, <span className="text-primary font-semibold">deployment metrics</span>, and <span className="text-primary font-semibold">incident alerts</span>. Stop explaining pipeline outputs to PMs. Get automatic incident summaries that actually make sense.</p>
              </div>
              
-             <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-               <div className="flex items-center gap-3 mb-4">
-                 <div className="text-sm font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded">DOC</div>
-                 <div className="text-sm font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded">OPS</div>
+             <div className="group p-8 border border-border/50 rounded-2xl hover:border-border hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-background/90 dark:to-muted/20 backdrop-blur-sm">
+               <div className="flex items-center gap-3 mb-6">
+                 <div className="flex gap-2">
+                   <div className="text-xs font-mono text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">DOC</div>
+                   <div className="text-xs font-mono text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">OPS</div>
+                 </div>
                </div>
-               <h3 className="font-medium mb-3 text-lg">For Automation Hackers</h3>
-               <p className="text-sm text-muted-foreground mb-6"><span className="text-primary font-medium">Scripts</span>, <span className="text-primary font-medium">n8n flows</span>, and <span className="text-primary font-medium">automation outputs</span>. Stop building ugly Google Docs. Turn automation outputs into client-ready reports instantly.</p>
-
+               <div className="w-12 h-12 bg-muted/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                 <Code className="w-6 h-6 text-muted-foreground" />
+               </div>
+               <h3 className="font-semibold mb-4 text-xl">For Automation Hackers</h3>
+               <p className="text-muted-foreground leading-relaxed"><span className="text-primary font-semibold">Scripts</span>, <span className="text-primary font-semibold">n8n flows</span>, and <span className="text-primary font-semibold">automation outputs</span>. Stop building ugly Google Docs. Turn automation outputs into client-ready reports instantly.</p>
              </div>
 
-             <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-               <div className="flex items-center gap-3 mb-4">
-                 <div className="text-sm font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded">RESEARCH</div>
-                 <div className="text-sm font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded">SHARE</div>
+             <div className="group p-8 border border-border/50 rounded-2xl hover:border-border hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-background/90 dark:to-muted/20 backdrop-blur-sm">
+               <div className="flex items-center gap-3 mb-6">
+                 <div className="flex gap-2">
+                   <div className="text-xs font-mono text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">RESEARCH</div>
+                   <div className="text-xs font-mono text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">SHARE</div>
+                 </div>
                </div>
-               <h3 className="font-medium mb-3 text-lg">Information Tracking & Research</h3>
-               <p className="text-sm text-muted-foreground mb-6"><span className="text-primary font-medium">Market research</span>, <span className="text-primary font-medium">competitive analysis</span>, and <span className="text-primary font-medium">data insights</span>. Transform complex research data and analysis into digestible reports for stakeholders and collaborators.</p>
-
+               <div className="w-12 h-12 bg-muted/20 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                 <Search className="w-6 h-6 text-muted-foreground" />
+               </div>
+               <h3 className="font-semibold mb-4 text-xl">Information Tracking & Research</h3>
+               <p className="text-muted-foreground leading-relaxed"><span className="text-primary font-semibold">Market research</span>, <span className="text-primary font-semibold">competitive analysis</span>, and <span className="text-primary font-semibold">data insights</span>. Transform complex research data and analysis into digestible reports for stakeholders and collaborators.</p>
              </div>
            </div>
          </div>
@@ -1526,7 +1736,7 @@ export default function Home() {
      </div>
 
       {/* Data Management & Research Section */}
-      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-muted/5">
+      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-gradient-to-b from-gray-200 to-gray-100 dark:from-muted/20 dark:to-muted/10">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <div className="flex justify-center mb-6">
@@ -1545,7 +1755,7 @@ export default function Home() {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {/* Extract Data from Documents */}
-            <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-background/50">
+            <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white/95 to-gray-50 dark:from-background/80 dark:to-muted/10 backdrop-blur-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-muted/20 rounded-lg flex items-center justify-center">
                   <FileText className="w-6 h-6 text-muted-foreground" />
@@ -1564,7 +1774,7 @@ export default function Home() {
             </div>
             
             {/* Turn Raw Data into Structured Outputs */}
-            <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-background/50">
+            <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white/95 to-gray-50 dark:from-background/80 dark:to-muted/10 backdrop-blur-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-muted/20 rounded-lg flex items-center justify-center">
                   <Brain className="w-6 h-6 text-muted-foreground" />
@@ -1583,7 +1793,7 @@ export default function Home() {
             </div>
             
             {/* Perplexity Research */}
-            <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-background/50">
+            <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white/95 to-gray-50 dark:from-background/80 dark:to-muted/10 backdrop-blur-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-muted/20 rounded-lg flex items-center justify-center">
                   <Search className="w-6 h-6 text-muted-foreground" />
@@ -1602,7 +1812,7 @@ export default function Home() {
             </div>
             
             {/* Community Datasets */}
-            <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-background/50">
+            <div className="p-6 border border-border/50 rounded-xl hover:border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-white/95 to-gray-50 dark:from-background/80 dark:to-muted/10 backdrop-blur-sm">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-muted/20 rounded-lg flex items-center justify-center">
                   <Globe className="w-6 h-6 text-muted-foreground" />
@@ -1642,7 +1852,7 @@ export default function Home() {
       </div>
 
       {/* Professional Client Reports Section */}
-      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-muted/10">
+      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-gradient-to-b from-gray-100 to-background dark:from-muted/10 dark:to-background">
         <div className="max-w-5xl mx-auto">
           <div className="flex justify-center">
             <div className="relative">
@@ -1812,19 +2022,19 @@ export default function Home() {
 
 
       {/* Other sections */}
-       <div className="py-20 sm:py-24 px-8 sm:px-20 bg-muted/10">
-         <div className="flex flex-col items-center">
+       <div className="py-24 sm:py-32 px-8 sm:px-20 bg-gradient-to-b from-background to-gray-100 dark:to-muted/15">
+         <div className="flex flex-col items-center max-w-7xl mx-auto">
            {/* Pricing Section */}
-                       <div 
-              ref={pricingRef}
-              className={`transition-all duration-1000 ease-out ${
-                isPricingInView 
-                  ? 'opacity-100 translate-y-0 scale-100' 
-                  : 'opacity-0 translate-y-20 scale-95'
-              }`}
-            >
-              <PricingSection />
-            </div>
+           <div 
+             ref={pricingRef}
+             className={`transition-all duration-1000 ease-out ${
+               isPricingInView 
+                 ? 'opacity-100 translate-y-0 scale-100' 
+                 : 'opacity-0 translate-y-20 scale-95'
+             }`}
+           >
+             <PricingSection />
+           </div>
 
            {/* Works with Your Automation Stack Section */}
            <div 
@@ -1843,19 +2053,19 @@ export default function Home() {
              </div>
              
              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-               <div className="p-6 border border-border/50 rounded-xl bg-background/50 hover:bg-background hover:border-border transition-all duration-300 hover:scale-105">
+               <div className="p-6 border border-border/50 rounded-xl bg-gradient-to-br from-white/95 to-gray-50 dark:from-background/80 dark:to-muted/10 backdrop-blur-sm hover:bg-background hover:border-border transition-all duration-300 hover:scale-105">
                  <div className="text-lg font-medium mb-2">n8n</div>
                  <div className="text-xs text-muted-foreground">Workflow outputs</div>
                </div>
-               <div className="p-6 border border-border/50 rounded-xl bg-background/50 hover:bg-background hover:border-border transition-all duration-300 hover:scale-105">
+               <div className="p-6 border border-border/50 rounded-xl bg-gradient-to-br from-white/95 to-gray-50 dark:from-background/80 dark:to-muted/10 backdrop-blur-sm hover:bg-background hover:border-border transition-all duration-300 hover:scale-105">
                  <div className="text-lg font-medium mb-2">Make.com</div>
                  <div className="text-xs text-muted-foreground">Scenario results</div>
                </div>
-               <div className="p-6 border border-border/50 rounded-xl bg-background/50 hover:bg-background hover:border-border transition-all duration-300 hover:scale-105">
+               <div className="p-6 border border-border/50 rounded-xl bg-gradient-to-br from-white/95 to-gray-50 dark:from-background/80 dark:to-muted/10 backdrop-blur-sm hover:bg-background hover:border-border transition-all duration-300 hover:scale-105">
                  <div className="text-lg font-medium mb-2">Zapier</div>
                  <div className="text-xs text-muted-foreground">Zap outputs</div>
                </div>
-               <div className="p-6 border border-border/50 rounded-xl bg-background/50 hover:bg-background hover:border-border transition-all duration-300 hover:scale-105">
+               <div className="p-6 border border-border/50 rounded-xl bg-gradient-to-br from-white/95 to-gray-50 dark:from-background/80 dark:to-muted/10 backdrop-blur-sm hover:bg-background hover:border-border transition-all duration-300 hover:scale-105">
                  <div className="text-lg font-medium mb-2">Custom Scripts</div>
                  <div className="text-xs text-muted-foreground">Any JSON/API output</div>
                </div>
@@ -1966,7 +2176,7 @@ export default function Home() {
 
           
           {/* Footer */}
-          <footer className="mt-20 bg-muted/10 border-t border-border/50">
+          <footer className="mt-20 bg-gradient-to-b from-gray-100 to-gray-200 dark:from-muted/15 dark:to-muted/25 border-t border-border/50">
             <div className="max-w-7xl mx-auto px-6 sm:px-12 py-12">
               <div className="grid md:grid-cols-4 gap-8">
                 {/* Logo and Description */}

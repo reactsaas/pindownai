@@ -85,11 +85,20 @@ export function PricingSection() {
      }
   ]
 
-        return (
+  return (
     <div className="w-full">
-      <h2 className="text-xl sm:text-2xl font-medium text-center mb-6 sm:mb-8">
-        Pricing
-      </h2>
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-6">
+          <span>$</span>
+          <span>Pricing</span>
+        </div>
+        <h2 className="text-4xl sm:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent leading-tight">
+          Simple, Transparent Pricing
+        </h2>
+        <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          Choose the plan that fits your team's needs. No hidden fees, no surprises.
+        </p>
+      </div>
       
       {/* Billing Toggle */}
       <div className="flex justify-center mb-8 sm:mb-12">
@@ -211,128 +220,146 @@ export function PricingSection() {
       </div>
 
       {/* Desktop Table Layout */}
-      <div className="hidden lg:block overflow-x-auto pt-8 -mx-4 px-4">
-        <table className="w-full border-collapse min-w-[800px]">
-          <thead>
-            <tr className="border-b border-border/50">
-              <th className="text-left p-2 sm:p-4 font-medium text-muted-foreground text-sm sm:text-base">Plan</th>
-                             <th className="text-center p-2 sm:p-4 font-medium text-muted-foreground text-sm sm:text-base">Starter</th>
-               <th className="text-center p-2 sm:p-4 font-medium text-muted-foreground text-sm sm:text-base">Hobby</th>
-               <th className="text-center p-2 sm:p-4 font-medium text-muted-foreground bg-muted/20 relative text-sm sm:text-base">
-                 Professional
-                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                   <span className="bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
-                     Recommended
-                   </span>
-                 </div>
-               </th>
-               <th className="text-center p-2 sm:p-4 font-medium text-muted-foreground text-sm sm:text-base">Teams</th>
-               <th className="text-center p-2 sm:p-4 font-medium text-muted-foreground text-sm sm:text-base">Social Media</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Price Row */}
-            <tr className="border-b border-border/30">
-              <td className="p-2 sm:p-4 font-medium text-sm sm:text-base">Price</td>
-              {plans.map((plan) => (
-                <td key={plan.name} className={`text-center p-2 sm:p-4 ${plan.featured ? 'bg-muted/20' : ''}`}>
-                  <div className="text-base sm:text-lg font-mono font-medium">
-                    {isAnnual ? plan.annualMonthlyPrice : plan.monthlyPrice}
-                  </div>
-                  {plan.annualMonthlyPrice === "FREE" ? (
-                    <div className="text-xs text-muted-foreground/70 mt-1">
-                      forever
+      <div className="hidden lg:block overflow-x-auto pt-8">
+        <div className="relative">
+          {/* Recommended Badge - Positioned above container, centered over Professional column */}
+          <div className="absolute -top-3 z-10" style={{left: 'calc(50% + 10px)'}}>
+            <span className="bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-medium shadow-sm transform -translate-x-1/2">
+              Recommended
+            </span>
+          </div>
+          
+          <div className="bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-background/90 dark:to-muted/20 rounded-2xl border border-border/50 shadow-lg backdrop-blur-sm overflow-hidden">
+            <table className="w-full border-collapse min-w-[900px]">
+              <thead>
+                <tr className="border-b border-border/50 bg-muted/5">
+                  <th className="text-left p-4 font-semibold text-foreground">Plan</th>
+                  <th className="text-center p-4 font-semibold text-foreground">Starter</th>
+                  <th className="text-center p-4 font-semibold text-foreground">Hobby</th>
+                  <th className="text-center p-4 font-semibold text-foreground bg-primary/5 relative">
+                    Professional
+                  </th>
+                  <th className="text-center p-4 font-semibold text-foreground">Teams</th>
+                  <th className="text-center p-4 font-semibold text-foreground">Social Media</th>
+                </tr>
+              </thead>
+            <tbody>
+              {/* Price Row */}
+              <tr className="border-b border-border/30">
+                <td className="p-4 font-semibold text-foreground">Price</td>
+                {plans.map((plan) => (
+                  <td key={plan.name} className={`text-center p-4 ${plan.featured ? 'bg-primary/5' : ''}`}>
+                    <div className="text-xl font-bold text-primary mb-1">
+                      {isAnnual ? plan.annualMonthlyPrice : plan.monthlyPrice}
                     </div>
-                  ) : isAnnual ? (
-                    <div className="text-xs text-muted-foreground/70 mt-1">
-                      paid annually
+                    {plan.annualMonthlyPrice === "FREE" ? (
+                      <div className="text-xs text-muted-foreground">
+                        forever
+                      </div>
+                    ) : isAnnual ? (
+                      <div className="text-xs text-muted-foreground">
+                        paid annually
+                      </div>
+                    ) : (
+                      <div className="text-xs text-muted-foreground">
+                        paid monthly
+                      </div>
+                    )}
+                  </td>
+                ))}
+              </tr>
+            
+              {/* Pins Row */}
+              <tr className="border-b border-border/30">
+                <td className="p-4 font-semibold text-foreground">Pins</td>
+                {plans.map((plan) => (
+                  <td key={plan.name} className={`text-center p-4 ${plan.featured ? 'bg-primary/5' : ''}`}>
+                    <span className="font-medium">
+                      {plan.features.find(f => f.includes('pins'))?.replace(' pins', '') || '-'}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+              
+              {/* Pinboards Row */}
+              <tr className="border-b border-border/30">
+                <td className="p-4 font-semibold text-foreground">Pinboards</td>
+                {plans.map((plan) => (
+                  <td key={plan.name} className={`text-center p-4 ${plan.featured ? 'bg-primary/5' : ''}`}>
+                    <span className="font-medium">
+                      {plan.features.find(f => f.includes('pinboard'))?.replace(' pinboard', '').replace('s', '') || '-'}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+              
+              {/* Updates Row */}
+              <tr className="border-b border-border/30">
+                <td className="p-4 font-semibold text-foreground">Updates</td>
+                {plans.map((plan) => (
+                  <td key={plan.name} className={`text-center p-4 ${plan.featured ? 'bg-primary/5' : ''}`}>
+                    <span className="font-medium">
+                      {plan.features.find(f => f.includes('update') || f.includes('Live') || f.includes('once')) || '-'}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+              
+              {/* API Access Row */}
+              <tr className="border-b border-border/30">
+                <td className="p-4 font-semibold text-foreground">API Access</td>
+                {plans.map((plan) => (
+                  <td key={plan.name} className={`text-center p-4 ${plan.featured ? 'bg-primary/5' : ''}`}>
+                    <span className="font-medium">
+                      {plan.features.find(f => f.includes('API')) || '-'}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+              
+              {/* Document Intelligence Row */}
+              <tr className="border-b border-border/30">
+                <td className="p-4 font-semibold text-foreground">Document Intelligence</td>
+                {plans.map((plan) => (
+                  <td key={plan.name} className={`text-center p-4 ${plan.featured ? 'bg-primary/5' : ''}`}>
+                    <span className="font-medium">
+                      {plan.features.find(f => f.includes('document intelligence')) || '-'}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+              
+              {/* Research Row */}
+              <tr className="border-b border-border/30">
+                <td className="p-4 font-semibold text-foreground">Research</td>
+                {plans.map((plan) => (
+                  <td key={plan.name} className={`text-center p-4 ${plan.featured ? 'bg-primary/5' : ''}`}>
+                    <span className="font-medium">
+                      {plan.features.find(f => f.includes('research')) || '-'}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+            
+              {/* Additional Features Row */}
+              <tr>
+                <td className="p-4 font-semibold text-foreground">Additional Features</td>
+                {plans.map((plan) => (
+                  <td key={plan.name} className={`text-center p-4 ${plan.featured ? 'bg-primary/5' : ''}`}>
+                    <div className="text-sm text-muted-foreground space-y-2">
+                      {plan.features
+                        .filter(f => !f.includes('pins') && !f.includes('pinboard') && !f.includes('update') && !f.includes('API') && !f.includes('document intelligence') && !f.includes('research'))
+                        .map((feature, index) => (
+                          <div key={index} className="text-sm">{feature}</div>
+                        ))}
                     </div>
-                  ) : (
-                    <div className="text-xs text-muted-foreground/70 mt-1">
-                      paid monthly
-                    </div>
-                  )}
-                </td>
-              ))}
-            </tr>
-            
-            {/* Pins Row */}
-            <tr className="border-b border-border/30">
-              <td className="p-2 sm:p-4 font-medium text-sm sm:text-base">Pins</td>
-              {plans.map((plan) => (
-                <td key={plan.name} className={`text-center p-2 sm:p-4 text-sm sm:text-base ${plan.featured ? 'bg-muted/20' : ''}`}>
-                  {plan.features.find(f => f.includes('pins'))?.replace(' pins', '') || '-'}
-                </td>
-              ))}
-            </tr>
-            
-            {/* Pinboards Row */}
-            <tr className="border-b border-border/30">
-              <td className="p-2 sm:p-4 font-medium text-sm sm:text-base">Pinboards</td>
-              {plans.map((plan) => (
-                <td key={plan.name} className={`text-center p-2 sm:p-4 text-sm sm:text-base ${plan.featured ? 'bg-muted/20' : ''}`}>
-                  {plan.features.find(f => f.includes('pinboard'))?.replace(' pinboard', '').replace('s', '') || '-'}
-                </td>
-              ))}
-            </tr>
-            
-                         {/* Updates Row */}
-             <tr className="border-b border-border/30">
-               <td className="p-2 sm:p-4 font-medium text-sm sm:text-base">Updates</td>
-               {plans.map((plan) => (
-                 <td key={plan.name} className={`text-center p-2 sm:p-4 text-sm sm:text-base ${plan.featured ? 'bg-muted/20' : ''}`}>
-                   {plan.features.find(f => f.includes('update') || f.includes('Live') || f.includes('once')) || '-'}
-                 </td>
-               ))}
-             </tr>
-            
-                         {/* API Access Row */}
-             <tr className="border-b border-border/30">
-               <td className="p-2 sm:p-4 font-medium text-sm sm:text-base">API Access</td>
-               {plans.map((plan) => (
-                 <td key={plan.name} className={`text-center p-2 sm:p-4 text-sm sm:text-base ${plan.featured ? 'bg-muted/20' : ''}`}>
-                   {plan.features.find(f => f.includes('API')) || '-'}
-                 </td>
-               ))}
-             </tr>
-             
-             {/* Document Intelligence Row */}
-             <tr className="border-b border-border/30">
-               <td className="p-2 sm:p-4 font-medium text-sm sm:text-base">Document Intelligence</td>
-               {plans.map((plan) => (
-                 <td key={plan.name} className={`text-center p-2 sm:p-4 text-sm sm:text-base ${plan.featured ? 'bg-muted/20' : ''}`}>
-                   {plan.features.find(f => f.includes('document intelligence')) || '-'}
-                 </td>
-               ))}
-             </tr>
-             
-             {/* Research Row */}
-             <tr className="border-b border-border/30">
-               <td className="p-2 sm:p-4 font-medium text-sm sm:text-base">Research</td>
-               {plans.map((plan) => (
-                 <td key={plan.name} className={`text-center p-2 sm:p-4 text-sm sm:text-base ${plan.featured ? 'bg-muted/20' : ''}`}>
-                   {plan.features.find(f => f.includes('research')) || '-'}
-                 </td>
-               ))}
-             </tr>
-            
-            {/* Additional Features Row */}
-            <tr>
-              <td className="p-2 sm:p-4 font-medium text-sm sm:text-base">Additional Features</td>
-              {plans.map((plan) => (
-                <td key={plan.name} className={`text-center p-2 sm:p-4 ${plan.featured ? 'bg-muted/20' : ''}`}>
-                  <div className="text-xs sm:text-sm text-muted-foreground space-y-1">
-                                         {plan.features
-                       .filter(f => !f.includes('pins') && !f.includes('pinboard') && !f.includes('update') && !f.includes('API') && !f.includes('document intelligence') && !f.includes('research'))
-                       .map((feature, index) => (
-                        <div key={index} className="text-xs">{feature}</div>
-                      ))}
-                  </div>
-                </td>
-              ))}
-            </tr>
-          </tbody>
-        </table>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
       </div>
     </div>
   )
