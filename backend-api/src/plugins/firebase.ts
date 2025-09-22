@@ -290,7 +290,7 @@ const firebasePlugin: FastifyPluginAsync = async (fastify: FastifyInstance<ZodTy
     async createPinboard(pinboardData: any): Promise<string> {
       const pinboardRef = db.ref('pin_boards').push();
       const firebaseId = pinboardRef.key!;
-      const pinboardId = `pb-${firebaseId}`;
+      const pinboardId = `pb${firebaseId}`; // Remove extra dash to avoid pb--N123...
       
       const pinboardWithId = {
         ...pinboardData,

@@ -32,9 +32,10 @@ interface SharePopoverProps {
   templateName?: string
   isTemplate?: boolean
   isPublished?: boolean
+  isPinboard?: boolean
 }
 
-export function SharePopover({ templateId, templateName, isTemplate = false, isPublished = false }: SharePopoverProps) {
+export function SharePopover({ templateId, templateName, isTemplate = false, isPublished = false, isPinboard = false }: SharePopoverProps) {
   const { user, getAuthToken } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
@@ -45,7 +46,7 @@ export function SharePopover({ templateId, templateName, isTemplate = false, isP
     allowComments: true
   })
 
-  const shareUrl = `${window.location.origin}/share/pin/${templateId || 'template-123'}`
+  const shareUrl = `${window.location.origin}/share/${isPinboard ? 'pinboard' : 'pin'}/${templateId || 'template-123'}`
   const embedCode = `<iframe src="${shareUrl}/embed" width="100%" height="600"></iframe>`
 
   // Update publish status when prop changes
@@ -68,7 +69,12 @@ export function SharePopover({ templateId, templateName, isTemplate = false, isP
       const token = await getAuthToken()
       const endpoint = publishStatus ? 'unpublish' : 'publish'
       
-      const response = await fetch(`http://localhost:8000/api/pins/${templateId}/${endpoint}`, {
+      // Use different API endpoints for pinboards vs pins
+      const apiEndpoint = isPinboard 
+        ? `http://localhost:8000/api/pinboards/${templateId}/${endpoint}`
+        : `http://localhost:8000/api/pins/${templateId}/${endpoint}`
+      
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -78,16 +84,18 @@ export function SharePopover({ templateId, templateName, isTemplate = false, isP
       })
 
       if (!response.ok) {
-        throw new Error(`Failed to ${endpoint} pin`)
+        throw new Error(`Failed to ${endpoint} ${isPinboard ? 'pinboard' : 'pin'}`)
       }
 
       const newStatus = !publishStatus
       setPublishStatus(newStatus)
       
-      toast.success(newStatus ? 'Pin published successfully!' : 'Pin unpublished successfully!')
+      const itemType = isPinboard ? 'Pinboard' : 'Pin'
+      toast.success(newStatus ? `${itemType} published successfully!` : `${itemType} unpublished successfully!`)
     } catch (error) {
-      console.error(`Error ${publishStatus ? 'unpublishing' : 'publishing'} pin:`, error)
-      toast.error(`Failed to ${publishStatus ? 'unpublish' : 'publish'} pin`)
+      console.error(`Error ${publishStatus ? 'unpublishing' : 'publishing'} ${isPinboard ? 'pinboard' : 'pin'}:`, error)
+      const itemType = isPinboard ? 'pinboard' : 'pin'
+      toast.error(`Failed to ${publishStatus ? 'unpublish' : 'publish'} ${itemType}`)
     } finally {
       setIsPublishing(false)
     }
@@ -104,8 +112,9 @@ export function SharePopover({ templateId, templateName, isTemplate = false, isP
   }
 
   const shareViaEmail = () => {
-    const subject = encodeURIComponent(`Check out this ${isTemplate ? 'template' : 'block'}: ${templateName || 'Untitled'}`)
-    const body = encodeURIComponent(`I wanted to share this ${isTemplate ? 'template' : 'block'} with you:\n\n${shareUrl}`)
+    const itemType = isPinboard ? 'pinboard' : isTemplate ? 'template' : 'block'
+    const subject = encodeURIComponent(`Check out this ${itemType}: ${templateName || 'Untitled'}`)
+    const body = encodeURIComponent(`I wanted to share this ${itemType} with you:\n\n${shareUrl}`)
     window.open(`mailto:?subject=${subject}&body=${body}`)
   }
 
@@ -121,7 +130,7 @@ export function SharePopover({ templateId, templateName, isTemplate = false, isP
         <div className="p-4 border-b flex-shrink-0">
           <h4 className="font-semibold text-sm flex items-center gap-2">
             <Share className="h-4 w-4" />
-            Share {isTemplate ? "Template" : "Block"}
+            Share {isPinboard ? "Pinboard" : isTemplate ? "Template" : "Block"}
           </h4>
           {templateName && (
             <p className="text-xs text-muted-foreground mt-1">{templateName}</p>
@@ -210,10 +219,10 @@ export function SharePopover({ templateId, templateName, isTemplate = false, isP
                     <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 mt-0.5" />
                     <div>
                       <p className="text-xs font-medium text-yellow-800 dark:text-yellow-200">
-                        Private Pin
+                        Private {isPinboard ? 'Pinboard' : 'Pin'}
                       </p>
                       <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
-                        This pin is only visible to you. Enable public viewing to share it with others.
+                        This {isPinboard ? 'pinboard' : 'pin'} is only visible to you. Enable public viewing to share it with others.
                       </p>
                     </div>
                   </div>
@@ -291,7 +300,7 @@ export function SharePopover({ templateId, templateName, isTemplate = false, isP
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Embed this {isTemplate ? 'template' : 'block'} in your website or documentation.
+                Embed this {isPinboard ? 'pinboard' : isTemplate ? 'template' : 'block'} in your website or documentation.
               </p>
             </div>
           </div>

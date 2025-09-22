@@ -11,6 +11,7 @@ import { Card, CardContent } from './ui/card';
 import { Search, Check, X, GripVertical } from 'lucide-react';
 import { useAuth } from '../lib/auth-context';
 import { Pinboard } from '../types/pinboard';
+import { SharePopover } from './share-popover';
 
 interface Pin {
   id: string;
@@ -153,9 +154,17 @@ export const PinboardPinsModal: React.FC<PinboardPinsModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[80vw] max-w-[80vw] sm:max-w-[80vw] max-h-[90vh] flex flex-col">
+      <DialogContent className="w-[80vw] max-w-[80vw] sm:max-w-[80vw] max-h-[90vh] flex flex-col" showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle>Manage Pins in "{pinboard.name}"</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle>Manage Pins in "{pinboard.name}"</DialogTitle>
+            <SharePopover 
+              templateId={pinboard.id}
+              templateName={pinboard.name}
+              isTemplate={false}
+              isPublished={pinboard.is_public}
+            />
+          </div>
         </DialogHeader>
 
         {/* Search */}

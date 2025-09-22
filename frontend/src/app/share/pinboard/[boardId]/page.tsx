@@ -407,14 +407,82 @@ export default function SharePinboardPage() {
   const params = useParams()
   const router = useRouter()
   const boardId = params.boardId as string
-  const [pinboard, setPinboard] = useState<Pinboard | null>(null)
+  const [pinboard, setPinboard] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // In real app, this would be an API call
-    const foundPinboard = mockPinboards.find(b => b.id === boardId)
-    setPinboard(foundPinboard || null)
-    setIsLoading(false)
+    const fetchPinboard = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        
+        const response = await fetch(`http://localhost:8000/api/pinboards/${boardId}`)
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            setError('Pinboard not found')
+          } else {
+            setError('Failed to load pinboard')
+          }
+          return
+        }
+
+        const data = await response.json()
+        const pinboardData = data.data
+        
+        // Fetch the actual pins for this pinboard
+        if (pinboardData.pins && pinboardData.pins.length > 0) {
+          const pinsPromises = pinboardData.pins.map(async (pinId: string) => {
+            try {
+              const pinResponse = await fetch(`http://localhost:8000/api/pins/${pinId}`)
+              if (pinResponse.ok) {
+                const pinData = await pinResponse.json()
+                return {
+                  id: pinData.data.id,
+                  name: pinData.data.metadata?.title || 'Untitled Pin',
+                  type: "automation" as const,
+                  description: pinData.data.metadata?.description || '',
+                  content: pinData.data.content || '',
+                  lastModified: new Date(pinData.data.metadata?.created_at || Date.now()).toLocaleDateString(),
+                  createdAt: new Date(pinData.data.metadata?.created_at || Date.now()).toLocaleDateString(),
+                  author: pinData.data.metadata?.created_by || 'Unknown',
+                  views: Math.floor(Math.random() * 1000), // Mock views for now
+                  metadata: {
+                    category: pinData.data.metadata?.category,
+                    tags: pinData.data.metadata?.tags || []
+                  }
+                }
+              }
+              return null
+            } catch (err) {
+              console.error(`Error fetching pin ${pinId}:`, err)
+              return null
+            }
+          })
+          
+          const pins = (await Promise.all(pinsPromises)).filter(Boolean)
+          setPinboard({
+            ...pinboardData,
+            pins
+          })
+        } else {
+          setPinboard({
+            ...pinboardData,
+            pins: []
+          })
+        }
+      } catch (err) {
+        console.error('Error fetching pinboard:', err)
+        setError('Failed to load pinboard')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (boardId) {
+      fetchPinboard()
+    }
   }, [boardId])
 
   if (isLoading) {
@@ -425,12 +493,12 @@ export default function SharePinboardPage() {
     )
   }
 
-  if (!pinboard) {
+  if (error || !pinboard) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center space-y-4">
           <h1 className="text-2xl font-bold">Pinboard not found</h1>
-          <p className="text-muted-foreground">The pinboard you&apos;re looking for doesn&apos;t exist or has been removed.</p>
+          <p className="text-muted-foreground">{error || "The pinboard you're looking for doesn't exist or has been removed."}</p>
         </div>
       </div>
     )
@@ -553,15 +621,15 @@ export default function SharePinboardPage() {
             <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <User className="h-4 w-4" />
-                <span>{pinboard.author}</span>
+                <span>{pinboard.user_id || 'Unknown User'}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="h-4 w-4" />
-                <span>{pinboard.createdAt}</span>
+                <span>{new Date(pinboard.created_at).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center gap-1">
                 <Eye className="h-4 w-4" />
-                <span>{pinboard.views.toLocaleString()} views</span>
+                <span>{pinboard.is_public ? 'Public Pinboard' : 'Private Pinboard'}</span>
               </div>
             </div>
           </div>

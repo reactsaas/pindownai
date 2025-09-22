@@ -29,7 +29,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PinboardModal } from "@/components/pinboard-modal";
-import { PinboardPinsModal } from "@/components/pinboard-pins-modal";
 import { usePinboard } from "@/lib/pinboard-context";
 import { Pinboard } from "@/types/pinboard";
 
@@ -39,7 +38,6 @@ export default function PinboardPage() {
   const [selectedFilter, setSelectedFilter] = useState<string>("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingPinboard, setEditingPinboard] = useState<Pinboard | null>(null);
-  const [managingPinboard, setManagingPinboard] = useState<Pinboard | null>(null);
 
   // Filter pinboards based on search and filter
   const filteredPinboards = pinboards.filter(pinboard => {
@@ -65,22 +63,15 @@ export default function PinboardPage() {
   };
 
   const handleEditPinboard = (pinboard: Pinboard) => {
-    setManagingPinboard(pinboard);
+    // Navigate to the pinboard detail page
+    window.location.href = `/pinboard/${pinboard.id}`;
   };
 
   const handleCloseModal = () => {
     setIsAddModalOpen(false);
     setEditingPinboard(null);
-    setManagingPinboard(null);
   };
 
-  const handleSavePinboardPins = async (updatedPinboard: Pinboard) => {
-    try {
-      await updatePinboard(updatedPinboard.id, updatedPinboard);
-    } catch (error) {
-      console.error("Failed to update pinboard:", error);
-    }
-  };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -92,13 +83,8 @@ export default function PinboardPage() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'draft': return 'bg-yellow-100 text-yellow-800';
-      case 'archived': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-blue-100 text-blue-800';
-    }
+  const getStatusColor = () => {
+    return "bg-muted text-muted-foreground"
   };
 
   const formatDate = (dateString: string) => {
@@ -193,7 +179,7 @@ export default function PinboardPage() {
         >
           <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
             <div className="w-12 h-12 bg-muted/30 rounded-full flex items-center justify-center mb-4 group-hover:bg-muted/50 transition-colors">
-              <Plus className="w-6 h-6 text-muted-foreground" />
+              <Grid3X3 className="w-6 h-6 text-muted-foreground" />
             </div>
             <h3 className="font-medium text-sm mb-1">Create New Pinboard</h3>
             <p className="text-xs text-muted-foreground text-center">
@@ -210,10 +196,10 @@ export default function PinboardPage() {
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-muted/20 rounded-full flex items-center justify-center">
-                      <Grid3X3 className="w-5 h-5 text-muted-foreground" />
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-200">
+                      <Grid3X3 className="w-5 h-5 text-primary" />
                     </div>
-                    <Badge variant="secondary" className={getStatusColor(pinboard.is_public ? 'public' : 'private')}>
+                    <Badge variant="secondary" className={getStatusColor()}>
                       {pinboard.is_public ? 'Public' : 'Private'}
                     </Badge>
                   </div>
@@ -313,14 +299,6 @@ export default function PinboardPage() {
         />
       )}
 
-      {managingPinboard && (
-        <PinboardPinsModal
-          isOpen={!!managingPinboard}
-          onClose={handleCloseModal}
-          pinboard={managingPinboard}
-          onSave={handleSavePinboardPins}
-        />
-      )}
     </div>
   );
 }

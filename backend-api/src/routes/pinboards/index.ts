@@ -145,8 +145,8 @@ export async function pinboardRoutes(fastify: FastifyInstance) {
       }
       
       const response = createSuccessResponse(
-        'Pinboard retrieved successfully',
-        pinboard
+        pinboard,
+        'Pinboard retrieved successfully'
       );
       
       return reply.code(200).send(response);
@@ -384,6 +384,114 @@ export async function pinboardRoutes(fastify: FastifyInstance) {
       return reply.code(500).send({
         error: 'Failed to remove pin from pinboard',
         message: 'PINBOARD_PIN_REMOVE_ERROR'
+      });
+    }
+  });
+
+  // POST /api/pinboards/:pinboardId/publish - Publish pinboard
+  fastify.post('/api/pinboards/:pinboardId/publish', {
+    preHandler: fastify.authenticate,
+    schema: {
+      description: 'Publish pinboard',
+      tags: ['Pinboards'],
+      params: pinboardIdParamSchema,
+      response: {
+        200: z.object({
+          success: z.boolean(),
+          message: z.string(),
+          timestamp: z.string()
+        }),
+        404: errorResponseSchema,
+        403: errorResponseSchema,
+        500: errorResponseSchema
+      }
+    }
+  }, async (request, reply) => {
+    try {
+      const user = request.user!;
+      const { pinboardId } = request.params as PinboardIdParams;
+      
+      // Check if pinboard exists and user owns it
+      const existingPinboard = await (fastify as any).firebase.getPinboard(pinboardId);
+      
+      if (!existingPinboard) {
+        return reply.code(404).send({
+          error: 'Pinboard not found',
+          message: 'PINBOARD_NOT_FOUND'
+        });
+      }
+      
+      if (existingPinboard.user_id !== user.user_id) {
+        return reply.code(403).send({
+          error: 'Access denied to this pinboard',
+          message: 'PINBOARD_ACCESS_DENIED'
+        });
+      }
+      
+      await (fastify as any).firebase.updatePinboard(pinboardId, { is_public: true });
+      
+      const response = createSuccessResponse('Pinboard published successfully');
+      
+      return reply.code(200).send(response);
+    } catch (error) {
+      fastify.log.error(`Error publishing pinboard: ${error}`);
+      return reply.code(500).send({
+        error: 'Failed to publish pinboard',
+        message: 'PINBOARD_PUBLISH_ERROR'
+      });
+    }
+  });
+
+  // POST /api/pinboards/:pinboardId/unpublish - Unpublish pinboard
+  fastify.post('/api/pinboards/:pinboardId/unpublish', {
+    preHandler: fastify.authenticate,
+    schema: {
+      description: 'Unpublish pinboard',
+      tags: ['Pinboards'],
+      params: pinboardIdParamSchema,
+      response: {
+        200: z.object({
+          success: z.boolean(),
+          message: z.string(),
+          timestamp: z.string()
+        }),
+        404: errorResponseSchema,
+        403: errorResponseSchema,
+        500: errorResponseSchema
+      }
+    }
+  }, async (request, reply) => {
+    try {
+      const user = request.user!;
+      const { pinboardId } = request.params as PinboardIdParams;
+      
+      // Check if pinboard exists and user owns it
+      const existingPinboard = await (fastify as any).firebase.getPinboard(pinboardId);
+      
+      if (!existingPinboard) {
+        return reply.code(404).send({
+          error: 'Pinboard not found',
+          message: 'PINBOARD_NOT_FOUND'
+        });
+      }
+      
+      if (existingPinboard.user_id !== user.user_id) {
+        return reply.code(403).send({
+          error: 'Access denied to this pinboard',
+          message: 'PINBOARD_ACCESS_DENIED'
+        });
+      }
+      
+      await (fastify as any).firebase.updatePinboard(pinboardId, { is_public: false });
+      
+      const response = createSuccessResponse('Pinboard unpublished successfully');
+      
+      return reply.code(200).send(response);
+    } catch (error) {
+      fastify.log.error(`Error unpublishing pinboard: ${error}`);
+      return reply.code(500).send({
+        error: 'Failed to unpublish pinboard',
+        message: 'PINBOARD_UNPUBLISH_ERROR'
       });
     }
   });

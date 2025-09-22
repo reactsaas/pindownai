@@ -7,7 +7,6 @@ import { AddPinModal } from "@/components/add-pin-modal"
 import { useAuth } from "@/lib/auth-context"
 import { usePins } from "@/lib/pins-context"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
 
 interface Pin {
   id: string
@@ -313,17 +312,11 @@ export default function PinsPage() {
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="flex-shrink-0 p-6 border-b border-border bg-card">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Your Pins</h1>
-            <p className="text-muted-foreground">
-              {pins.length} {pins.length === 1 ? 'pin' : 'pins'} total
-            </p>
-          </div>
-          <Button onClick={() => setIsAddModalOpen(true)}>
-            <Plus className="w-4 h-4 mr-2" />
-            Create Pin
-          </Button>
+        <div>
+          <h1 className="text-2xl font-bold">Your Pins</h1>
+          <p className="text-muted-foreground">
+            {pins.length} {pins.length === 1 ? 'pin' : 'pins'} total
+          </p>
         </div>
       </div>
 
