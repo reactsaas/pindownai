@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { ArrowLeft, Grid3X3, Search, Check, X, GripVertical, Plus, Save } from "lucide-react"
+import { ArrowLeft, Grid3X3, Search, Check, X, GripVertical, Plus, Save, ExternalLink } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
@@ -273,13 +273,25 @@ export default function PinboardDetailPage() {
                 <h2 className="font-semibold truncate text-sm">{pinboard.name}</h2>
               </div>
             </div>
-            <SharePopover 
-              templateId={pinboard.id}
-              templateName={pinboard.name}
-              isTemplate={false}
-              isPinboard={true}
-              isPublished={pinboard.is_public}
-            />
+            <div className="flex items-center gap-2">
+              <SharePopover 
+                templateId={pinboard.id}
+                templateName={pinboard.name}
+                isTemplate={false}
+                isPinboard={true}
+                isPublished={pinboard.is_public}
+              />
+              <a
+                href={`/share/pinboard/${pinboard.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" size="sm" className="h-9 px-3 cursor-pointer">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Visit
+                </Button>
+              </a>
+            </div>
           </div>
           
           {/* Second row: Action buttons */}
@@ -334,6 +346,16 @@ export default function PinboardDetailPage() {
               isPinboard={true}
               isPublished={pinboard.is_public}
             />
+            <a
+              href={`/share/pinboard/${pinboard.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="outline" className="h-9 px-3 cursor-pointer">
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Visit
+              </Button>
+            </a>
             <div className="flex items-center gap-2">
               <Button variant="outline" onClick={handleBack}>
                 Cancel

@@ -9,7 +9,9 @@ import { pinRoutes } from './routes/pins/index';
 import { pinboardRoutes } from './routes/pinboards/index';
 import { workflowDataRoutes } from './routes/workflow-data';
 import { authRoutes } from './routes/auth';
+import { userRoutes } from './routes/users';
 import { publicPinRoutes } from './routes/public/pins';
+import { publicPinboardRoutes } from './routes/public/pinboards';
 
 // Load environment variables
 dotenv.config();
@@ -60,7 +62,9 @@ async function registerRoutes() {
   await server.register(pinboardRoutes);
   await server.register(workflowDataRoutes);
   await server.register(authRoutes);
+  await server.register(userRoutes);
   await server.register(publicPinRoutes);
+  await server.register(publicPinboardRoutes);
   
   // Basic routes with Swagger schemas
   server.get('/', {

@@ -9,6 +9,8 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
 import 'katex/dist/katex.min.css'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -33,19 +35,22 @@ interface Pin {
   id: string
   metadata: {
     title: string
-  description: string
+    description: string
     tags: string[]
     created_at: string
     updated_at: string
+    is_public?: boolean
   }
   blocks: Array<{
     id: string
-    name: stringw
+    name: string
     type: 'markdown' | 'mermaid' | 'conditional' | 'image' | 'image-steps'
     template: string
     order: number
     updated_at: string
   }>
+  type?: string
+  content?: string
 }
 
 
@@ -365,6 +370,8 @@ function AskAI({ pinContent }: { pinContent: string }) {
 export default function SharePinPage() {
   const params = useParams()
   const pinId = params.pinId as string
+  const { getAuthToken } = useAuth()
+  const { theme } = useTheme()
   const [pin, setPin] = useState<Pin | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -376,7 +383,21 @@ export default function SharePinPage() {
         setIsLoading(true)
         setError(null)
         
-        const response = await fetch(`http://localhost:8000/api/public/pins/${pinId}`)
+        // Get auth token if user is logged in
+        const token = await getAuthToken()
+        
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json'
+        }
+        
+        // Add auth header if token exists
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`
+        }
+        
+        const response = await fetch(`http://localhost:8000/api/public/pins/${pinId}`, {
+          headers
+        })
         
         if (response.status === 404) {
           setError('Pin not found or is private')
@@ -400,7 +421,7 @@ export default function SharePinPage() {
     if (pinId) {
       fetchPinData()
     }
-  }, [pinId])
+  }, [pinId, getAuthToken])
 
   if (isLoading) {
     return (
@@ -534,11 +555,13 @@ export default function SharePinPage() {
               </a>
             </div>
             <div className="flex items-center space-x-3">
-              <Badge variant="secondary" className={cn("flex items-center gap-1", getTypeColor(pin.type))}>
-                {getTypeIcon(pin.type)}
-                {getTypeLabel(pin.type)}
-              </Badge>
-              <AskAI pinContent={pin.content} />
+              {pin.type && (
+                <Badge variant="secondary" className={cn("flex items-center gap-1", getTypeColor(pin.type))}>
+                  {getTypeIcon(pin.type)}
+                  {getTypeLabel(pin.type)}
+                </Badge>
+              )}
+              <AskAI pinContent={pin.blocks.map(b => b.template).join('\n\n')} />
               <Button
                 onClick={() => setIsTocVisible(!isTocVisible)}
                 variant="ghost"
@@ -576,6 +599,10 @@ export default function SharePinPage() {
                 <div className="flex items-center gap-1">
                   <FileText className="h-4 w-4" />
                   <span>{pin.blocks.length} block{pin.blocks.length !== 1 ? 's' : ''}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Globe className="h-4 w-4" />
+                  <span>{pin.metadata.is_public ? 'Public' : 'Private'}</span>
                 </div>
               </div>
 
@@ -646,11 +673,24 @@ export default function SharePinPage() {
                       {children}
                     </td>
                   ),
-                  code: ({ children }) => (
-                    <code className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-1.5 py-0.5 rounded text-sm font-mono">
-                      {children}
-                    </code>
-                  ),
+                  code: ({ node, inline, className, children, ...props }) => {
+                    const match = /language-(\w+)/.exec(className || '')
+                    return !inline && match ? (
+                      <SyntaxHighlighter
+                        style={theme === 'dark' ? oneDark : oneLight}
+                        language={match[1]}
+                        PreTag="div"
+                        className="rounded-lg my-4"
+                        {...props}
+                      >
+                        {String(children).replace(/\n$/, '')}
+                      </SyntaxHighlighter>
+                    ) : (
+                      <code className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                        {children}
+                      </code>
+                    )
+                  },
                   pre: ({ children }) => (
                     <pre className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 p-4 rounded-lg overflow-x-auto my-4 shadow-sm [&_*]:bg-transparent [&_*]:!bg-transparent [&_code]:bg-transparent [&_code]:p-0 [&_span]:bg-transparent [&_span]:!bg-transparent">
                       {children}

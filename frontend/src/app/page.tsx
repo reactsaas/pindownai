@@ -731,6 +731,7 @@ function DataAnalysis() {
 
 function InformationHub() {
   const [hubData, setHubData] = useState({
+    category: "Mixed Information",
     items: [
       { type: "task", title: "Review Q4 metrics", status: "pending", priority: "high", time: "Due today" },
       { type: "metric", title: "Project Progress", value: "78%", trend: "On track", icon: "●" },
@@ -861,7 +862,7 @@ function InformationHub() {
             )}
             
             <div className="text-xs text-muted-foreground">
-              <LiveValue value={item.trend || item.time || item.priority} />
+              <LiveValue value={(item.trend || item.time || item.priority) ?? ""} />
             </div>
           </div>
         ))}
@@ -986,13 +987,24 @@ export default function Home() {
             
             {/* Navigation Links */}
             <div className="hidden md:flex items-center gap-8">
-              <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <button 
+                onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              >
                 Features
-              </Link>
-              <Link href="#pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              </button>
+              <button 
+                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+              >
                 Pricing
-              </Link>
-              <Link href="#docs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              </button>
+              <Link 
+                href={process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://docs.pindown.ai'} 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
                 Docs
               </Link>
             </div>
@@ -1062,7 +1074,7 @@ export default function Home() {
               </h1>
             </div>
             <p className="text-xl sm:text-2xl text-center text-muted-foreground max-w-3xl leading-relaxed font-light">
-              <span className="text-foreground font-semibold">Pin down your data.</span> Transform your automation outputs into 
+              Transform your data into 
               <span className="text-primary font-semibold"> beautiful reports</span>, 
               <span className="text-primary font-semibold"> engaging articles</span> and 
               <span className="text-primary font-semibold"> insightful pages</span> that everyone can understand and share.
@@ -1079,9 +1091,11 @@ export default function Home() {
              <Pin className="w-4 h-4 rotate-45 relative z-10" />
              <span className="relative z-10 font-semibold">Get Started</span>
            </Link>
-            <Link
-              href="/chat"
-              className="group relative rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-all duration-300 flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent hover:scale-105 hover:shadow-md text-sm sm:text-base h-12 sm:h-14 px-6 sm:px-8"
+                                    <Link
+              href={process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://docs.pindown.ai'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-all duration-300 flex items-center justify-center bg-[#f2f2f2] dark:bg-[#1a1a1a] hover:bg-[#eaeaea] dark:hover:bg-[#151515] hover:border-transparent hover:scale-105 hover:shadow-md text-sm sm:text-base h-12 sm:h-14 px-6 sm:px-8"
             >
               <MessageSquare className="w-4 h-4 mr-2 transition-transform duration-300 group-hover:scale-110" />
               <span className="font-medium">View Docs</span>
@@ -1230,7 +1244,7 @@ export default function Home() {
       </div>
 
       {/* UI Layer for AI Automations Section */}
-      <div className="py-24 sm:py-32 px-6 sm:px-12 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-muted/10 dark:to-muted/20">
+      <div id="features" className="py-24 sm:py-32 px-6 sm:px-12 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-muted/10 dark:to-muted/20">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Content */}
@@ -1736,7 +1750,7 @@ export default function Home() {
      </div>
 
       {/* Data Management & Research Section */}
-      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-gradient-to-b from-gray-200 to-gray-100 dark:from-muted/20 dark:to-muted/10">
+      <div className="py-16 sm:py-20 px-6 sm:px-12 bg-gradient-to-b from-gray-100 to-gray-50 dark:from-muted/10 dark:to-muted/5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <div className="flex justify-center mb-6">
@@ -2026,6 +2040,7 @@ export default function Home() {
          <div className="flex flex-col items-center max-w-7xl mx-auto">
            {/* Pricing Section */}
            <div 
+             id="pricing"
              ref={pricingRef}
              className={`transition-all duration-1000 ease-out ${
                isPricingInView 

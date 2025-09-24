@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { Pinboard, CreatePinboardRequest, UpdatePinboardRequest } from '../types/pinboard';
 import { pinboardApi } from './pinboard-api';
+import { useAuth } from './auth-context';
 
 // State interface
 interface PinboardState {
@@ -82,6 +83,7 @@ interface PinboardProviderProps {
 
 export const PinboardProvider: React.FC<PinboardProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(pinboardReducer, initialState);
+  const { getAuthToken } = useAuth();
 
   // Load pinboards on mount
   useEffect(() => {
@@ -93,7 +95,8 @@ export const PinboardProvider: React.FC<PinboardProviderProps> = ({ children }) 
       dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'CLEAR_ERROR' });
       
-      const pinboards = await pinboardApi.getPinboards();
+      const token = await getAuthToken();
+      const pinboards = await pinboardApi.getPinboards(token);
       dispatch({ type: 'SET_PINBOARDS', payload: pinboards });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to load pinboards' });
@@ -105,7 +108,8 @@ export const PinboardProvider: React.FC<PinboardProviderProps> = ({ children }) 
       dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'CLEAR_ERROR' });
       
-      const newPinboard = await pinboardApi.createPinboard(data);
+      const token = await getAuthToken();
+      const newPinboard = await pinboardApi.createPinboard(data, token);
       dispatch({ type: 'ADD_PINBOARD', payload: newPinboard });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to create pinboard' });
@@ -118,10 +122,11 @@ export const PinboardProvider: React.FC<PinboardProviderProps> = ({ children }) 
       dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'CLEAR_ERROR' });
       
-      await pinboardApi.updatePinboard(id, data);
+      const token = await getAuthToken();
+      await pinboardApi.updatePinboard(id, data, token);
       
       // Refresh the specific pinboard to get updated data
-      const updatedPinboard = await pinboardApi.getPinboard(id);
+      const updatedPinboard = await pinboardApi.getPinboard(id, token);
       dispatch({ type: 'UPDATE_PINBOARD', payload: updatedPinboard });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to update pinboard' });
@@ -134,7 +139,8 @@ export const PinboardProvider: React.FC<PinboardProviderProps> = ({ children }) 
       dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'CLEAR_ERROR' });
       
-      await pinboardApi.deletePinboard(id);
+      const token = await getAuthToken();
+      await pinboardApi.deletePinboard(id, token);
       dispatch({ type: 'DELETE_PINBOARD', payload: id });
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to delete pinboard' });

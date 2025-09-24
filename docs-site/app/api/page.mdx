@@ -1,0 +1,173 @@
+# Quickstart
+
+Welcome to the PinDown.ai API quickstart guide. This API allows you to transform your automation outputs into beautiful, shareable pins and reports.
+
+## Base URL
+
+```
+http://localhost:8000
+```
+
+## Authentication
+
+Most endpoints require authentication via Firebase Auth tokens. Include the token in the Authorization header:
+
+```
+Authorization: Bearer <your-firebase-token>
+```
+
+## API Overview
+
+The PinDown.ai API is built with Fastify and provides the following main resources:
+
+- **Pins** - Core content containers that hold your automation outputs
+- **Blocks** - Individual content blocks within pins (markdown, mermaid, etc.)
+- **Datasets** - Data sources for your pins (JSON, markdown, etc.)
+- **Pinboards** - Collections of pins for organization
+- **Workflow Data** - Real-time data updates for your automations
+
+## Quick Start
+
+### 1. Create a Pin
+
+```bash
+curl -X POST http://localhost:8000/api/pins/send \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data_type": "markdown",
+    "metadata": {
+      "title": "My First Pin",
+      "description": "A sample pin for testing",
+      "tags": ["automation", "test"],
+      "is_public": false
+    }
+  }'
+```
+
+### 2. Get Your Pins
+
+```bash
+curl -X GET http://localhost:8000/api/pins \
+  -H "Authorization: Bearer <your-token>"
+```
+
+### 3. Update Pin Data
+
+```bash
+curl -X PUT http://localhost:8000/api/pins/{pinId} \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "metadata": {
+      "title": "Updated Pin Title",
+      "is_public": true
+    }
+  }'
+```
+
+## Response Format
+
+All API responses follow a consistent format:
+
+### Success Response
+
+```json
+{
+  "success": true,
+  "data": { ... },
+  "message": "Operation completed successfully",
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+### Error Response
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "type": "ERROR_TYPE",
+    "message": "Human readable error message",
+    "details": { ... },
+    "timestamp": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+## Rate Limits
+
+- **Development**: No rate limits
+- **Production**: 1000 requests per hour per user
+
+## SDKs and Examples
+
+### JavaScript/Node.js
+
+```javascript
+const API_BASE = 'http://localhost:8000';
+
+// Create a pin
+async function createPin(token, pinData) {
+  const response = await fetch(`${API_BASE}/api/pins/send`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(pinData)
+  });
+  
+  return response.json();
+}
+
+// Get user's pins
+async function getPins(token) {
+  const response = await fetch(`${API_BASE}/api/pins`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  
+  return response.json();
+}
+```
+
+### Python
+
+```python
+import requests
+
+API_BASE = 'http://localhost:8000'
+
+def create_pin(token, pin_data):
+    response = requests.post(
+        f'{API_BASE}/api/pins/send',
+        headers={
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json'
+        },
+        json=pin_data
+    )
+    return response.json()
+
+def get_pins(token):
+    response = requests.get(
+        f'{API_BASE}/api/pins',
+        headers={'Authorization': f'Bearer {token}'}
+    )
+    return response.json()
+```
+
+## Next Steps
+
+- [Pins API](/api/pins) - Complete pins management
+- [Blocks API](/api/blocks) - Content blocks within pins
+- [Datasets API](/api/datasets) - Data sources for pins
+- [Pinboards API](/api/pinboards) - Pin collections
+- [Workflow Data API](/api/workflow-data) - Real-time updates
+
+## Support
+
+Need help? Check out our [GitHub repository](https://github.com/yourusername/pindownai) or contact support.

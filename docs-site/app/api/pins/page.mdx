@@ -1,0 +1,302 @@
+# Pins
+
+Pins are the core content containers in PinDown.ai. They hold your automation outputs and can be organized into pinboards.
+
+## Endpoints
+
+### Create Pin
+
+Create a new pin with initial metadata.
+
+```http
+POST /api/pins/send
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+- `Content-Type: application/json`
+
+**Request Body:**
+
+```json
+{
+  "data_type": "markdown",
+  "metadata": {
+    "title": "My Automation Report",
+    "description": "Weekly sales performance summary",
+    "tags": ["automation", "sales", "weekly"],
+    "is_public": false
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "pid": "p-abc123def456",
+  "message": "Pin created successfully",
+  "data": {
+    "id": "p-abc123def456",
+    "user_id": "user123",
+    "data_type": "markdown",
+    "content": "",
+    "metadata": {
+      "title": "My Automation Report",
+      "description": "Weekly sales performance summary",
+      "tags": ["automation", "sales", "weekly"],
+      "is_public": false,
+      "created_at": "2024-01-15T10:30:00Z"
+    },
+    "permissions": {
+      "is_public": false,
+      "created_by": "user123"
+    }
+  }
+}
+```
+
+### Get Pin
+
+Retrieve a specific pin by ID.
+
+```http
+GET /api/pins/{pid}
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "p-abc123def456",
+    "user_id": "user123",
+    "data_type": "markdown",
+    "content": "# Weekly Sales Report\n\nSales are up 15% this week...",
+    "metadata": {
+      "title": "My Automation Report",
+      "description": "Weekly sales performance summary",
+      "tags": ["automation", "sales", "weekly"],
+      "is_public": false,
+      "created_at": "2024-01-15T10:30:00Z"
+    },
+    "permissions": {
+      "is_public": false,
+      "created_by": "user123"
+    }
+  }
+}
+```
+
+### List Pins
+
+Get all pins for the authenticated user.
+
+```http
+GET /api/pins
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Query Parameters:**
+- `limit` (optional): Number of pins to return (default: 50)
+- `offset` (optional): Number of pins to skip (default: 0)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "pins": [
+      {
+        "id": "p-abc123def456",
+        "user_id": "user123",
+        "data_type": "markdown",
+        "metadata": {
+          "title": "My Automation Report",
+          "description": "Weekly sales performance summary",
+          "tags": ["automation", "sales", "weekly"],
+          "is_public": false,
+          "created_at": "2024-01-15T10:30:00Z"
+        }
+      }
+    ],
+    "total": 1
+  }
+}
+```
+
+### Update Pin
+
+Update pin metadata.
+
+```http
+PUT /api/pins/{pid}
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+- `Content-Type: application/json`
+
+**Request Body:**
+
+```json
+{
+  "metadata": {
+    "title": "Updated Pin Title",
+    "description": "Updated description",
+    "tags": ["automation", "updated"],
+    "is_public": true
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "p-abc123def456",
+    "metadata": {
+      "title": "Updated Pin Title",
+      "description": "Updated description",
+      "tags": ["automation", "updated"],
+      "is_public": true,
+      "updated_at": "2024-01-15T11:00:00Z"
+    }
+  },
+  "message": "Pin updated successfully"
+}
+```
+
+### Delete Pin
+
+Delete a pin and all its associated data.
+
+```http
+DELETE /api/pins/{pid}
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Pin deleted successfully",
+  "data": {
+    "pinId": "p-abc123def456"
+  },
+  "timestamp": "2024-01-15T11:30:00Z"
+}
+```
+
+### Publish Pin
+
+Make a pin publicly accessible.
+
+```http
+POST /api/pins/{pid}/publish
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Pin published successfully",
+  "data": {
+    "pinId": "p-abc123def456",
+    "is_public": true
+  },
+  "timestamp": "2024-01-15T11:30:00Z"
+}
+```
+
+### Unpublish Pin
+
+Make a pin private again.
+
+```http
+POST /api/pins/{pid}/unpublish
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Pin unpublished successfully",
+  "data": {
+    "pinId": "p-abc123def456",
+    "is_public": false
+  },
+  "timestamp": "2024-01-15T11:30:00Z"
+}
+```
+
+## Data Types
+
+Pins support different data types:
+
+- `markdown` - Markdown content
+- `json` - JSON data
+- `text` - Plain text
+
+## Error Codes
+
+| Code | Description |
+|------|-------------|
+| `RESOURCE_NOT_FOUND` | Pin not found |
+| `PERMISSION_DENIED` | Insufficient permissions |
+| `VALIDATION_ERROR` | Invalid request data |
+| `INTERNAL_SERVER_ERROR` | Server error |
+
+## Examples
+
+### Creating a Sales Report Pin
+
+```bash
+curl -X POST http://localhost:8000/api/pins/send \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data_type": "markdown",
+    "metadata": {
+      "title": "Q4 Sales Report",
+      "description": "Quarterly sales performance analysis",
+      "tags": ["sales", "q4", "report"],
+      "is_public": false
+    }
+  }'
+```
+
+### Making a Pin Public
+
+```bash
+curl -X POST http://localhost:8000/api/pins/p-abc123def456/publish \
+  -H "Authorization: Bearer <your-token>"
+```
+
+### Getting All User Pins
+
+```bash
+curl -X GET "http://localhost:8000/api/pins?limit=10&offset=0" \
+  -H "Authorization: Bearer <your-token>"
+```

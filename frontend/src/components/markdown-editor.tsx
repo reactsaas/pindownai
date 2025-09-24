@@ -798,13 +798,13 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
       )}
 
       {editingBlockId && activeView === "edit" && (
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col min-h-0">
             <ForwardRefEditor
               ref={mdxEditorRef}
               markdown={template}
               onChange={(markdown) => onTemplateChange(markdown)}
               placeholder="Enter your markdown template with {{variable}} placeholders..."
-              className="flex-1"
+              className="flex-1 min-h-0"
             />
           </div>
         )}

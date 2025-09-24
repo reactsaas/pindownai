@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { useRouter, useParams } from "next/navigation"
+import { useRouter, useParams, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +11,14 @@ import { type MDXEditorMethods } from '@mdxeditor/editor'
 import { AIEditModal } from "@/components/ai-edit-modal"
 import { useAuth } from "@/lib/auth-context"
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import 'katex/dist/katex.min.css'
 import { toast } from "sonner"
+import { useTheme } from "next-themes"
 
 interface Pin {
   id: string
@@ -36,12 +43,17 @@ interface BlockItem {
 export default function BlockEditPage() {
   const router = useRouter()
   const params = useParams()
+  const searchParams = useSearchParams()
   const { user, getAuthToken } = useAuth()
+  const { theme } = useTheme()
   const pinId = params.pinSlug as string // This is actually the pinId, not slug
   const blockId = params.blockId as string
   const mdxEditorRef = useRef<MDXEditorMethods>(null)
   
-  const [activeView, setActiveView] = useState<"edit" | "preview">("edit")
+  const [activeView, setActiveView] = useState<"edit" | "preview">(() => {
+    const viewMode = searchParams.get('viewmode')
+    return viewMode === 'preview' ? 'preview' : 'edit'
+  })
   const [template, setTemplate] = useState("")
   const [blockData, setBlockData] = useState<BlockItem | null>(null)
   const [pinData, setPinData] = useState<Pin | null>(null)
@@ -167,6 +179,17 @@ export default function BlockEditPage() {
 
   const handleBack = () => {
     router.push(`/pins/${pinId}`)
+  }
+
+  const handleViewChange = (view: "edit" | "preview") => {
+    setActiveView(view)
+    const url = new URL(window.location.href)
+    if (view === 'preview') {
+      url.searchParams.set('viewmode', 'preview')
+    } else {
+      url.searchParams.delete('viewmode')
+    }
+    router.replace(url.pathname + url.search)
   }
 
   const handleSave = async () => {
@@ -328,7 +351,7 @@ export default function BlockEditPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col min-h-0">
       {/* Header */}
       <div className="p-3 sm:p-4 border-b border-border bg-card">
         {/* Mobile: Only back button and action buttons */}
@@ -342,7 +365,7 @@ export default function BlockEditPage() {
               <Button
                 variant={activeView === "edit" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setActiveView("edit")}
+                onClick={() => handleViewChange("edit")}
                 className="h-8 px-2 rounded-r-none border-r cursor-pointer"
               >
                 <Edit className="h-4 w-4" />
@@ -350,7 +373,7 @@ export default function BlockEditPage() {
               <Button
                 variant={activeView === "preview" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setActiveView("preview")}
+                onClick={() => handleViewChange("preview")}
                 className="h-8 px-2 rounded-l-none cursor-pointer"
               >
                 <Eye className="h-4 w-4" />
@@ -423,7 +446,7 @@ export default function BlockEditPage() {
               <Button
                 variant={activeView === "edit" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setActiveView("edit")}
+                onClick={() => handleViewChange("edit")}
                 className="h-8 px-2 sm:px-3 rounded-r-none border-r cursor-pointer"
               >
                 <Edit className="h-4 w-4 sm:mr-2" />
@@ -432,7 +455,7 @@ export default function BlockEditPage() {
               <Button
                 variant={activeView === "preview" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setActiveView("preview")}
+                onClick={() => handleViewChange("preview")}
                 className="h-8 px-2 sm:px-3 rounded-l-none cursor-pointer"
               >
                 <Eye className="h-4 w-4 sm:mr-2" />
@@ -468,15 +491,17 @@ export default function BlockEditPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 overflow-hidden">
         {activeView === "edit" ? (
-          <ForwardRefEditor
-            ref={mdxEditorRef}
-            markdown={template}
-            onChange={setTemplate}
-            placeholder="Enter your markdown template with {{variable}} placeholders..."
-            className="h-full"
-          />
+                      <div className="h-full min-h-0 overflow-auto editor-scroll">
+            <ForwardRefEditor
+              ref={mdxEditorRef}
+              markdown={template}
+              onChange={setTemplate}
+              placeholder="Enter your markdown template with {{variable}} placeholders..."
+              className="h-full min-h-0"
+            />
+          </div>
         ) : (
           <Card className="h-full m-4 bg-background border-border">
             <CardHeader className="bg-background">
@@ -486,8 +511,77 @@ export default function BlockEditPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="h-full overflow-y-auto bg-background">
-              <div className="prose prose-slate max-w-none dark:prose-invert">
-                <ReactMarkdown>
+              <div className="prose prose-gray dark:prose-invert max-w-none">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm, remarkMath]}
+                  rehypePlugins={[rehypeKatex]}
+                  components={{
+                    h1: ({ children }) => {
+                      const text = String(children)
+                      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+                      return <h1 id={id} className="text-3xl font-bold mb-6 mt-8 first:mt-0">{children}</h1>
+                    },
+                    h2: ({ children }) => {
+                      const text = String(children)
+                      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+                      return <h2 id={id} className="text-2xl font-semibold mb-4 mt-8 first:mt-0">{children}</h2>
+                    },
+                    h3: ({ children }) => {
+                      const text = String(children)
+                      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+                      return <h3 id={id} className="text-xl font-medium mb-3 mt-6 first:mt-0">{children}</h3>
+                    },
+                    p: ({ children }) => <p className="mb-4 leading-7">{children}</p>,
+                    ul: ({ children }) => <ul className="mb-4 ml-6 list-disc space-y-1">{children}</ul>,
+                    ol: ({ children }) => <ol className="mb-4 ml-6 list-decimal space-y-1">{children}</ol>,
+                    li: ({ children }) => <li className="leading-7">{children}</li>,
+                    blockquote: ({ children }) => (
+                      <blockquote className="border-l-4 border-muted-foreground/20 pl-4 italic my-4">
+                        {children}
+                      </blockquote>
+                    ),
+                    table: ({ children }) => (
+                      <div className="overflow-x-auto my-6">
+                        <table className="w-full border-collapse border border-border">
+                          {children}
+                        </table>
+                      </div>
+                    ),
+                    th: ({ children }) => (
+                      <th className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-4 py-2 text-left font-medium text-neutral-900 dark:text-neutral-100">
+                        {children}
+                      </th>
+                    ),
+                    td: ({ children }) => (
+                      <td className="border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-neutral-900 dark:text-neutral-100">
+                        {children}
+                      </td>
+                    ),
+                    code: ({ node, inline, className, children, ...props }) => {
+                      const match = /language-(\w+)/.exec(className || '')
+                      return !inline && match ? (
+                        <SyntaxHighlighter
+                          style={theme === 'dark' ? oneDark : oneLight}
+                          language={match[1]}
+                          PreTag="div"
+                          className="rounded-lg my-4"
+                          {...props}
+                        >
+                          {String(children).replace(/\n$/, '')}
+                        </SyntaxHighlighter>
+                      ) : (
+                        <code className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                          {children}
+                        </code>
+                      )
+                    },
+                    pre: ({ children }) => (
+                      <pre className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 p-4 rounded-lg overflow-x-auto my-4 shadow-sm [&_*]:bg-transparent [&_*]:!bg-transparent [&_code]:bg-transparent [&_code]:p-0 [&_span]:bg-transparent [&_span]:!bg-transparent">
+                        {children}
+                      </pre>
+                    ),
+                  }}
+                >
                   {renderTemplate(template, mockData)}
                 </ReactMarkdown>
               </div>

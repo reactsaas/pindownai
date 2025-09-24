@@ -1,0 +1,393 @@
+# Workflow Data
+
+Workflow Data endpoints allow you to manage real-time data updates for your automation workflows. This is perfect for keeping your pins updated with live data from external systems.
+
+## Endpoints
+
+### Update Workflow Data
+
+Update specific workflow data for a pin. This is typically called by your automation systems to push new data.
+
+```http
+PUT /api/workflow-data/{pinId}/{workflowId}
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+- `Content-Type: application/json`
+
+**Request Body:**
+
+```json
+{
+  "data": {
+    "status": "completed",
+    "recordsProcessed": 1247,
+    "errors": 3,
+    "duration": "2m 34s",
+    "timestamp": "2024-01-15T14:30:00Z",
+    "metrics": {
+      "cpu": 23.5,
+      "memory": 45.2,
+      "queueSize": 156
+    }
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Workflow data updated successfully",
+  "data": {
+    "pid": "p-abc123def456",
+    "wid": "workflow-789",
+    "data": {
+      "status": "completed",
+      "recordsProcessed": 1247,
+      "errors": 3,
+      "duration": "2m 34s",
+      "timestamp": "2024-01-15T14:30:00Z",
+      "metrics": {
+        "cpu": 23.5,
+        "memory": 45.2,
+        "queueSize": 156
+      }
+    }
+  }
+}
+```
+
+### Get Specific Workflow Data
+
+Retrieve workflow data for a specific workflow ID within a pin.
+
+```http
+GET /api/workflow-data/{pinId}/{workflowId}
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "completed",
+    "recordsProcessed": 1247,
+    "errors": 3,
+    "duration": "2m 34s",
+    "timestamp": "2024-01-15T14:30:00Z",
+    "metrics": {
+      "cpu": 23.5,
+      "memory": 45.2,
+      "queueSize": 156
+    }
+  }
+}
+```
+
+### Get All Workflow Data
+
+Retrieve all workflow data for a pin.
+
+```http
+GET /api/workflow-data/{pinId}
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "workflow-789": {
+      "status": "completed",
+      "recordsProcessed": 1247,
+      "errors": 3,
+      "duration": "2m 34s",
+      "timestamp": "2024-01-15T14:30:00Z",
+      "metrics": {
+        "cpu": 23.5,
+        "memory": 45.2,
+        "queueSize": 156
+      }
+    },
+    "workflow-456": {
+      "status": "running",
+      "progress": 75,
+      "currentStep": "Processing records",
+      "timestamp": "2024-01-15T14:25:00Z"
+    }
+  }
+}
+```
+
+## Use Cases
+
+### Automation Monitoring
+
+Keep your team updated with real-time automation status:
+
+```bash
+# Update automation status
+curl -X PUT http://localhost:8000/api/workflow-data/p-abc123def456/workflow-789 \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": {
+      "status": "completed",
+      "recordsProcessed": 1247,
+      "errors": 3,
+      "duration": "2m 34s",
+      "timestamp": "2024-01-15T14:30:00Z"
+    }
+  }'
+```
+
+### System Metrics
+
+Push system performance data:
+
+```bash
+# Update system metrics
+curl -X PUT http://localhost:8000/api/workflow-data/p-abc123def456/system-metrics \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": {
+      "cpu": 23.5,
+      "memory": 45.2,
+      "disk": 67.8,
+      "network": {
+        "inbound": "1.2GB",
+        "outbound": "890MB"
+      },
+      "timestamp": "2024-01-15T14:30:00Z"
+    }
+  }'
+```
+
+### Business Metrics
+
+Update business KPIs and metrics:
+
+```bash
+# Update sales metrics
+curl -X PUT http://localhost:8000/api/workflow-data/p-abc123def456/sales-metrics \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "data": {
+      "revenue": 45670,
+      "customers": 1834,
+      "conversion": 12.4,
+      "uptime": 99.8,
+      "timestamp": "2024-01-15T14:30:00Z"
+    }
+  }'
+```
+
+## Integration Examples
+
+### Zapier Integration
+
+```javascript
+// Zapier webhook to update workflow data
+const updateWorkflowData = async (pinId, workflowId, data) => {
+  const response = await fetch(`http://localhost:8000/api/workflow-data/${pinId}/${workflowId}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${process.env.PINDOWN_API_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ data })
+  });
+  
+  return response.json();
+};
+
+// Example usage in Zapier
+const zapData = {
+  status: 'completed',
+  recordsProcessed: inputData.recordsProcessed,
+  errors: inputData.errors,
+  timestamp: new Date().toISOString()
+};
+
+await updateWorkflowData('p-abc123def456', 'zapier-workflow', zapData);
+```
+
+### n8n Integration
+
+```javascript
+// n8n HTTP Request node configuration
+const n8nConfig = {
+  method: 'PUT',
+  url: 'http://localhost:8000/api/workflow-data/{{$json.pinId}}/{{$json.workflowId}}',
+  headers: {
+    'Authorization': 'Bearer {{$json.apiToken}}',
+    'Content-Type': 'application/json'
+  },
+  body: {
+    data: {
+      status: '{{$json.status}}',
+      recordsProcessed: '{{$json.recordsProcessed}}',
+      errors: '{{$json.errors}}',
+      timestamp: '{{$json.timestamp}}'
+    }
+  }
+};
+```
+
+### Make.com Integration
+
+```json
+{
+  "module": "HTTP",
+  "method": "PUT",
+  "url": "http://localhost:8000/api/workflow-data/{{pinId}}/{{workflowId}}",
+  "headers": {
+    "Authorization": "Bearer {{apiToken}}",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "data": {
+      "status": "{{status}}",
+      "recordsProcessed": "{{recordsProcessed}}",
+      "errors": "{{errors}}",
+      "timestamp": "{{timestamp}}"
+    }
+  }
+}
+```
+
+## Error Handling
+
+### Common Error Responses
+
+**Pin Not Found (404):**
+```json
+{
+  "error": "Not Found",
+  "message": "Pin not found"
+}
+```
+
+**Permission Denied (403):**
+```json
+{
+  "error": "Forbidden",
+  "message": "You can only update workflow data for your own pins"
+}
+```
+
+**Workflow Data Not Found (404):**
+```json
+{
+  "error": "Not Found",
+  "message": "Workflow data not found"
+}
+```
+
+## Best Practices
+
+### 1. Use Meaningful Workflow IDs
+
+```javascript
+// Good: Descriptive workflow IDs
+const workflowId = 'sales-automation-weekly';
+const workflowId = 'data-sync-daily';
+const workflowId = 'system-health-monitor';
+
+// Avoid: Generic or unclear IDs
+const workflowId = 'workflow1';
+const workflowId = 'data';
+```
+
+### 2. Include Timestamps
+
+Always include timestamps in your workflow data:
+
+```json
+{
+  "data": {
+    "status": "completed",
+    "timestamp": "2024-01-15T14:30:00Z",
+    "lastUpdated": "2024-01-15T14:30:00Z"
+  }
+}
+```
+
+### 3. Structure Your Data
+
+Use consistent data structures:
+
+```json
+{
+  "data": {
+    "status": "completed|running|failed|pending",
+    "metrics": {
+      "performance": { ... },
+      "business": { ... },
+      "technical": { ... }
+    },
+    "timestamp": "2024-01-15T14:30:00Z"
+  }
+}
+```
+
+### 4. Handle Errors Gracefully
+
+```javascript
+const updateWorkflowData = async (pinId, workflowId, data) => {
+  try {
+    const response = await fetch(`http://localhost:8000/api/workflow-data/${pinId}/${workflowId}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ data })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to update workflow data:', error);
+    // Implement retry logic or fallback
+  }
+};
+```
+
+## Rate Limits
+
+- **Development**: No rate limits
+- **Production**: 100 requests per minute per workflow ID
+
+## Webhook Integration
+
+You can also use webhooks to automatically update workflow data when external systems change:
+
+```bash
+# Set up webhook endpoint
+curl -X POST http://localhost:8000/api/webhooks \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://your-automation.com/webhook",
+    "events": ["workflow.completed", "workflow.failed"],
+    "pinId": "p-abc123def456",
+    "workflowId": "automation-123"
+  }'
+```

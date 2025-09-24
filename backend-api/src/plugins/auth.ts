@@ -20,8 +20,29 @@ declare module 'fastify' {
 const authPlugin: FastifyPluginAsync = async (fastify: FastifyInstance<ZodTypeProvider>) => {
   fastify.decorate('authenticate', async (request: any, reply: any) => {
     try {
-      // Skip authentication in development
+      // In development, still try to authenticate with Firebase token
+      // but fall back to dev user if no token provided
       if (process.env.NODE_ENV === 'development') {
+        const authHeader = request.headers.authorization;
+        
+        // Try to use Firebase token if provided
+        if (authHeader?.startsWith('Bearer ')) {
+          const token = authHeader.replace('Bearer ', '');
+          try {
+            const decodedToken = await fastify.firebase.auth.verifyIdToken(token);
+            request.user = {
+              user_id: decodedToken.uid,
+              auth_method: 'firebase_token' as const,
+              permissions: ['pins:read', 'pins:write', 'pins:delete', 'workflow_data:read', 'workflow_data:write']
+            };
+            return;
+          } catch (error) {
+            fastify.log.warn(`Invalid Firebase token in development: ${(error as Error).message}`);
+            // Fall through to dev user fallback
+          }
+        }
+        
+        // Fallback to dev user if no valid token
         request.user = {
           user_id: 'dev_user_123',
           auth_method: 'development',

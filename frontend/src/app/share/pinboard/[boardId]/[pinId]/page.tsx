@@ -826,7 +826,7 @@ export default function SharePinboardPinPage() {
   const getTypeLabel = (type: Pin["type"]) => {
     switch (type) {
       case "automation":
-        return "Automation Output"
+        return "Automation"
       case "article":
         return "Article"
       case "toplist":

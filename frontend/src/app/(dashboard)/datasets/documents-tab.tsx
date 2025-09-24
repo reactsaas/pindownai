@@ -101,8 +101,110 @@ export default function DocumentsTab({
       uploadedAt: "1 day ago",
       uploadedBy: "You",
       description: "Latest product design mockups"
+    },
+    {
+      id: "upload-3",
+      name: "Marketing Strategy.docx",
+      type: "docx",
+      size: "1.2 MB",
+      uploadedAt: "3 days ago",
+      uploadedBy: "You",
+      description: "Q4 marketing strategy document"
+    },
+    {
+      id: "upload-4",
+      name: "Analytics Dashboard.png",
+      type: "png",
+      size: "3.8 MB",
+      uploadedAt: "1 week ago",
+      uploadedBy: "You",
+      description: "Screenshot of analytics dashboard"
+    },
+    {
+      id: "upload-5",
+      name: "User Feedback.csv",
+      type: "csv",
+      size: "0.5 MB",
+      uploadedAt: "2 weeks ago",
+      uploadedBy: "You",
+      description: "Raw user feedback data"
+    },
+    {
+      id: "upload-6",
+      name: "Team Roadmap.md",
+      type: "md",
+      size: "0.3 MB",
+      uploadedAt: "3 weeks ago",
+      uploadedBy: "You",
+      description: "Product team roadmap"
+    },
+    {
+      id: "upload-7",
+      name: "Quarterly Results.pdf",
+      type: "pdf",
+      size: "4.1 MB",
+      uploadedAt: "1 month ago",
+      uploadedBy: "You",
+      description: "Q3 financial results"
+    },
+    {
+      id: "upload-8",
+      name: "Customer List.xlsx",
+      type: "xlsx",
+      size: "2.6 MB",
+      uploadedAt: "1 month ago",
+      uploadedBy: "You",
+      description: "Active customers export"
+    },
+    {
+      id: "upload-9",
+      name: "Bug Reports.txt",
+      type: "txt",
+      size: "0.2 MB",
+      uploadedAt: "2 months ago",
+      uploadedBy: "You",
+      description: "Consolidated bug reports"
+    },
+    {
+      id: "upload-10",
+      name: "API Documentation.pdf",
+      type: "pdf",
+      size: "1.8 MB",
+      uploadedAt: "2 months ago",
+      uploadedBy: "You",
+      description: "API reference guide"
+    },
+    {
+      id: "upload-11",
+      name: "Database Schema.sql",
+      type: "sql",
+      size: "0.4 MB",
+      uploadedAt: "3 months ago",
+      uploadedBy: "You",
+      description: "Database structure"
+    },
+    {
+      id: "upload-12",
+      name: "Meeting Notes.docx",
+      type: "docx",
+      size: "0.7 MB",
+      uploadedAt: "3 months ago",
+      uploadedBy: "You",
+      description: "Weekly team meeting notes"
+    },
+    {
+      id: "upload-13",
+      name: "Logo Assets.zip",
+      type: "zip",
+      size: "5.2 MB",
+      uploadedAt: "4 months ago",
+      uploadedBy: "You",
+      description: "Company logo variations"
     }
   ])
+
+  // Selected documents state
+  const [selectedDocuments, setSelectedDocuments] = useState<string[]>([])
 
   const filteredDatasets = datasets.filter(dataset => {
     const matchesSearch = dataset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -207,77 +309,109 @@ export default function DocumentsTab({
     setUploadedDocuments(prev => prev.filter(doc => doc.id !== docId))
   }
 
+  const handleDocumentSelect = (docId: string) => {
+    setSelectedDocuments(prev => 
+      prev.includes(docId) 
+        ? prev.filter(id => id !== docId)
+        : [...prev, docId]
+    )
+  }
+
   return (
     <div className="h-full flex flex-col overflow-y-auto min-h-0">
       {/* Uploaded Documents Section */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-lg font-semibold">Uploaded Documents</h3>
-            <p className="text-sm text-muted-foreground">
-              {uploadedDocuments.length} files • {uploadedDocuments.reduce((acc, doc) => acc + parseFloat(doc.size), 0).toFixed(1)} MB total
-            </p>
+        <div className="mb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold">Your Files</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Click on files to select them for processing
+              </p>
+            </div>
+            {selectedDocuments.length > 0 && (
+              <div className="text-sm text-muted-foreground">
+                {selectedDocuments.length} selected • {uploadedDocuments
+                  .filter(doc => selectedDocuments.includes(doc.id))
+                  .reduce((acc, doc) => acc + parseFloat(doc.size), 0)
+                  .toFixed(1)} MB
+              </div>
+            )}
           </div>
-          <Button variant="outline" size="sm" className="h-8">
-            <Plus className="h-4 w-4 mr-2" />
-            Select Documents
-          </Button>
         </div>
 
         {/* Two Column Layout: Uploaded Documents (Left) + Dropzone (Right) */}
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
           {/* Left Column: Uploaded Documents */}
           <div className="space-y-4">
-            <h4 className="font-medium text-sm text-muted-foreground">Your Files</h4>
             {uploadedDocuments.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-h-96 overflow-y-auto">
-                {uploadedDocuments.map((doc) => (
-                  <Card key={doc.id} className="group hover:shadow-sm transition-shadow py-1 px-1">
-                    <CardContent className="p-1">
-                      <div className="flex items-start gap-2">
-                        <div className="flex-shrink-0">
-                          {getFileIcon(doc.type)}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-h-64 overflow-y-auto">
+                {uploadedDocuments.map((doc) => {
+                  const isSelected = selectedDocuments.includes(doc.id)
+                  return (
+                    <Card 
+                      key={doc.id} 
+                      className={`group hover:shadow-sm transition-all cursor-pointer py-1 px-1 ${
+                        isSelected 
+                          ? 'bg-primary/10 border-primary shadow-sm' 
+                          : 'hover:bg-muted/50'
+                      }`}
+                      onClick={() => handleDocumentSelect(doc.id)}
+                    >
+                      <CardContent className="p-2">
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <div className="flex-shrink-0">
+                              <div className="w-4 h-4 flex items-center justify-center">
+                                {getFileIcon(doc.type)}
+                              </div>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-xs font-medium truncate leading-tight" title={doc.name}>
+                                {doc.name.length > 20 ? `${doc.name.substring(0, 20)}...` : doc.name}
+                              </h3>
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <MoreHorizontal className="h-3 w-3" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                                  <Eye className="w-3 h-3 mr-2" />
+                                  View
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
+                                  <Download className="w-3 h-3 mr-2" />
+                                  Download
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  className="text-red-600"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleDeleteDocument(doc.id)
+                                  }}
+                                >
+                                  <Trash2 className="w-3 h-3 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                          <div className="flex justify-start items-center">
+                            <p className="text-xs text-muted-foreground">{doc.size}</p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-xs font-medium break-words leading-tight" title={doc.name}>{doc.name}</h3>
-                          <p className="text-xs text-muted-foreground">{doc.size}</p>
-                        </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <MoreHorizontal className="h-3 w-3" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                              <Eye className="w-3 h-3 mr-2" />
-                              View
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                              <Download className="w-3 h-3 mr-2" />
-                              Download
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              className="text-red-600"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleDeleteDocument(doc.id)
-                              }}
-                            >
-                              <Trash2 className="w-3 h-3 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  )
+                })}
               </div>
             ) : (
               <div className="text-center py-12 border-2 border-dashed border-muted-foreground/25 rounded-lg">
@@ -289,8 +423,7 @@ export default function DocumentsTab({
           </div>
 
           {/* Right Column: Drag & Drop Upload Area */}
-          <div className="space-y-4">
-            <h4 className="font-medium text-sm text-muted-foreground">Upload Files</h4>
+          <div className="space-y-4 pl-4 pr-8">
             <div
               {...getRootProps()}
               className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors cursor-pointer min-h-[200px] flex items-center justify-center ${

@@ -1,0 +1,302 @@
+# Pinboards
+
+Pinboards are collections of pins that help you organize and share related content together.
+
+## Endpoints
+
+### Create Pinboard
+
+Create a new pinboard to organize your pins.
+
+```http
+POST /api/pinboards
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+- `Content-Type: application/json`
+
+**Request Body:**
+
+```json
+{
+  "name": "My Sales Reports",
+  "description": "Collection of weekly and monthly sales reports",
+  "pins": []
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "pb-abc123def456",
+    "name": "My Sales Reports",
+    "description": "Collection of weekly and monthly sales reports",
+    "pins": [],
+    "created_at": "2024-01-15T10:30:00Z",
+    "author": "user123",
+    "views": 0,
+    "is_public": false
+  },
+  "message": "Pinboard created successfully"
+}
+```
+
+### Get Pinboard
+
+Retrieve a specific pinboard by ID.
+
+```http
+GET /api/pinboards/{pinboardId}
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "pb-abc123def456",
+    "name": "My Sales Reports",
+    "description": "Collection of weekly and monthly sales reports",
+    "pins": [
+      "p-pin1abc123",
+      "p-pin2def456"
+    ],
+    "created_at": "2024-01-15T10:30:00Z",
+    "author": "user123",
+    "views": 15,
+    "is_public": false
+  }
+}
+```
+
+### List Pinboards
+
+Get all pinboards for the authenticated user.
+
+```http
+GET /api/pinboards
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Query Parameters:**
+- `limit` (optional): Number of pinboards to return (default: 50)
+- `offset` (optional): Number of pinboards to skip (default: 0)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "pinboards": [
+      {
+        "id": "pb-abc123def456",
+        "name": "My Sales Reports",
+        "description": "Collection of weekly and monthly sales reports",
+        "pins": ["p-pin1abc123", "p-pin2def456"],
+        "created_at": "2024-01-15T10:30:00Z",
+        "author": "user123",
+        "views": 15,
+        "is_public": false
+      }
+    ],
+    "total": 1
+  }
+}
+```
+
+### Update Pinboard
+
+Update pinboard metadata and pin list.
+
+```http
+PUT /api/pinboards/{pinboardId}
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+- `Content-Type: application/json`
+
+**Request Body:**
+
+```json
+{
+  "name": "Updated Sales Reports",
+  "description": "Updated description",
+  "pins": ["p-pin1abc123", "p-pin2def456", "p-pin3ghi789"]
+}
+```
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "pb-abc123def456",
+    "name": "Updated Sales Reports",
+    "description": "Updated description",
+    "pins": ["p-pin1abc123", "p-pin2def456", "p-pin3ghi789"],
+    "updated_at": "2024-01-15T11:00:00Z"
+  },
+  "message": "Pinboard updated successfully"
+}
+```
+
+### Delete Pinboard
+
+Delete a pinboard and remove it from user's collection.
+
+```http
+DELETE /api/pinboards/{pinboardId}
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Pinboard deleted successfully",
+  "data": {
+    "pinboardId": "pb-abc123def456"
+  },
+  "timestamp": "2024-01-15T11:30:00Z"
+}
+```
+
+### Publish Pinboard
+
+Make a pinboard publicly accessible.
+
+```http
+POST /api/pinboards/{pinboardId}/publish
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Pinboard published successfully",
+  "data": {
+    "pinboardId": "pb-abc123def456",
+    "is_public": true
+  },
+  "timestamp": "2024-01-15T11:30:00Z"
+}
+```
+
+### Unpublish Pinboard
+
+Make a pinboard private again.
+
+```http
+POST /api/pinboards/{pinboardId}/unpublish
+```
+
+**Headers:**
+- `Authorization: Bearer <token>` (required)
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Pinboard unpublished successfully",
+  "data": {
+    "pinboardId": "pb-abc123def456",
+    "is_public": false
+  },
+  "timestamp": "2024-01-15T11:30:00Z"
+}
+```
+
+## Pinboard Structure
+
+A pinboard contains:
+
+- **Basic Info**: `id`, `name`, `description`
+- **Content**: Array of pin IDs in `pins`
+- **Metadata**: `created_at`, `author`, `views`
+- **Permissions**: `is_public` flag
+
+## Pin Management
+
+Pinboards automatically manage the relationship between pins and collections:
+
+- Adding a pin to a pinboard doesn't duplicate the pin
+- Removing a pin from a pinboard doesn't delete the pin
+- Pins can belong to multiple pinboards
+- Deleting a pinboard doesn't delete the pins
+
+## Error Codes
+
+| Code | Description |
+|------|-------------|
+| `RESOURCE_NOT_FOUND` | Pinboard not found |
+| `PERMISSION_DENIED` | Insufficient permissions |
+| `VALIDATION_ERROR` | Invalid request data |
+| `INTERNAL_SERVER_ERROR` | Server error |
+
+## Examples
+
+### Creating a Sales Reports Pinboard
+
+```bash
+curl -X POST http://localhost:8000/api/pinboards \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Q4 Sales Reports",
+    "description": "All quarterly sales reports and analysis",
+    "pins": []
+  }'
+```
+
+### Adding Pins to a Pinboard
+
+```bash
+curl -X PUT http://localhost:8000/api/pinboards/pb-abc123def456 \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "pins": ["p-pin1abc123", "p-pin2def456", "p-pin3ghi789"]
+  }'
+```
+
+### Getting All User Pinboards
+
+```bash
+curl -X GET "http://localhost:8000/api/pinboards?limit=10&offset=0" \
+  -H "Authorization: Bearer <your-token>"
+```
+
+### Making a Pinboard Public
+
+```bash
+curl -X POST http://localhost:8000/api/pinboards/pb-abc123def456/publish \
+  -H "Authorization: Bearer <your-token>"
+```
+
+## Use Cases
+
+- **Project Collections**: Group related automation reports
+- **Team Dashboards**: Share curated content with team members
+- **Client Reports**: Organize client-specific documentation
+- **Templates**: Create reusable pin collections

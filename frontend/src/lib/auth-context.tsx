@@ -29,9 +29,58 @@ export function AuthProvider({
   const router = useRouter()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((user) => {
+    const unsubscribe = onAuthStateChange(async (user) => {
       setUser(user)
       setLoading(false)
+      
+      // Save user data to backend only on first registration
+      if (user) {
+        try {
+          const token = await user.getIdToken()
+          
+          // Check if user already exists
+          const checkResponse = await fetch(`http://localhost:8000/api/users/${user.uid}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
+
+          // Only save if user doesn't exist (404 response)
+          if (checkResponse.status === 404) {
+            const userData = {
+              uid: user.uid,
+              email: user.email || '',
+              displayName: user.displayName || null,
+              photoURL: user.photoURL || null,
+              emailVerified: user.emailVerified || false
+            }
+
+            const response = await fetch('http://localhost:8000/api/users', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(userData)
+            })
+
+            if (response.ok) {
+              const result = await response.json()
+              console.log('New user registered successfully:', result)
+            } else {
+              console.warn('Failed to save new user data:', response.statusText)
+            }
+          } else if (checkResponse.ok) {
+            console.log('User already exists, skipping registration')
+          } else {
+            console.warn('Error checking user existence:', checkResponse.statusText)
+          }
+        } catch (error) {
+          console.error('Error handling user registration:', error)
+          // Don't throw error to avoid breaking the auth flow
+        }
+      }
       
       // If this component requires auth and user is not authenticated, redirect to login
       if (requireAuth && !user && !loading) {
@@ -100,6 +149,7 @@ export function AuthProvider({
       return null
     }
   }
+
 
   const value = {
     user,

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter, useParams, useSearchParams, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Clock, Copy, Database, FileText, Sparkles, Layout } from "lucide-react"
+import { ArrowLeft, Clock, Copy, Database, FileText, Sparkles, Layout, ExternalLink } from "lucide-react"
 import { BlocksList } from "@/components/blocks-list"
 import { TemplateDataSources } from "@/components/template-data-sources"
 import { TemplateSettingsPopover } from "@/components/template-settings-popover"
@@ -577,6 +577,16 @@ export default function PinEditPage() {
                 isTemplate={true}
                 isPublished={pinData?.metadata.is_public || false}
               />
+              <a
+                href={`/share/pin/${pinData?.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" size="sm" className="h-8 px-3 cursor-pointer">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Visit
+                </Button>
+              </a>
             </div>
           </div>
         </div>
@@ -657,6 +667,16 @@ export default function PinEditPage() {
               isTemplate={true}
               isPublished={pinData?.metadata.is_public || false}
             />
+            <a
+              href={`/share/pin/${pinData?.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="outline" className="h-8 px-3 cursor-pointer">
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Visit
+              </Button>
+            </a>
           </div>
         </div>
       </div>

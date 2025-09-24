@@ -1,11 +1,13 @@
 import { FastifyInstance } from 'fastify';
-import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { createSuccessResponse } from '../../lib/utils';
 import { ERRORS, createNotFoundError } from '../../lib/errors';
 
-export async function publicPinRoutes(fastify: FastifyInstance<ZodTypeProvider>) {
-  // GET /api/public/pins/:pid - Get public pin data (no auth required)
+// Import auth plugin to get type declarations
+import '../../plugins/auth';
+
+export async function publicPinRoutes(fastify: FastifyInstance) {
+  // GET /api/public/pins/:pid - Get pin data (public or private if owner)
   fastify.get('/api/public/pins/:pid', async (request, reply) => {
     try {
       const { pid } = request.params as { pid: string };
@@ -22,8 +24,28 @@ export async function publicPinRoutes(fastify: FastifyInstance<ZodTypeProvider>)
       
       fastify.log.info(`Pin data: ${JSON.stringify(pinData, null, 2)}`);
       
-      // Check if pin is public
-      if (!pinData.metadata?.is_public && !pinData.permissions?.is_public) {
+      // Check if pin is public OR if user is authenticated and owns the pin
+      const isPublic = pinData.metadata?.is_public || pinData.permissions?.is_public;
+      
+      // Try to authenticate user if token is provided
+      let authenticatedUser = null;
+      const authHeader = request.headers.authorization;
+      if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.replace('Bearer ', '');
+        try {
+          const decodedToken = await fastify.firebase.auth.verifyIdToken(token);
+          authenticatedUser = decodedToken.uid as string;
+        } catch (e) {
+          const emsg = (e as Error).message || 'Unknown error';
+          fastify.log.warn(`Invalid Firebase token: ${emsg}`);
+        }
+      }
+      
+      const isOwner = authenticatedUser === pinData.user_id;
+      
+      fastify.log.info(`Auth check - isPublic: ${isPublic}, authenticatedUser: ${authenticatedUser}, pinUserId: ${pinData.user_id}, isOwner: ${isOwner}`);
+      
+      if (!isPublic && !isOwner) {
         throw createNotFoundError('RESOURCE_NOT_FOUND', 'Pin not found or is private');
       }
       
@@ -39,7 +61,8 @@ export async function publicPinRoutes(fastify: FastifyInstance<ZodTypeProvider>)
           description: pinData.metadata?.description || '',
           tags: pinData.metadata?.tags || [],
           created_at: pinData.metadata?.created_at || new Date().toISOString(),
-          updated_at: pinData.metadata?.updated_at || new Date().toISOString()
+          updated_at: pinData.metadata?.updated_at || new Date().toISOString(),
+          is_public: isPublic
         },
         blocks: blocks.map(block => ({
           id: block.id,
@@ -64,13 +87,14 @@ export async function publicPinRoutes(fastify: FastifyInstance<ZodTypeProvider>)
     } catch (error) {
       fastify.log.error(`Error fetching public pin: ${error}`);
       
-      if (error.code === 'RESOURCE_NOT_FOUND') {
+      const errObj = error as any;
+      if (errObj?.code === 'RESOURCE_NOT_FOUND') {
         return reply.code(404).send({
           success: false,
           error: {
-            code: error.code,
+            code: errObj.code,
             type: 'NOT_FOUND',
-            message: error.message,
+            message: errObj.message,
             timestamp: new Date().toISOString()
           }
         });

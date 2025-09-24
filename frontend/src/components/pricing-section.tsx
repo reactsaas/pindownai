@@ -13,7 +13,7 @@ export function PricingSection() {
       monthlyPrice: "FREE",
       annualMonthlyPrice: "FREE",
              features: [
-         "3 pins",
+         "3 pins/month",
          "every 15 minutes", 
          "Basic templates"
        ]
@@ -24,7 +24,7 @@ export function PricingSection() {
       monthlyPrice: "$7/mo",
       annualMonthlyPrice: "$5/mo",
                    features: [
-        "20 pins",
+        "20 pins/month",
         "1 pinboard",
         "Live updates",
         "Custom templates",
@@ -37,7 +37,7 @@ export function PricingSection() {
       monthlyPrice: "$15/mo",
       annualMonthlyPrice: "$12.50/mo",
                      features: [
-          "100 pins",
+          "100 pins/month",
           "10 pinboards",
           "Live updates",
           "Full API access",
@@ -49,11 +49,11 @@ export function PricingSection() {
     {
       name: "Teams",
       description: "For teams and organizations",
-       monthlyPrice: "$79/mo", 
-       annualMonthlyPrice: "$50/mo",
+       monthlyPrice: "$45/mo", 
+       annualMonthlyPrice: "$40/mo",
                         features: [
-           "250 pins",
-           "20 pinboards",
+           "400 pins/month",
+           "40 pinboards",
            "Live updates",
            "Full API access",
            "AI document intelligence",
@@ -65,22 +65,22 @@ export function PricingSection() {
          ]
      },
          {
-       name: "Social Media",
-       description: "For agencies and content creators",
-       monthlyPrice: "$149/mo", 
-       annualMonthlyPrice: "$99/mo",
+       name: "Agency",
+       description: "For marketing agencies and consultants",
+       monthlyPrice: "$99/mo", 
+       annualMonthlyPrice: "$79/mo",
                         features: [
-           "500+ pins",
+           "800 pins/month",
            "100 pinboards",
            "Live updates",
            "Full API access",
            "AI document intelligence",
            "AI research",
-           "Content scheduling",
            "White-label reports",
            "Client management",
-           "Analytics dashboard",
-           "Language translation"
+           "Team workspaces",
+           "Custom branding",
+           "Priority support"
          ]
      }
   ]
@@ -135,7 +135,7 @@ export function PricingSection() {
             <TabsTrigger value="hobby" className="text-xs">Hobby</TabsTrigger>
             <TabsTrigger value="professional" className="text-xs">Pro</TabsTrigger>
             <TabsTrigger value="startups" className="text-xs">Teams</TabsTrigger>
-            <TabsTrigger value="social" className="text-xs">Social</TabsTrigger>
+            <TabsTrigger value="agency" className="text-xs">Agency</TabsTrigger>
           </TabsList>
           
           {plans.map((plan) => {
@@ -175,7 +175,10 @@ export function PricingSection() {
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between items-center py-2 border-b border-border/20">
                     <span className="font-medium">Pins:</span>
-                    <span className="font-mono">{plan.features.find(f => f.includes('pins'))?.replace(' pins', '') || '-'}</span>
+                    <div className="font-mono">
+                      {plan.features.find(f => f.includes('pins'))?.replace(' pins/month', '') || '-'}
+                      <span className="text-xs text-muted-foreground ml-1">/month</span>
+                    </div>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-border/20">
                     <span className="font-medium">Pinboards:</span>
@@ -240,7 +243,7 @@ export function PricingSection() {
                     Professional
                   </th>
                   <th className="text-center p-4 font-semibold text-foreground">Teams</th>
-                  <th className="text-center p-4 font-semibold text-foreground">Social Media</th>
+                  <th className="text-center p-4 font-semibold text-foreground">Agency</th>
                 </tr>
               </thead>
             <tbody>
@@ -274,9 +277,10 @@ export function PricingSection() {
                 <td className="p-4 font-semibold text-foreground">Pins</td>
                 {plans.map((plan) => (
                   <td key={plan.name} className={`text-center p-4 ${plan.featured ? 'bg-primary/5' : ''}`}>
-                    <span className="font-medium">
-                      {plan.features.find(f => f.includes('pins'))?.replace(' pins', '') || '-'}
-                    </span>
+                    <div className="font-medium">
+                      {plan.features.find(f => f.includes('pins'))?.replace(' pins/month', '') || '-'}
+                      <span className="text-xs text-muted-foreground ml-1">/month</span>
+                    </div>
                   </td>
                 ))}
               </tr>

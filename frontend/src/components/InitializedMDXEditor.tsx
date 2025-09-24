@@ -27,6 +27,10 @@ import {
   ListsToggle,
   BlockTypeSelect,
   DiffSourceToggleWrapper,
+  ConditionalContents,
+  codeMirrorPlugin,
+  ChangeCodeMirrorLanguage,
+  InsertCodeBlock
 } from '@mdxeditor/editor'
 import '@mdxeditor/editor/style.css'
 import './mdx-editor-custom.css'
@@ -45,7 +49,25 @@ export default function InitializedMDXEditor({
         quotePlugin(),
         thematicBreakPlugin(),
         markdownShortcutPlugin(),
-        codeBlockPlugin(),
+        codeBlockPlugin({ defaultCodeBlockLanguage: 'js' }),
+        codeMirrorPlugin({
+          codeBlockLanguages: {
+            js: 'JavaScript',
+            ts: 'TypeScript',
+            tsx: 'TSX',
+            jsx: 'JSX',
+            css: 'CSS',
+            json: 'JSON',
+            bash: 'Bash',
+            python: 'Python',
+            py: 'Python',
+            html: 'HTML',
+            xml: 'XML',
+            sql: 'SQL',
+            yaml: 'YAML',
+            yml: 'YAML'
+          }
+        }),
         linkPlugin(),
         linkDialogPlugin(),
         imagePlugin(),
@@ -55,8 +77,8 @@ export default function InitializedMDXEditor({
         // Toolbar plugin with responsive layout
         toolbarPlugin({
           toolbarContents: () => (
-            <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-              <DiffSourceToggleWrapper>
+            <DiffSourceToggleWrapper>
+              <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                 <div className="flex items-center gap-1">
                   <UndoRedo />
                   <BlockTypeSelect />
@@ -74,8 +96,14 @@ export default function InitializedMDXEditor({
                   <InsertTable />
                   <InsertThematicBreak />
                 </div>
-              </DiffSourceToggleWrapper>
-            </div>
+                <ConditionalContents
+                  options={[
+                    { when: (editor) => editor?.editorType === 'codeblock', contents: () => <ChangeCodeMirrorLanguage /> },
+                    { fallback: () => (<InsertCodeBlock />) }
+                  ]}
+                />
+              </div>
+            </DiffSourceToggleWrapper>
           )
         })
       ]}

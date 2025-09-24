@@ -540,6 +540,22 @@ html.dark .mdxeditor [class*="_toolbarToggleItem_"] * {
   display: none !important;
 }
 
+/* Hide the Rich text toggle button (robust) */
+.mdxeditor-toolbar button[aria-label="Rich text"],
+.mdxeditor-toolbar [data-toolbar-item][aria-label="Rich text"],
+.mdxeditor [data-toolbar-item][aria-label="Rich text"],
+.mdxeditor button[aria-label="Rich text"],
+.mdxeditor [aria-label="Rich text"] * {
+  display: none !important;
+}
+
+/* Dark mode: make the 'Source mode' toolbar title readable */
+.dark .mdxeditor-toolbar [class*="_toolbarTitleMode_"] {
+  color: #e5e7eb !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
 /* Fix CodeMirror source editor for dark mode */
 html.dark .mdxeditor .cm-sourceView,
 html.dark .mdxeditor .cm-editor,
@@ -643,4 +659,62 @@ html.dark .mdxeditor .ProseMirror hr {
   opacity: 1 !important;
   display: block !important;
   width: 100% !important;
+}
+
+/* Root editor scrollbar styles (light) */
+.mdxeditor {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: auto !important; /* scroll here */
+  scrollbar-width: thin !important;
+  scrollbar-color: #9ca3af #f3f4f6 !important;
+}
+.mdxeditor::-webkit-scrollbar {
+  width: 10px !important;
+  height: 10px !important;
+}
+.mdxeditor::-webkit-scrollbar-track {
+  background: #f3f4f6 !important;
+}
+.mdxeditor::-webkit-scrollbar-thumb {
+  background: #9ca3af !important;
+  border-radius: 6px !important;
+  border: 2px solid #f3f4f6 !important;
+}
+.mdxeditor::-webkit-scrollbar-thumb:hover {
+  background: #6b7280 !important;
+}
+
+/* Root editor scrollbar styles (dark) */
+html.dark .mdxeditor {
+  scrollbar-width: thin !important;
+  scrollbar-color: #525252 #1f2937 !important;
+}
+html.dark .mdxeditor::-webkit-scrollbar-track {
+  background: #1f2937 !important;
+}
+html.dark .mdxeditor::-webkit-scrollbar-thumb {
+  background: #525252 !important;
+  border: 2px solid #1f2937 !important;
+}
+html.dark .mdxeditor::-webkit-scrollbar-thumb:hover {
+  background: #737373 !important;
+}
+
+/* Ensure content area expands beneath the toolbar */
+.mdxeditor .mdxeditor-rich-text-editor,
+.mdxeditor [data-editor="rich-text"] {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+/* Avoid nested scroll inside CM; let the root scroll */
+.mdxeditor .cm-scroller {
+  max-height: none !important;
+}
+
+/* Ensure wrapper does not capture scroll */
+.editor-scroll {
+  overflow: visible !important;
 }
