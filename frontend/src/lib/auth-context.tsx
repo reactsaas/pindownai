@@ -89,7 +89,7 @@ export function AuthProvider({
     })
 
     return () => unsubscribe()
-  }, [requireAuth, router, loading])
+  }, [requireAuth, router])
 
   const handleSignInWithGoogle = async () => {
     console.log('Auth context - isFirebaseConfigured:', isFirebaseConfigured)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -419,9 +419,10 @@ function ThemeToggle() {
 export default function SharePinboardPage() {
   const params = useParams()
   const router = useRouter()
-  const { getAuthToken, user } = useAuth()
+  const { getAuthToken, user, loading } = useAuth()
   const { theme } = useTheme()
   const boardId = params.boardId as string
+  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const [pinboard, setPinboard] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -429,16 +430,20 @@ export default function SharePinboardPage() {
   const [isLoadingPin, setIsLoadingPin] = useState(false)
 
   useEffect(() => {
-    const fetchPinboard = async (retryCount = 0) => {
+    if (loading) return
+    const fetchPinboard = async () => {
       try {
         setIsLoading(true)
         setError(null)
+        
+
         
         // Get auth token if user is logged in
         const token = await getAuthToken()
         console.log('Auth token retrieved:', token ? 'YES' : 'NO')
         console.log('User state:', user ? 'LOGGED_IN' : 'NOT_LOGGED_IN')
         
+
         const headers: HeadersInit = {
           'Content-Type': 'application/json'
         }
@@ -456,12 +461,6 @@ export default function SharePinboardPage() {
         })
         
         if (response.status === 404) {
-          // If we get 404 and we don't have a token, but user is logged in, retry once
-          if (!token && user && retryCount === 0) {
-            console.log('Retrying with fresh token...')
-            setTimeout(() => fetchPinboard(1), 1000)
-            return
-          }
           setError('Pinboard not found or is private')
           return
         }
@@ -484,7 +483,16 @@ export default function SharePinboardPage() {
     if (boardId) {
       fetchPinboard()
     }
-  }, [boardId, getAuthToken, user])
+  }, [boardId, getAuthToken, user, loading])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+      }
+    }
+  }, [])
 
   if (isLoading) {
     return (
@@ -556,9 +564,6 @@ export default function SharePinboardPage() {
     setSelectedPin(pin)
     
     try {
-      // Wait for modal animation to start (small delay)
-      await new Promise(resolve => setTimeout(resolve, 100))
-      
       // Fetch the full pin data with blocks from the public API
       const response = await fetch(`http://localhost:8000/api/public/pins/${pin.id}`)
       
@@ -578,18 +583,17 @@ export default function SharePinboardPage() {
           }
         }
         
-        // Ensure minimum loading time to show skeleton properly (wait for modal animation to complete)
-        await new Promise(resolve => setTimeout(resolve, 200))
-        
         setSelectedPin(updatedPin)
       }
     } catch (error) {
       console.error('Error fetching pin details:', error)
       // Keep the basic pin data we already have
-      // Still ensure minimum loading time
-      await new Promise(resolve => setTimeout(resolve, 300))
     } finally {
-      setIsLoadingPin(false)
+      // Small delay for better UX with proper cleanup
+      if (loadingTimeoutRef.current) {
+        clearTimeout(loadingTimeoutRef.current)
+      }
+      loadingTimeoutRef.current = setTimeout(() => setIsLoadingPin(false), 200)
     }
   }
 

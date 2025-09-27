@@ -370,7 +370,7 @@ function AskAI({ pinContent }: { pinContent: string }) {
 export default function SharePinPage() {
   const params = useParams()
   const pinId = params.pinId as string
-  const { getAuthToken } = useAuth()
+  const { getAuthToken, user, loading } = useAuth()
   const { theme } = useTheme()
   const [pin, setPin] = useState<Pin | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -378,13 +378,18 @@ export default function SharePinPage() {
   const [isTocVisible, setIsTocVisible] = useState(false)
 
   useEffect(() => {
+    if (loading) return
     const fetchPinData = async () => {
       try {
         setIsLoading(true)
         setError(null)
         
+
+        
         // Get auth token if user is logged in
         const token = await getAuthToken()
+        console.log('Auth token retrieved:', token ? 'YES' : 'NO')
+        console.log('User state:', user ? 'LOGGED_IN' : 'NOT_LOGGED_IN')
         
         const headers: HeadersInit = {
           'Content-Type': 'application/json'
@@ -393,6 +398,9 @@ export default function SharePinPage() {
         // Add auth header if token exists
         if (token) {
           headers['Authorization'] = `Bearer ${token}`
+          console.log('Sending auth token:', token.substring(0, 20) + '...')
+        } else {
+          console.log('No auth token available - this might cause access issues for private pins')
         }
         
         const response = await fetch(`http://localhost:8000/api/public/pins/${pinId}`, {
@@ -409,19 +417,20 @@ export default function SharePinPage() {
         }
         
         const data = await response.json()
+        console.log('Pin response data:', data)
         setPin(data.data.pin)
       } catch (err) {
         console.error('Error fetching pin:', err)
         setError(err instanceof Error ? err.message : 'Failed to load pin')
       } finally {
-    setIsLoading(false)
+        setIsLoading(false)
       }
     }
 
     if (pinId) {
       fetchPinData()
     }
-  }, [pinId, getAuthToken])
+  }, [pinId, getAuthToken, user, loading])
 
   if (isLoading) {
     return (

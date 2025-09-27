@@ -300,9 +300,6 @@ export default function PinboardDetailPage() {
               {selectedPins.length} pins selected
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={handleBack} size="sm">
-                Cancel
-              </Button>
               <Button onClick={handleSave} size="sm" disabled={isSaving}>
                 {saveSuccess ? (
                   <Check className="w-4 h-4 mr-2" />
@@ -357,16 +354,13 @@ export default function PinboardDetailPage() {
               </Button>
             </a>
             <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={handleBack}>
-                Cancel
-              </Button>
               <Button onClick={handleSave} disabled={isSaving}>
                 {saveSuccess ? (
                   <Check className="w-4 h-4 mr-2" />
                 ) : (
                   <Save className="w-4 h-4 mr-2" />
                 )}
-                Save Changes
+                Save
               </Button>
             </div>
           </div>

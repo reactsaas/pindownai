@@ -263,12 +263,20 @@ const firebasePlugin: FastifyPluginAsync = async (fastify: FastifyInstance<ZodTy
       const datasetsRef = db.ref(`pin_datasets/${pinId}`);
       const snapshot = await datasetsRef.once('value');
       
+      console.log(`Fetching datasets for pin: ${pinId}`);
+      console.log(`Firebase path: pin_datasets/${pinId}`);
+      console.log(`Snapshot exists: ${snapshot.exists()}`);
+      
       if (!snapshot.exists()) {
+        console.log('No datasets found for pin');
         return [];
       }
       
       const datasets = snapshot.val();
-      return Object.values(datasets) || [];
+      console.log('Raw datasets data:', datasets);
+      const result = Object.values(datasets) || [];
+      console.log('Processed datasets:', result);
+      return result;
     },
 
     async getDataset(pinId: string, datasetId: string): Promise<any> {

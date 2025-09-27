@@ -919,7 +919,7 @@ export async function pinRoutes(fastify: FastifyInstance) {
   // Dataset Management Routes
   // POST /api/pins/:pid/datasets - Create new dataset
   fastify.post('/api/pins/:pid/datasets', {
-    preHandler: process.env.NODE_ENV === 'development' ? [] : [fastify.authenticate],
+    preHandler: [fastify.authenticate],
     schema: {
       params: pinIdParamSchema,
       body: createDatasetSchema,
@@ -936,13 +936,8 @@ export async function pinRoutes(fastify: FastifyInstance) {
       const { pid } = request.params as { pid: string };
       const datasetData = request.body as CreateDatasetRequest;
       
-      // Get user ID (development vs production)
-      let userId: string;
-      if (process.env.NODE_ENV === 'development') {
-        userId = 'dev_user_123'; // For development - matches existing pins
-      } else {
-        userId = (request as any).user.user_id;
-      }
+      // Get user ID from authenticated request
+      const userId = (request as any).user.user_id;
 
       // Verify pin exists and user has access
       const pinData = await fastify.firebase.getPin(pid);
@@ -989,7 +984,7 @@ export async function pinRoutes(fastify: FastifyInstance) {
 
   // GET /api/pins/:pid/datasets - Get all datasets for pin
   fastify.get('/api/pins/:pid/datasets', {
-    preHandler: process.env.NODE_ENV === 'development' ? [] : [fastify.authenticate],
+    preHandler: [fastify.authenticate],
     schema: {
       params: pinIdParamSchema,
       response: {
@@ -1003,13 +998,8 @@ export async function pinRoutes(fastify: FastifyInstance) {
     try {
       const { pid } = request.params as { pid: string };
       
-      // Get user ID (development vs production)
-      let userId: string;
-      if (process.env.NODE_ENV === 'development') {
-        userId = 'dev_user_123'; // For development - matches existing pins
-      } else {
-        userId = (request as any).user.user_id;
-      }
+      // Get user ID from authenticated request
+      const userId = (request as any).user.user_id;
 
       // Verify pin exists and user has access
       const pinData = await fastify.firebase.getPin(pid);
@@ -1050,7 +1040,7 @@ export async function pinRoutes(fastify: FastifyInstance) {
 
   // GET /api/pins/:pid/datasets/:datasetId - Get specific dataset
   fastify.get('/api/pins/:pid/datasets/:datasetId', {
-    preHandler: process.env.NODE_ENV === 'development' ? [] : [fastify.authenticate],
+    preHandler: [fastify.authenticate],
     schema: {
       params: datasetIdParamSchema,
       response: {
@@ -1064,13 +1054,8 @@ export async function pinRoutes(fastify: FastifyInstance) {
     try {
       const { pid, datasetId } = request.params as { pid: string; datasetId: string };
       
-      // Get user ID (development vs production)
-      let userId: string;
-      if (process.env.NODE_ENV === 'development') {
-        userId = 'dev_user_123'; // For development - matches existing pins
-      } else {
-        userId = (request as any).user.user_id;
-      }
+      // Get user ID from authenticated request
+      const userId = (request as any).user.user_id;
 
       // Verify pin exists and user has access
       const pinData = await fastify.firebase.getPin(pid);
@@ -1113,7 +1098,7 @@ export async function pinRoutes(fastify: FastifyInstance) {
 
   // DELETE /api/pins/:pid/datasets/:datasetId - Delete dataset
   fastify.delete('/api/pins/:pid/datasets/:datasetId', {
-    preHandler: process.env.NODE_ENV === 'development' ? [] : [fastify.authenticate],
+    preHandler: [fastify.authenticate],
     schema: {
       params: datasetIdParamSchema,
       response: {
@@ -1127,13 +1112,8 @@ export async function pinRoutes(fastify: FastifyInstance) {
     try {
       const { pid, datasetId } = request.params as { pid: string; datasetId: string };
       
-      // Get user ID (development vs production)
-      let userId: string;
-      if (process.env.NODE_ENV === 'development') {
-        userId = 'dev_user_123'; // For development - matches existing pins
-      } else {
-        userId = (request as any).user.user_id;
-      }
+      // Get user ID from authenticated request
+      const userId = (request as any).user.user_id;
 
       // Verify pin exists and user has access
       const pinData = await fastify.firebase.getPin(pid);

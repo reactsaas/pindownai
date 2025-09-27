@@ -1,0 +1,25 @@
+{
+  "product": {
+    "id": "prod_123",
+    "name": "Premium Widget",
+    "price": 299.99,
+    "currency": "USD",
+    "category": "Electronics",
+    "inStock": true,
+    "stockCount": 150
+  },
+  "sales": {
+    "totalRevenue": 45000,
+    "unitsSold": 150,
+    "conversionRate": 0.12,
+    "avgOrderValue": 299.99
+  },
+  "metrics": {
+    "pageViews": 2500,
+    "uniqueVisitors": 1200,
+    "bounceRate": 0.35,
+    "sessionDuration": 180
+  },
+  "status": "active",
+  "lastUpdated": "2025-01-24T10:30:00.000Z"
+}

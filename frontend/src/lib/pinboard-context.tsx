@@ -87,8 +87,21 @@ export const PinboardProvider: React.FC<PinboardProviderProps> = ({ children }) 
 
   // Load pinboards on mount
   useEffect(() => {
-    refreshPinboards();
-  }, []);
+    const loadPinboards = async () => {
+      try {
+        dispatch({ type: 'SET_LOADING', payload: true });
+        dispatch({ type: 'CLEAR_ERROR' });
+        
+        const token = await getAuthToken();
+        const pinboards = await pinboardApi.getPinboards(token);
+        dispatch({ type: 'SET_PINBOARDS', payload: pinboards });
+      } catch (error) {
+        dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Failed to load pinboards' });
+      }
+    };
+
+    loadPinboards();
+  }, [getAuthToken]);
 
   const refreshPinboards = async () => {
     try {
