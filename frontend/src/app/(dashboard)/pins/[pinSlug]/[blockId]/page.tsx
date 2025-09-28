@@ -10,21 +10,10 @@ import { ForwardRefEditor } from "@/components/ForwardRefEditor"
 import { type MDXEditorMethods } from '@mdxeditor/editor'
 
 import { useAuth } from "@/lib/auth-context"
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import remarkMath from 'remark-math'
-import rehypeKatex from 'rehype-katex'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import 'katex/dist/katex.min.css'
 import { toast } from "sonner"
 import { useTheme } from "next-themes"
-import { remarkTemplateVariables } from '@/lib/remark-template-variables'
-import { TemplateVariable } from '@/components/TemplateVariable'
-import { TemplateVariableLoadingProvider, useTemplateVariableLoading } from '@/lib/template-variable-loading-context'
-import { motion, AnimatePresence } from 'framer-motion'
-import { MarkdownLoadingSkeleton } from '@/components/loading-skeleton'
-import { useMemo, useCallback } from 'react'
+import { useTemplateVariableLoading } from '@/lib/template-variable-loading-context'
+import { SharedContentViewer } from '@/components/share/SharedContentViewer'
 
 interface Pin {
   id: string
@@ -521,13 +510,41 @@ export default function BlockEditPage() {
             />
           </div>
         ) : (
-          <TemplateVariableLoadingProvider>
-            <PreviewContent 
-              template={template} 
-              pinData={pinData} 
-              theme={resolvedTheme} 
-            />
-          </TemplateVariableLoadingProvider>
+          <div className="h-full overflow-auto">
+            {pinData && blockData ? (
+              <SharedContentViewer
+                pin={{
+                  id: pinData.id,
+                  metadata: {
+                    title: pinData.metadata.title,
+                    description: pinData.metadata.description || '',
+                    tags: [],
+                    created_at: pinData.metadata.created_at,
+                    updated_at: blockData.updated_at,
+                    is_public: pinData.metadata.is_public
+                  },
+                  blocks: [{
+                    id: blockData.id,
+                    name: blockData.name,
+                    type: blockData.type as 'markdown',
+                    template: template,
+                    order: blockData.order,
+                    updated_at: blockData.updated_at
+                  }],
+                  type: 'automation'
+                }}
+                isModal={false}
+                currentPinId={pinId}
+              />
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Loading preview...</p>
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
 
@@ -548,157 +565,3 @@ const LiveIndicator: React.FC = () => {
   )
 }
 
-
-
-// Preview content component that handles loading states and animations
-const PreviewContent: React.FC<{
-  template: string
-  pinData: any
-  theme: string | undefined
-}> = ({ template, pinData, theme }) => {
-  const { isInitialLoadComplete, seedVariables } = useTemplateVariableLoading()
-
-  // Seed expected variables from template so we wait for them before reveal
-  useEffect(() => {
-    const matches = Array.from(template.matchAll(/\{\{(dataset\.[^}]+)\}\}/g))
-    const ids: string[] = matches.map(m => m[1])
-    if (ids.length > 0) seedVariables(ids)
-  }, [template, seedVariables])
-
-  // Memoize the template variable component creator to prevent infinite loops
-  const createTemplateVariableComponent = useCallback((props: any) => {
-    return (
-      <TemplateVariable
-        variableType={props.variableType || props['variable-type']}
-        datasetId={props.datasetId || props['data-set-id']}
-        pinId={props.pinId || props['pin-id']}
-        jsonPath={props.jsonPath || props['json-path']}
-        fullPath={props.fullPath || props['full-path']}
-        currentPinId={pinData?.id}
-      />
-    )
-  }, [pinData?.id])
-
-  // Memoize the ReactMarkdown components to prevent re-creation
-  const markdownComponents = useMemo(() => ({
-    ...(({
-      'template-variable': createTemplateVariableComponent,
-      'templateVariableBlock': createTemplateVariableComponent
-    }) as any),
-    h1: ({ children }: any) => {
-      const text = String(children)
-      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-      return <h1 id={id} className="text-3xl font-bold mb-6 mt-8 first:mt-0">{children}</h1>
-    },
-    h2: ({ children }: any) => {
-      const text = String(children)
-      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-      return <h2 id={id} className="text-2xl font-semibold mb-4 mt-6 first:mt-0">{children}</h2>
-    },
-    h3: ({ children }: any) => {
-      const text = String(children)
-      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-      return <h3 id={id} className="text-xl font-medium mb-3 mt-5 first:mt-0">{children}</h3>
-    },
-    h4: ({ children }: any) => {
-      const text = String(children)
-      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-      return <h4 id={id} className="text-lg font-medium mb-2 mt-4 first:mt-0">{children}</h4>
-    },
-    p: ({ children }: any) => <p className="mb-4 leading-relaxed">{children}</p>,
-    ul: ({ children }: any) => <ul className="mb-4 ml-6 list-disc space-y-2">{children}</ul>,
-    ol: ({ children }: any) => <ol className="mb-4 ml-6 list-decimal space-y-2">{children}</ol>,
-    li: ({ children }: any) => <li className="leading-relaxed">{children}</li>,
-    blockquote: ({ children }: any) => (
-      <blockquote className="border-l-4 border-muted-foreground/20 pl-4 italic my-4 text-muted-foreground">
-        {children}
-      </blockquote>
-    ),
-    table: ({ children }: any) => (
-      <div className="overflow-x-auto my-6">
-        <table className="w-full border-collapse border border-border">
-          {children}
-        </table>
-      </div>
-    ),
-    th: ({ children }: any) => (
-      <th className="border border-border bg-muted px-4 py-2 text-left font-semibold">
-        {children}
-      </th>
-    ),
-    td: ({ children }: any) => (
-      <td className="border border-border px-4 py-2">
-        {children}
-      </td>
-    ),
-    code: ({ className, children, ...props }: any) => {
-      const match = /language-(\w+)/.exec(className || '')
-      return match ? (
-        <div className="not-prose">
-          <SyntaxHighlighter
-            style={theme === 'dark' ? (oneDark as any) : (oneLight as any)}
-            language={match[1]}
-            PreTag="div"
-            className="rounded-lg my-4"
-          >
-            {String(children).replace(/\n$/, '')}
-          </SyntaxHighlighter>
-        </div>
-      ) : (
-        <code className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
-          {children}
-        </code>
-      )
-    },
-    pre: ({ children }: any) => (
-      <pre className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 p-4 rounded-lg overflow-x-auto my-4 shadow-sm">
-        {children}
-      </pre>
-    ),
-  }), [createTemplateVariableComponent, theme])
-
-  return (
-    <Card className="h-full m-4 bg-background border-border">
-      <CardHeader className="bg-background">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Eye className="w-4 h-4" />
-            Rendered Output
-          </CardTitle>
-          <LiveIndicator />
-        </div>
-      </CardHeader>
-      <CardContent className="h-full overflow-y-auto bg-background">
-        <AnimatePresence mode="wait">
-          <>
-            {!isInitialLoadComplete && (
-              <motion.div
-                key="loading"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <MarkdownLoadingSkeleton />
-              </motion.div>
-            )}
-            <motion.div
-              key="content"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: isInitialLoadComplete ? 1 : 0, y: isInitialLoadComplete ? 0 : 20 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className={`prose prose-gray dark:prose-invert max-w-none ${!isInitialLoadComplete ? 'invisible absolute -z-10' : ''}`}
-            >
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath, remarkTemplateVariables]}
-                rehypePlugins={[rehypeKatex]}
-                components={markdownComponents}
-              >
-                {template}
-              </ReactMarkdown>
-            </motion.div>
-          </>
-        </AnimatePresence>
-      </CardContent>
-    </Card>
-  )
-}

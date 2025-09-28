@@ -67,6 +67,7 @@ interface SharedContentViewerProps {
 // Live indicator component for real-time connection status
 function LiveIndicator() {
   const { anyConnected } = useTemplateVariableLoading()
+  
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-1 rounded border text-xs ${anyConnected ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' : 'bg-muted text-muted-foreground border-border'}`}>
       <span className={`w-2 h-2 rounded-full ${anyConnected ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground/50'}`} />
@@ -165,7 +166,7 @@ const SharePageContent = React.memo(function SharePageContent({ template, pinDat
     ol: ({ children }: any) => <ol className="mb-4 ml-6 list-decimal space-y-1">{children}</ol>,
     li: ({ children }: any) => <li className="leading-7">{children}</li>,
     blockquote: ({ children }: any) => (
-      <blockquote className="border-l-4 border-muted-foreground/20 pl-4 italic my-4">
+      <blockquote className="pl-4 italic my-4">
         {children}
       </blockquote>
     ),
@@ -213,7 +214,7 @@ const SharePageContent = React.memo(function SharePageContent({ template, pinDat
   }), [createTemplateVariableComponent, theme])
 
   return (
-    <div className="prose prose-gray dark:prose-invert max-w-none">
+    <div className="prose prose-gray dark:prose-invert max-w-none [&_blockquote]:border-l-0 [&_blockquote]:border-0 [&_*]:border-l-0">
       <AnimatePresence mode="wait">
         <>
           {!isInitialLoadComplete && (
@@ -386,9 +387,9 @@ export const SharedContentViewer: React.FC<SharedContentViewerProps> = ({
           >
             <TemplateVariableLoadingProvider>
               <div className="space-y-4 mb-6">
-                <p className="text-xl text-foreground text-pretty leading-relaxed font-medium">
+                {/* <p className="text-xl text-foreground text-pretty leading-relaxed font-medium">
                   {pin.metadata.description}
-                </p>
+                </p> */}
                 <div className="pb-4">
                   <MetadataRow pin={pin} />
                 </div>
@@ -434,7 +435,7 @@ export const SharedContentViewer: React.FC<SharedContentViewerProps> = ({
         <CardHeader className="pb-6 bg-transparent">
           <div className="space-y-4">
             <CardTitle className="text-3xl font-bold leading-tight">{pin.metadata.title}</CardTitle>
-            <p className="text-muted-foreground text-lg">{pin.metadata.description}</p>
+            {/* <p className="text-muted-foreground text-lg">{pin.metadata.description}</p> */}
             
             {/* Metadata with LiveIndicator */}
             <MetadataRow pin={pin} />

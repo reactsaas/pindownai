@@ -128,3 +128,29 @@ logVerbose('Pin clicked', 'PinboardPage', {
 ```
 
 ---
+
+## 🔄 Code Duplikation vermeiden
+
+### **DRY Regel: 2+ mal derselbe Code = Shared Utility erstellen**
+
+```typescript
+// ✅ Frontend Utils: frontend/src/lib/utils/[name].ts
+export const formatPinDate = (dateString: string) => {
+  if (!dateString) return 'Unknown'
+  return new Date(dateString).toLocaleDateString()
+}
+
+// ✅ Backend Utils: backend-api/src/lib/utils/[name].ts  
+export const validatePinId = (pinId: string): boolean => {
+  return /^p-[a-zA-Z0-9_-]+$/.test(pinId)
+}
+
+// ❌ NIEMALS Code copy-pasten ohne Refactoring
+// ❌ NIEMALS Utilities in Component-Dateien verstecken
+```
+
+**Kategorien:** Date/Time, Validation, Data transformation, UI helpers, API helpers
+
+**Immer daran denken: Copy-Paste = Utility erstellen! 🛠️**
+
+---

@@ -36,6 +36,7 @@ export const TemplateVariableLoadingProvider: React.FC<TemplateVariableLoadingPr
   const [connections, setConnections] = useState<Set<string>>(new Set())
   const [isInitialLoadComplete, setIsInitialLoadComplete] = useState(false)
   const [hasStartedLoading, setHasStartedLoading] = useState(false)
+  const [stableAnyConnected, setStableAnyConnected] = useState(false)
 
   const seedVariables = React.useCallback((ids: string[]) => {
     if (!ids || ids.length === 0) return
@@ -89,8 +90,18 @@ export const TemplateVariableLoadingProvider: React.FC<TemplateVariableLoadingPr
     }
   }, [variables.size, loadedVariables.size, hasStartedLoading])
 
+  // Debounce anyConnected to prevent flickering
+  useEffect(() => {
+    const actualAnyConnected = connections.size > 0
+    const timer = setTimeout(() => {
+      setStableAnyConnected(actualAnyConnected)
+    }, 200)
+    
+    return () => clearTimeout(timer)
+  }, [connections.size])
+
   const isAnyVariableLoading = variables.size > loadedVariables.size
-  const anyConnected = connections.size > 0
+  const anyConnected = stableAnyConnected
 
   const value = React.useMemo(() => ({
     registerVariable,
