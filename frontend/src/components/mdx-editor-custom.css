@@ -25,33 +25,47 @@
 .mdxeditor-toolbar {
   background-color: #FAFAFA !important;
   border-bottom: 1px solid hsl(var(--border)) !important;
-  padding: 8px 12px !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  white-space: nowrap !important;
+  padding: 12px 16px !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  white-space: normal !important;
   display: flex !important;
-  align-items: center !important;
-  min-height: 48px !important;
+  align-items: flex-start !important;
+
+
+  flex-wrap: wrap !important;
 }
 
 /* Responsive toolbar for mobile */
 @media (max-width: 640px) {
   .mdxeditor-toolbar {
-    padding: 4px 6px !important;
+    padding: 10px 12px !important;
     gap: 2px !important;
-    min-height: 36px !important;
+    min-height: 70px !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    flex-wrap: wrap !important;
   }
   
   .mdxeditor-toolbar button {
-    padding: 3px 4px !important;
-    height: 24px !important;
-    min-width: 24px !important;
+    padding: 5px 7px !important;
+    height: 32px !important;
+    min-width: 32px !important;
     font-size: 11px !important;
   }
   
   /* Make toolbar groups more compact */
   .mdxeditor-toolbar > div > div {
     gap: 1px !important;
+  }
+}
+
+/* Third row support around 580px */
+@media (max-width: 600px) {
+  .mdxeditor-toolbar {
+    min-height: 110px !important;
   }
   
   /* Compact dropdown/select elements */
@@ -74,11 +88,14 @@
 /* Extra small screens */
 @media (max-width: 480px) {
   .mdxeditor-toolbar {
-    padding: 2px 4px !important;
-    overflow-x: auto !important;
+    padding: 8px 10px !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
-    min-height: 28px !important;
+
+  
+    flex-wrap: wrap !important;
   }
   
   .mdxeditor-toolbar::-webkit-scrollbar {
@@ -86,15 +103,15 @@
   }
   
   .mdxeditor-toolbar button {
-    padding: 2px 3px !important;
-    height: 20px !important;
-    min-width: 20px !important;
+    padding: 4px 5px !important;
+    height: 28px !important;
+    min-width: 28px !important;
     font-size: 10px !important;
   }
   
   .mdxeditor-toolbar svg {
-    width: 10px !important;
-    height: 10px !important;
+    width: 14px !important;
+    height: 14px !important;
   }
 }
 
@@ -549,11 +566,28 @@ html.dark .mdxeditor [class*="_toolbarToggleItem_"] * {
   display: none !important;
 }
 
-/* Dark mode: make the 'Source mode' toolbar title readable */
-.dark .mdxeditor-toolbar [class*="_toolbarTitleMode_"] {
-  color: #e5e7eb !important;
-  opacity: 1 !important;
-  font-weight: 500 !important;
+/* Hide the 'Source mode' text - we'll highlight the button instead */
+.mdxeditor-toolbar [class*="_toolbarTitleMode_"],
+.mdxeditor-toolbar ._toolbarTitleMode_1e2ox_1027 {
+  display: none !important;
+}
+
+/* Enhance source mode button highlighting when active */
+.mdxeditor-toolbar button[aria-label="Source mode"][data-state="on"],
+.mdxeditor-toolbar button[aria-label="Source mode"][aria-checked="true"] {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border: 2px solid hsl(var(--primary)) !important;
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2) !important;
+}
+
+/* Dark mode source mode button highlighting */
+.dark .mdxeditor-toolbar button[aria-label="Source mode"][data-state="on"],
+.dark .mdxeditor-toolbar button[aria-label="Source mode"][aria-checked="true"] {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border: 2px solid hsl(var(--primary)) !important;
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2) !important;
 }
 
 /* Fix CodeMirror source editor for dark mode */
@@ -717,4 +751,157 @@ html.dark .mdxeditor::-webkit-scrollbar-thumb:hover {
 /* Ensure wrapper does not capture scroll */
 .editor-scroll {
   overflow: visible !important;
+}
+
+/* Enhanced Insert Variable Button Styling - Strong background */
+.mdxeditor-toolbar button[title*="Insert Template Variable"] {
+  background: #e2e8f0 !important;
+  color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  padding: 6px 12px !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  height: 32px !important;
+  width: auto !important;
+  min-width: auto !important;
+}
+
+.mdxeditor-toolbar button[title*="Insert Template Variable"]:hover {
+  background: #cbd5e1 !important;
+  color: hsl(var(--foreground)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.mdxeditor-toolbar button[title*="Insert Template Variable"] svg {
+  color: hsl(var(--foreground)) !important;
+  fill: hsl(var(--foreground)) !important;
+  stroke: hsl(var(--foreground)) !important;
+}
+
+.mdxeditor-toolbar button[title*="Insert Template Variable"]:hover svg {
+  color: hsl(var(--accent-foreground)) !important;
+  fill: hsl(var(--accent-foreground)) !important;
+  stroke: hsl(var(--accent-foreground)) !important;
+}
+
+.mdxeditor-toolbar button[title*="Insert Template Variable"] span {
+  color: hsl(var(--foreground)) !important;
+  font-weight: 500 !important;
+}
+
+.mdxeditor-toolbar button[title*="Insert Template Variable"]:hover span {
+  color: hsl(var(--accent-foreground)) !important;
+}
+
+/* Dark mode overrides for insert variable button */
+html.dark .mdxeditor-toolbar button[title*="Insert Template Variable"],
+.dark .mdxeditor-toolbar button[title*="Insert Template Variable"] {
+  background: #374151 !important;
+  color: hsl(var(--foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+html.dark .mdxeditor-toolbar button[title*="Insert Template Variable"]:hover,
+.dark .mdxeditor-toolbar button[title*="Insert Template Variable"]:hover {
+  background: #4b5563 !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+/* Enhanced AI Edit Button Styling - Similar to Insert Variable */
+.mdxeditor-toolbar button[title*="AI Edit"] {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 6px 12px !important;
+  font-weight: 500 !important;
+  font-size: 12px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  height: 32px !important;
+  width: auto !important;
+  min-width: auto !important;
+}
+
+.mdxeditor-toolbar button[title*="AI Edit"]:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%) !important;
+  color: white !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.mdxeditor-toolbar button[title*="AI Edit"] svg {
+  color: white !important;
+  fill: white !important;
+  stroke: white !important;
+}
+
+.mdxeditor-toolbar button[title*="AI Edit"] span {
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+/* Dark mode overrides for AI Edit button */
+html.dark .mdxeditor-toolbar button[title*="AI Edit"],
+.dark .mdxeditor-toolbar button[title*="AI Edit"] {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%) !important;
+  color: white !important;
+}
+
+html.dark .mdxeditor-toolbar button[title*="AI Edit"]:hover,
+.dark .mdxeditor-toolbar button[title*="AI Edit"]:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%) !important;
+  color: white !important;
+}
+
+html.dark .mdxeditor-toolbar button[title*="AI Edit"] svg,
+.dark .mdxeditor-toolbar button[title*="AI Edit"] svg {
+  color: white !important;
+  fill: white !important;
+  stroke: white !important;
+}
+
+html.dark .mdxeditor-toolbar button[title*="AI Edit"] span,
+.dark .mdxeditor-toolbar button[title*="AI Edit"] span {
+  color: white !important;
+}
+
+/* Responsive adjustments for the enhanced buttons */
+@media (max-width: 640px) {
+  .mdxeditor-toolbar button[title*="Insert Template Variable"],
+  .mdxeditor-toolbar button[title*="AI Edit"] {
+    padding: 3px 6px !important;
+    font-size: 9px !important;
+    height: 24px !important;
+  }
+  
+  .mdxeditor-toolbar button[title*="Insert Template Variable"] svg,
+  .mdxeditor-toolbar button[title*="AI Edit"] svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .mdxeditor-toolbar button[title*="Insert Template Variable"],
+  .mdxeditor-toolbar button[title*="AI Edit"] {
+    padding: 2px 4px !important;
+    font-size: 8px !important;
+    height: 20px !important;
+    gap: 1px !important;
+  }
+  
+  .mdxeditor-toolbar button[title*="Insert Template Variable"] svg,
+  .mdxeditor-toolbar button[title*="AI Edit"] svg {
+    width: 10px !important;
+    height: 10px !important;
+  }
 }

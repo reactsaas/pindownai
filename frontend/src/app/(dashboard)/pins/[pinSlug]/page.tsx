@@ -396,6 +396,40 @@ export default function PinEditPage() {
     )
   }
 
+  const handleEditDataset = async (datasetId: string, newContent: string) => {
+    try {
+      const token = await getAuthToken()
+      const response = await fetch(`http://localhost:8000/api/pins/${pinId}/datasets/${datasetId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          data: { content: newContent },
+          metadata: { type: 'markdown' }
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to update dataset: ${response.statusText}`)
+      }
+
+      // Update local state
+      setSubmittedDataEntries(prev => 
+        prev.map(entry => 
+          entry.id === datasetId 
+            ? { ...entry, data: { content: newContent } }
+            : entry
+        )
+      )
+
+             // Data updated in local state above
+    } catch (err) {
+      console.error('Error updating dataset:', err)
+    }
+  }
+
   const handleRenameSubmittedData = (id: string, newName: string) => {
     setSubmittedDataEntries(prev => 
       prev.map(entry => 
@@ -700,6 +734,7 @@ export default function PinEditPage() {
             onRenameDataset={handleRenameSubmittedData}
             onApproveDataset={handleApproveSubmittedData}
             onRejectDataset={handleRejectSubmittedData}
+            onEditDataset={handleEditDataset}
           />
         </div>
       ) : (

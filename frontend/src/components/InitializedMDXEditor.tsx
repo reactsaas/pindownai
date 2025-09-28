@@ -34,6 +34,7 @@ import {
 } from '@mdxeditor/editor'
 import { templateVariablePlugin } from './mdx-editor/templateVariablePlugin'
 import { TemplateVariableToolbarButton } from './mdx-editor/TemplateVariableToolbarButton'
+import { AIEditToolbarButton } from './mdx-editor/AIEditToolbarButton'
 import '@mdxeditor/editor/style.css'
 import './mdx-editor-custom.css'
 
@@ -41,10 +42,12 @@ import './mdx-editor-custom.css'
 export default function InitializedMDXEditor({
   editorRef,
   currentPinId,
+  onAIEdit,
   ...props
 }: { 
   editorRef: ForwardedRef<MDXEditorMethods> | null
   currentPinId?: string | null
+  onAIEdit?: (prompt: string, selectedDocs: any[], researchData: any[]) => void
 } & MDXEditorProps) {
   return (
     <>
@@ -87,34 +90,30 @@ export default function InitializedMDXEditor({
           // Toolbar plugin with responsive layout
           toolbarPlugin({
             toolbarContents: () => (
-              <DiffSourceToggleWrapper>
-                <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-                  <div className="flex items-center gap-1">
-                    <UndoRedo />
-                    <BlockTypeSelect />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <BoldItalicUnderlineToggles />
-                    <CodeToggle />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <ListsToggle />
-                    <CreateLink />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <InsertImage />
-                    <InsertTable />
-                    <InsertThematicBreak />
-                    <TemplateVariableToolbarButton currentPinId={currentPinId} />
-                  </div>
-                  <ConditionalContents
-                    options={[
-                      { when: (editor) => editor?.editorType === 'codeblock', contents: () => <ChangeCodeMirrorLanguage /> },
-                      { fallback: () => (<InsertCodeBlock />) }
-                    ]}
-                  />
+              <div className="flex flex-wrap items-center gap-1 sm:gap-2 w-full">
+                <UndoRedo />
+                <BlockTypeSelect />
+                <BoldItalicUnderlineToggles />
+                <ListsToggle />
+                <CreateLink />
+                <InsertImage />
+                <InsertTable />
+                <InsertThematicBreak />
+                <CodeToggle />
+                <ConditionalContents
+                  options={[
+                    { when: (editor) => editor?.editorType === 'codeblock', contents: () => <ChangeCodeMirrorLanguage /> },
+                    { fallback: () => (<InsertCodeBlock />) }
+                  ]}
+                />
+                <div className="flex items-center gap-1 ml-auto">
+                  <TemplateVariableToolbarButton currentPinId={currentPinId} />
+                  <AIEditToolbarButton onAIEdit={onAIEdit} />
+                  <DiffSourceToggleWrapper>
+                    <></>
+                  </DiffSourceToggleWrapper>
                 </div>
-              </DiffSourceToggleWrapper>
+              </div>
             )
           })
         ]}

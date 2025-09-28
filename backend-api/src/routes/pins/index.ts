@@ -1096,6 +1096,63 @@ export async function pinRoutes(fastify: FastifyInstance) {
     }
   });
 
+  // PUT /api/pins/:pid/datasets/:datasetId - Update dataset
+  fastify.put('/api/pins/:pid/datasets/:datasetId', {
+    preHandler: [fastify.authenticate]
+  }, async (request, reply) => {
+    try {
+      const { pid, datasetId } = request.params as { pid: string; datasetId: string };
+      const { data, metadata } = request.body as { data: Record<string, any>; metadata?: { type: string } };
+      const userId = request.user!.user_id;
+
+      // Verify pin ownership
+      const pin = await fastify.firebase.getPin(pid);
+      if (!pin) {
+        throw ERRORS.RESOURCE_NOT_FOUND;
+      }
+
+      if (pin.user_id !== userId) {
+        throw ERRORS.PERMISSION_DENIED;
+      }
+
+      // Check if dataset exists first
+      const datasets = await fastify.firebase.getPinDatasets(pid);
+      const dataset = datasets.find(d => d.id === datasetId);
+      
+      if (!dataset) {
+        throw ERRORS.RESOURCE_NOT_FOUND;
+      }
+
+      // Update the dataset data
+      const updates = {
+        [`pin_datasets/${pid}/${datasetId}/data`]: data
+      };
+      
+      if (metadata) {
+        updates[`pin_datasets/${pid}/${datasetId}/metadata`] = {
+          ...dataset.metadata,
+          ...metadata,
+          updatedAt: new Date().toISOString()
+        };
+      }
+
+      await fastify.firebase.db.ref().update(updates);
+
+      return reply.code(200).send(createSuccessResponse({
+        message: 'Dataset updated successfully',
+        datasetId
+      }));
+    } catch (error) {
+      fastify.log.error(`Error updating dataset: ${error}`);
+      
+      if (error && typeof error === 'object' && 'code' in error) {
+        throw error;
+      }
+      
+      throw ERRORS.INTERNAL_SERVER_ERROR;
+    }
+  });
+
   // DELETE /api/pins/:pid/datasets/:datasetId - Delete dataset
   fastify.delete('/api/pins/:pid/datasets/:datasetId', {
     preHandler: [fastify.authenticate],

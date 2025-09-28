@@ -32,14 +32,8 @@ import {
   ExternalLink,
   Tag
 } from "lucide-react"
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import remarkMath from 'remark-math'
-import rehypeKatex from 'rehype-katex'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import 'katex/dist/katex.min.css'
 import { cn } from "@/lib/utils"
+import { SharedContentViewer } from '@/components/share/SharedContentViewer'
 import { useTheme } from "next-themes"
 import { useAuth } from "@/lib/auth-context"
 import {
@@ -55,18 +49,30 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Input } from "@/components/ui/input"
+import { logVerbose, logInfo } from '@/lib/logger'
 
 interface Pin {
   id: string
-  name: string
+  name?: string
   type: "automation" | "article" | "toplist" | "research"
+  description?: string
+  content?: string
+  lastModified?: string
+  createdAt?: string
+  author?: string
+  views?: number
+  metadata: {
+    title: string
   description: string
-  content: string
-  lastModified: string
-  createdAt: string
-  author: string
-  views: number
-  blocks?: Array<{
+    tags: string[]
+    created_at: string
+    updated_at: string
+    is_public?: boolean
+    category?: string
+    readTime?: string
+    stats?: Record<string, string | number>
+  }
+  blocks: Array<{
     id: string
     name: string
     type: 'markdown' | 'mermaid' | 'conditional' | 'image' | 'image-steps'
@@ -74,12 +80,6 @@ interface Pin {
     order: number
     updated_at: string
   }>
-  metadata?: {
-    category?: string
-    readTime?: string
-    tags?: string[]
-    stats?: Record<string, string | number>
-  }
 }
 
 interface Pinboard {
@@ -140,8 +140,13 @@ This week showed strong performance across all key metrics with a notable 15% in
         author: "Sales Automation System",
         views: 127,
         metadata: {
-          category: "Sales Analytics",
+          title: "Weekly Sales Performance Report",
+          description: "Automated weekly sales performance summary with key metrics and insights",
           tags: ["weekly", "sales", "performance", "automation"],
+          created_at: "2024-12-06T00:00:00Z",
+          updated_at: "2024-12-06T00:00:00Z",
+          is_public: true,
+          category: "Sales Analytics",
           stats: {
             revenue: 45670,
             customers: 1834,
@@ -440,8 +445,8 @@ export default function SharePinboardPage() {
         
         // Get auth token if user is logged in
         const token = await getAuthToken()
-        console.log('Auth token retrieved:', token ? 'YES' : 'NO')
-        console.log('User state:', user ? 'LOGGED_IN' : 'NOT_LOGGED_IN')
+        logVerbose('Auth token retrieved', 'PinboardPage', { hasToken: token ? 'YES' : 'NO' })
+        logVerbose('User state', 'PinboardPage', { state: user ? 'LOGGED_IN' : 'NOT_LOGGED_IN' })
         
 
         const headers: HeadersInit = {
@@ -451,10 +456,10 @@ export default function SharePinboardPage() {
         // Add auth header if token exists
         if (token) {
           headers['Authorization'] = `Bearer ${token}`
-          console.log('Sending auth token:', token.substring(0, 20) + '...')
-        } else {
-          console.log('No auth token available - this might cause access issues for private pinboards')
-        }
+          logVerbose('Sending auth token', 'PinboardPage', { token: token.substring(0, 20) + '...' })
+                  } else {
+            logVerbose('No auth token available - this might cause access issues for private pinboards', 'PinboardPage')
+          }
         
         const response = await fetch(`http://localhost:8000/api/public/pinboards/${boardId}`, {
           headers
@@ -470,7 +475,7 @@ export default function SharePinboardPage() {
         }
 
         const data = await response.json()
-        console.log('Pinboard response data:', data)
+        logVerbose('Pinboard response data', 'PinboardPage', data)
         setPinboard(data.data.pinboard)
       } catch (err) {
         console.error('Error fetching pinboard:', err)
@@ -560,29 +565,51 @@ export default function SharePinboardPage() {
 
   const handlePinClick = async (pin: Pin) => {
     // Set loading state and show modal immediately with basic info
+    logVerbose('Pin clicked', 'PinboardPage', { pinId: pin.id, metadata: pin.metadata })
     setIsLoadingPin(true)
     setSelectedPin(pin)
     
     try {
+      // Get auth token if user is logged in
+      const token = await getAuthToken()
+      
       // Fetch the full pin data with blocks from the public API
-      const response = await fetch(`http://localhost:8000/api/public/pins/${pin.id}`)
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json'
+      }
+      
+      // Add auth header if token exists
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+      
+      const response = await fetch(`http://localhost:8000/api/public/pins/${pin.id}`, {
+        headers
+      })
       
       if (response.ok) {
         const data = await response.json()
         const fullPinData = data.data.pin
         
         // Update the pin with the full data including blocks
+        logVerbose('API response for pin', 'PinboardPage', { pinId: pin.id, data: fullPinData })
         const updatedPin: Pin = {
           ...pin,
-          name: fullPinData.metadata?.title || pin.name,
-          description: fullPinData.metadata?.description || pin.description,
-          blocks: fullPinData.blocks || [],
           metadata: {
-            ...pin.metadata,
-            tags: fullPinData.metadata?.tags || pin.metadata?.tags || []
-          }
+            title: fullPinData.metadata?.title || pin.name || 'Untitled',
+            description: fullPinData.metadata?.description || pin.description || '',
+            tags: fullPinData.metadata?.tags || pin.metadata?.tags || [],
+            created_at: fullPinData.metadata?.created_at || pin.createdAt || new Date().toISOString(),
+            updated_at: fullPinData.metadata?.updated_at || fullPinData.metadata?.created_at || pin.lastModified || new Date().toISOString(),
+            is_public: fullPinData.metadata?.is_public,
+            category: pin.metadata?.category,
+            readTime: pin.metadata?.readTime,
+            stats: pin.metadata?.stats
+          },
+          blocks: fullPinData.blocks || []
         }
         
+        logVerbose('Setting updated pin with blocks', 'PinboardPage', { blockCount: updatedPin.blocks?.length || 0 })
         setSelectedPin(updatedPin)
       }
     } catch (error) {
@@ -774,300 +801,13 @@ export default function SharePinboardPage() {
       {/* Dynamic Modal */}
       <AnimatePresence>
         {selectedPin && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setSelectedPin(null)}
-          >
-            <motion.div
-              layoutId={`pin-${selectedPin.id}`}
-              className="bg-white dark:bg-neutral-800 rounded-lg max-w-5xl w-full max-h-[95vh] h-[95vh] overflow-hidden shadow-2xl flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header with gradient */}
-              <div className="h-24 bg-gradient-to-br from-muted/20 to-muted/10 relative flex-shrink-0">
-                <div className="absolute top-4 left-6">
-                  <Badge variant="secondary" className="bg-white/90 dark:bg-neutral-800/90 text-foreground mb-2">
-                    {getTypeLabel(selectedPin.type)}
-                  </Badge>
-                  <h2 className="text-3xl font-bold text-foreground text-balance">{selectedPin.name}</h2>
-                </div>
-                <div className="absolute top-4 right-4 flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-800 text-foreground"
-                    onClick={() => router.push(`/share/pinboard/${boardId}/${selectedPin.id}`)}
-                  >
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    View Full Page
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-800 text-foreground"
-                  >
-                    Share
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="bg-white/90 dark:bg-neutral-800/90 hover:bg-white dark:hover:bg-neutral-800 text-foreground"
-                    onClick={() => setSelectedPin(null)}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Modal Content */}
-              <div 
-                className="flex-1 p-8 overflow-y-auto"
-                style={{
-                  scrollbarWidth: 'thin',
-                  scrollbarColor: 'rgba(156, 163, 175, 0.5) transparent'
-                }}
-              >
-                <div className="flex items-center gap-6 mb-8 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    <span>{selectedPin.author}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>{selectedPin.createdAt}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4" />
-                    <span>{selectedPin.views} views</span>
-                  </div>
-                  {isLoadingPin && (
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-muted-foreground/30 border-t-primary"></div>
-                  )}
-                </div>
-
-                {/* Description */}
-                <div className="prose prose-lg max-w-none mb-8">
-                  <p className="text-xl text-foreground mb-6 text-pretty leading-relaxed font-medium">
-                    {selectedPin.description}
-                  </p>
-                </div>
-
-                {/* Loading State - Skeleton */}
-                {isLoadingPin && (
-                  <div className="space-y-6">
-                    {/* Skeleton for multiple blocks */}
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="space-y-4">
-                        {/* Skeleton heading */}
-                        <div className="h-8 bg-muted dark:bg-neutral-600 rounded-lg animate-pulse w-3/4"></div>
-                        
-                        {/* Skeleton paragraphs */}
-                        <div className="space-y-3">
-                          <div className="h-4 bg-muted/70 dark:bg-neutral-600/80 rounded animate-pulse w-full"></div>
-                          <div className="h-4 bg-muted/70 dark:bg-neutral-600/80 rounded animate-pulse w-5/6"></div>
-                          <div className="h-4 bg-muted/70 dark:bg-neutral-600/80 rounded animate-pulse w-4/5"></div>
-                        </div>
-                        
-                        {/* Skeleton list or table */}
-                        {i === 2 && (
-                          <div className="space-y-2">
-                            <div className="h-4 bg-muted/70 dark:bg-neutral-600/80 rounded animate-pulse w-1/3"></div>
-                            <div className="h-4 bg-muted/70 dark:bg-neutral-600/80 rounded animate-pulse w-2/5"></div>
-                            <div className="h-4 bg-muted/70 dark:bg-neutral-600/80 rounded animate-pulse w-1/4"></div>
-                          </div>
-                        )}
-                        
-                        {/* Skeleton code block */}
-                        {i === 3 && (
-                          <div className="bg-muted/40 dark:bg-neutral-700/60 rounded-lg p-4 space-y-2">
-                            <div className="h-3 bg-muted dark:bg-neutral-600 rounded animate-pulse w-full"></div>
-                            <div className="h-3 bg-muted dark:bg-neutral-600 rounded animate-pulse w-3/4"></div>
-                            <div className="h-3 bg-muted dark:bg-neutral-600 rounded animate-pulse w-5/6"></div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Content */}
-                {!isLoadingPin && (
-                  <motion.div 
-                    className="space-y-6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.4, delay: 0.1 }}
-                  >
-                    {selectedPin.blocks && selectedPin.blocks.length > 0 ? (
-                      selectedPin.blocks
-                        .sort((a, b) => a.order - b.order)
-                        .map((block, index) => (
-                          <motion.div 
-                            key={block.id} 
-                            className="block-content"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ 
-                              duration: 0.5, 
-                              delay: 0.2 + (index * 0.15),
-                              ease: "easeOut"
-                            }}
-                          >
-                            <div className="prose prose-gray dark:prose-invert max-w-none">
-                              <ReactMarkdown
-                                remarkPlugins={[remarkGfm, remarkMath]}
-                                rehypePlugins={[rehypeKatex]}
-                                components={{
-                                  h1: ({ children }) => {
-                                    const text = String(children)
-                                    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-                                    return <h1 id={id} className="text-2xl font-bold mb-4 mt-6 first:mt-0">{children}</h1>
-                                  },
-                                  h2: ({ children }) => {
-                                    const text = String(children)
-                                    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-                                    return <h2 id={id} className="text-xl font-semibold mb-3 mt-5 first:mt-0">{children}</h2>
-                                  },
-                                  h3: ({ children }) => {
-                                    const text = String(children)
-                                    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-                                    return <h3 id={id} className="text-lg font-medium mb-2 mt-4 first:mt-0">{children}</h3>
-                                  },
-                                  p: ({ children }) => <p className="mb-3 leading-6">{children}</p>,
-                                  ul: ({ children }) => <ul className="mb-3 ml-4 list-disc space-y-1">{children}</ul>,
-                                  ol: ({ children }) => <ol className="mb-3 ml-4 list-decimal space-y-1">{children}</ol>,
-                                  li: ({ children }) => <li className="leading-6">{children}</li>,
-                                  blockquote: ({ children }) => (
-                                    <blockquote className="border-l-4 border-muted-foreground/20 pl-3 italic my-3">
-                                      {children}
-                                    </blockquote>
-                                  ),
-                                  table: ({ children }) => (
-                                    <div className="overflow-x-auto my-4">
-                                      <table className="w-full border-collapse border border-border">
-                                        {children}
-                                      </table>
-                                    </div>
-                                  ),
-                                  th: ({ children }) => (
-                                    <th className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 text-left font-medium text-neutral-900 dark:text-neutral-100">
-                                      {children}
-                                    </th>
-                                  ),
-                                  td: ({ children }) => (
-                                    <td className="border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-neutral-900 dark:text-neutral-100">
-                                      {children}
-                                    </td>
-                                  ),
-                                  code: ({ node, inline, className, children, ...props }) => {
-                                    const match = /language-(\w+)/.exec(className || '')
-                                    return !inline && match ? (
-                                      <SyntaxHighlighter
-                                        style={theme === 'dark' ? oneDark : oneLight}
-                                        language={match[1]}
-                                        PreTag="div"
-                                        className="rounded-lg my-3"
-                                        {...props}
-                                      >
-                                        {String(children).replace(/\n$/, '')}
-                                      </SyntaxHighlighter>
-                                    ) : (
-                                      <code className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-1 py-0.5 rounded text-sm font-mono" {...props}>
-                                        {children}
-                                      </code>
-                                    )
-                                  },
-                                  pre: ({ children }) => (
-                                    <pre className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 p-3 rounded-lg overflow-x-auto my-3 shadow-sm [&_*]:bg-transparent [&_*]:!bg-transparent [&_code]:bg-transparent [&_code]:p-0 [&_span]:bg-transparent [&_span]:!bg-transparent">
-                                      {children}
-                                    </pre>
-                                  ),
-                                }}
-                              >
-                                {block.template}
-                              </ReactMarkdown>
-                            </div>
-                          </motion.div>
-                        ))
-                    ) : (
-                      <motion.div 
-                        className="prose prose-gray dark:prose-invert max-w-none"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-                      >
-                        <ReactMarkdown
-                          remarkPlugins={[remarkGfm, remarkMath]}
-                          rehypePlugins={[rehypeKatex]}
-                          components={{
-                            code: ({ node, inline, className, children, ...props }) => {
-                              const match = /language-(\w+)/.exec(className || '')
-                              return !inline && match ? (
-                                <SyntaxHighlighter
-                                  style={theme === 'dark' ? oneDark : oneLight}
-                                  language={match[1]}
-                                  PreTag="div"
-                                  className="rounded-lg my-3"
-                                  {...props}
-                                >
-                                  {String(children).replace(/\n$/, '')}
-                                </SyntaxHighlighter>
-                              ) : (
-                                <code className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-1 py-0.5 rounded text-sm font-mono" {...props}>
-                                  {children}
-                                </code>
-                              )
-                            },
-                            pre: ({ children }) => (
-                              <pre className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 p-3 rounded-lg overflow-x-auto my-3 shadow-sm [&_*]:bg-transparent [&_*]:!bg-transparent [&_code]:bg-transparent [&_code]:p-0 [&_span]:bg-transparent [&_span]:!bg-transparent">
-                                {children}
-                              </pre>
-                            ),
-                          }}
-                        >
-                          {selectedPin.content}
-                        </ReactMarkdown>
-                      </motion.div>
-                    )}
-                  </motion.div>
-                )}
-
-                {/* Tags */}
-                {selectedPin.metadata?.tags && (
-                  <div className="flex items-center gap-2 mt-8 mb-6">
-                    <Tag className="w-4 h-4 text-muted-foreground" />
-                    <div className="flex flex-wrap gap-2">
-                      {selectedPin.metadata.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Automation Stats */}
-                {selectedPin.type === "automation" && selectedPin.metadata?.stats && (
-                  <div className="mt-8 p-6 bg-muted/20 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-4">Key Metrics</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {Object.entries(selectedPin.metadata.stats).map(([key, value]) => (
-                        <div key={key} className="text-center">
-                          <div className="text-2xl font-bold text-primary">{value}</div>
-                          <div className="text-sm text-muted-foreground capitalize">{key}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-
-              </div>
-            </motion.div>
-          </motion.div>
+          <SharedContentViewer
+            pin={selectedPin}
+            isModal={true}
+            onClose={() => setSelectedPin(null)}
+            onViewFullPage={() => router.push(`/share/pinboard/${boardId}/${selectedPin.id}`)}
+            currentPinId={selectedPin.id}
+          />
         )}
       </AnimatePresence>
 

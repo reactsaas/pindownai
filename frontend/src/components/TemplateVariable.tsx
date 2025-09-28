@@ -4,6 +4,7 @@ import React, { useState, useEffect, memo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useAuth } from '@/lib/auth-context'
+import { logVerbose } from '@/lib/logger'
 import { useTemplateVariableLoading } from '@/lib/template-variable-loading-context'
 import { isRealtimeConfigured, subscribeToWorkflowData } from '@/lib/firebase-realtime'
 
@@ -34,10 +35,10 @@ export const TemplateVariable: React.FC<TemplateVariableProps> = memo(({
 
   // Register/unregister variable for loading tracking
   useEffect(() => {
-    console.log('TemplateVariable registering:', { variableId, fullPath })
+    logVerbose('TemplateVariable registering', 'TemplateVariable', { variableId, fullPath })
     registerVariable(variableId)
     return () => {
-      console.log('TemplateVariable unregistering:', { variableId, fullPath })
+      logVerbose('TemplateVariable unregistering', 'TemplateVariable', { variableId, fullPath })
       unregisterVariable(variableId)
     }
   }, [variableId, registerVariable, unregisterVariable])
@@ -145,7 +146,7 @@ export const TemplateVariable: React.FC<TemplateVariableProps> = memo(({
     // During real-time updates, show mini spinner
     return (
       <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted rounded text-sm">
-        <div className="w-3 h-3 border border-muted-foreground border-t-transparent rounded-full animate-spin" />
+        <span className="inline-block w-3 h-3 border border-muted-foreground border-t-transparent rounded-full animate-spin" />
         Loading...
       </span>
     )

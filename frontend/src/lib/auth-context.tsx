@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User } from 'firebase/auth'
 import { useRouter } from 'next/navigation'
 import { onAuthStateChange, signInWithGoogle, signInWithGitHub, signOut as firebaseSignOut, isFirebaseConfigured } from './firebase'
+import { logVerbose, logInfo, logError } from './logger'
 
 interface AuthContextType {
   user: User | null
@@ -67,17 +68,17 @@ export function AuthProvider({
 
             if (response.ok) {
               const result = await response.json()
-              console.log('New user registered successfully:', result)
+              logInfo('New user registered successfully', 'AuthContext', { userId: result.uid })
             } else {
-              console.warn('Failed to save new user data:', response.statusText)
+                              logError('Failed to save new user data', 'AuthContext', { status: response.statusText })
             }
           } else if (checkResponse.ok) {
-            console.log('User already exists, skipping registration')
+            logVerbose('User already exists, skipping registration', 'AuthContext')
           } else {
-            console.warn('Error checking user existence:', checkResponse.statusText)
+            logError('Error checking user existence', 'AuthContext', { status: checkResponse.statusText })
           }
         } catch (error) {
-          console.error('Error handling user registration:', error)
+          logError('Error handling user registration', 'AuthContext', error)
           // Don't throw error to avoid breaking the auth flow
         }
       }
@@ -92,48 +93,48 @@ export function AuthProvider({
   }, [requireAuth, router])
 
   const handleSignInWithGoogle = async () => {
-    console.log('Auth context - isFirebaseConfigured:', isFirebaseConfigured)
+    logVerbose('Firebase configuration status', 'AuthContext', { configured: isFirebaseConfigured })
     if (!isFirebaseConfigured) {
-      console.warn('Firebase not configured. Please set up environment variables.')
+      logError('Firebase not configured. Please set up environment variables.', 'AuthContext')
       return
     }
     try {
       setLoading(true)
-      console.log('Auth context - calling Firebase signInWithGoogle...')
+      logVerbose('Calling Firebase signInWithGoogle', 'AuthContext')
       await signInWithGoogle()
-      console.log('Auth context - Firebase signInWithGoogle successful!')
+      logInfo('Firebase signInWithGoogle successful', 'AuthContext')
       router.push('/pins')
     } catch (error) {
-      console.error('Google sign in error:', error)
+              logError('Google sign in error', 'AuthContext', error)
       setLoading(false)
     }
   }
 
-  const handleSignInWithGitHub = async () => {
-    if (!isFirebaseConfigured) {
-      console.warn('Firebase not configured. Please set up environment variables.')
-      return
-    }
-    try {
-      setLoading(true)
-      await signInWithGitHub()
-      router.push('/pins')
-    } catch (error) {
-      console.error('GitHub sign in error:', error)
+      const handleSignInWithGitHub = async () => {
+      if (!isFirebaseConfigured) {
+        logError('Firebase not configured. Please set up environment variables.', 'AuthContext')
+        return
+      }
+      try {
+        setLoading(true)
+        await signInWithGitHub()
+        router.push('/pins')
+      } catch (error) {
+        logError('GitHub sign in error', 'AuthContext', error)
       setLoading(false)
     }
   }
 
   const handleSignOut = async () => {
     if (!isFirebaseConfigured) {
-      console.warn('Firebase not configured. Please set up environment variables.')
+      logError('Firebase not configured. Please set up environment variables.', 'AuthContext')
       return
     }
     try {
       await firebaseSignOut()
       router.push('/')
     } catch (error) {
-      console.error('Sign out error:', error)
+      logError('Sign out error', 'AuthContext', error)
     }
   }
 
@@ -145,7 +146,7 @@ export function AuthProvider({
       const token = await user.getIdToken()
       return token
     } catch (error) {
-      console.error('Error getting auth token:', error)
+      logError('Error getting auth token', 'AuthContext', error)
       return null
     }
   }

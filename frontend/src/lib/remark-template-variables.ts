@@ -26,9 +26,7 @@ export function remarkTemplateVariables() {
           const pathParts = variablePath.split('.')
           let variableNode: any
 
-          if (process.env.NODE_ENV === 'development') {
-            console.log('Remark plugin parsing:', variablePath)
-          }
+
 
           if (pathParts[1] === 'current') {
             // {{dataset.current.datasetId}} or {{dataset.current.datasetId.jsonPath}}

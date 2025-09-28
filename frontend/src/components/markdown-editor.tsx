@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Eye, Edit, Copy, Database, Clock, ChevronRight, Sparkles, Settings, ArrowLeft, FileText, Github, Share, Upload, Palette, Code, Zap, Bell, Users, Lock, Search, Filter, Plus } from "lucide-react"
+import { Eye, Edit, Copy, Database, Clock, ChevronRight, Settings, ArrowLeft, FileText, Github, Share, Upload, Palette, Code, Zap, Bell, Users, Lock, Search, Filter, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
@@ -21,7 +21,6 @@ import { type MDXEditorMethods } from '@mdxeditor/editor'
 import { BlocksList } from "./blocks-list"
 import { PinsList } from "./pins-list"
 import { TemplateDataSources } from "./template-data-sources"
-import { AIEditModal } from "./ai-edit-modal"
 import { TemplateSettingsPopover } from "./template-settings-popover"
 import { SharePopover } from "./share-popover"
 import { PublishPopover } from "./publish-popover"
@@ -47,7 +46,6 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
   const [templateTab, setTemplateTab] = useState("blocks")
   const [expandedEntries, setExpandedEntries] = useState<Set<number>>(new Set())
   const [selectedVersion, setSelectedVersion] = useState("v1.3")
-  const [isAIEditModalOpen, setIsAIEditModalOpen] = useState(false)
   const [isAddPinModalOpen, setIsAddPinModalOpen] = useState(false)
   const [isAIBlockModalOpen, setIsAIBlockModalOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -680,18 +678,6 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
 
           {editingBlockId && (
             <div className="flex items-center gap-2">
-              {(activeView === "edit" || activeView === "data" || activeView === "preview") && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsAIEditModalOpen(true)}
-                  className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 border-purple-400/40 text-white shadow-md cursor-pointer"
-                >
-                  <Sparkles className="h-4 w-4 mr-2 text-white" />
-                  AI Edit
-                </Button>
-              )}
-
               <div className="flex items-center border rounded-md bg-muted/30">
                 <Button
                   variant={activeView === "edit" ? "default" : "ghost"}
@@ -805,6 +791,7 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
               onChange={(markdown) => onTemplateChange(markdown)}
               placeholder="Enter your markdown template with {{variable}} placeholders..."
               className="flex-1 min-h-0"
+              onAIEdit={handleAIEdit}
             />
           </div>
         )}
@@ -824,13 +811,6 @@ export function MarkdownEditor({ template, onTemplateChange, workflowId, initial
           </Card>
         )}
 
-      {/* AI Edit Modal */}
-      <AIEditModal
-        isOpen={isAIEditModalOpen}
-        onOpenChange={setIsAIEditModalOpen}
-        onSubmit={handleAIEdit}
-      />
-      
       {/* Add Pin Modal */}
       <AddPinModal
         isOpen={isAddPinModalOpen}

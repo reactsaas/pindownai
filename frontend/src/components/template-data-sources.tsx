@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Database, ChevronRight, FileText, Trash2, MoreVertical, Pencil, Workflow, Link, BookOpen, Search, Copy, Check } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import { WorkflowDataRealtimeDisplay } from "@/components/workflow-data-realtime-display"
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface DatasetEntry {
   id: string
@@ -28,6 +31,7 @@ interface TemplateDataSourcesProps {
   onRenameDataset?: (id: string, newName: string) => void
   onApproveDataset?: (id: string) => void
   onRejectDataset?: (id: string) => void
+  onEditDataset?: (id: string, newContent: string) => void
 }
 
 // Helper function to get icon for dataset type
@@ -48,6 +52,51 @@ const getDatasetTypeIcon = (datasetType: string) => {
   }
 }
 
+// Helper function to get data type from dataset
+const getDataType = (dataset: DatasetEntry): 'json' | 'markdown' | null => {
+  // Check metadata type first
+  if (dataset.data?.metadata?.type) {
+    return dataset.data.metadata.type === 'markdown' ? 'markdown' : 'json'
+  }
+  
+  // Fallback: check if data contains content field (likely markdown)
+  if (dataset.data?.content && typeof dataset.data.content === 'string') {
+    return 'markdown'
+  }
+  
+  // Default to json for structured data
+  return 'json'
+}
+
+// Helper function to get data type badge styling
+const getDataTypeBadge = (dataType: 'json' | 'markdown' | null) => {
+  if (!dataType) return null
+  
+  return (
+    <Badge 
+      variant="outline" 
+      className="text-xs h-5 px-2 bg-muted text-muted-foreground border-border"
+    >
+      {dataType.toUpperCase()}
+    </Badge>
+  )
+}
+
+// Helper function to extract markdown content from dataset
+const getMarkdownContent = (dataset: DatasetEntry): string | null => {
+  // Check if data has content field (direct markdown)
+  if (dataset.data?.content && typeof dataset.data.content === 'string') {
+    return dataset.data.content
+  }
+  
+  // Check if it's nested in another structure
+  if (dataset.data?.data?.content && typeof dataset.data.data.content === 'string') {
+    return dataset.data.data.content
+  }
+  
+  return null
+}
+
 // Helper function to get display name for dataset type
 const getDatasetTypeName = (datasetType: string) => {
   switch (datasetType) {
@@ -66,18 +115,43 @@ const getDatasetTypeName = (datasetType: string) => {
   }
 }
 
-export function TemplateDataSources({
+export function TemplateDataSources({ 
   pinId,
-  datasets,
-  expandedEntries,
+  datasets, 
+  expandedEntries, 
   onToggleExpanded,
   onAddDataset,
   onDeleteDataset,
   onRenameDataset,
   onApproveDataset,
-  onRejectDataset
+  onRejectDataset,
+  onEditDataset
 }: TemplateDataSourcesProps) {
   const [copiedIds, setCopiedIds] = useState<Set<string>>(new Set())
+  const [editingDataset, setEditingDataset] = useState<string | null>(null)
+  const [editContent, setEditContent] = useState<string>('')
+
+  // Start editing a dataset
+  const startEditing = (dataset: DatasetEntry) => {
+    const content = getMarkdownContent(dataset) || ''
+    setEditContent(content)
+    setEditingDataset(dataset.id)
+  }
+
+  // Save edited content
+  const saveEdit = () => {
+    if (editingDataset && onEditDataset) {
+      onEditDataset(editingDataset, editContent)
+      setEditingDataset(null)
+      setEditContent('')
+    }
+  }
+
+  // Cancel editing
+  const cancelEdit = () => {
+    setEditingDataset(null)
+    setEditContent('')
+  }
   // Group datasets by type
   const datasetsByType = (datasets || []).reduce((acc, dataset) => {
     if (!acc[dataset.datasetType]) {
@@ -142,6 +216,7 @@ export function TemplateDataSources({
                               }`} 
                             />
                             <span className="font-medium text-sm">{dataset.name}</span>
+                            {getDataTypeBadge(getDataType(dataset))}
                           </button>
                           <div className="flex items-center gap-2">
                             <Button
@@ -190,6 +265,15 @@ export function TemplateDataSources({
                                 }}>
                                   <Pencil className="w-4 h-4 mr-2" />
                                   Rename
+                                </DropdownMenuItem>
+                              )}
+                              {onEditDataset && getDataType(dataset) === 'markdown' && (
+                                <DropdownMenuItem onClick={(e) => {
+                                  e.stopPropagation()
+                                  startEditing(dataset)
+                                }}>
+                                  <FileText className="w-4 h-4 mr-2" />
+                                  Edit Content
                                 </DropdownMenuItem>
                               )}
                               {dataset.status === 'pending' && onApproveDataset && (
@@ -250,11 +334,50 @@ export function TemplateDataSources({
                               ) : (
                                 <div>
                                   <p className="text-xs font-medium text-muted-foreground mb-2">Data:</p>
-                                  <div className="bg-background/50 border rounded p-3">
-                                    <pre className="text-xs font-mono whitespace-pre-wrap overflow-x-auto">
-                                      {JSON.stringify(dataset.data, null, 2)}
-                                    </pre>
-                                  </div>
+                                  {editingDataset === dataset.id ? (
+                                    // Edit mode for markdown
+                                    <div className="space-y-3">
+                                      <textarea
+                                        value={editContent}
+                                        onChange={(e) => setEditContent(e.target.value)}
+                                        className="w-full h-48 p-3 text-sm font-mono bg-background/50 border rounded resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                                        placeholder="Enter markdown content..."
+                                      />
+                                      <div className="flex gap-2">
+                                        <Button 
+                                          size="sm" 
+                                          onClick={saveEdit}
+                                          className="h-7 px-3 text-xs"
+                                        >
+                                          Save
+                                        </Button>
+                                        <Button 
+                                          size="sm" 
+                                          variant="outline" 
+                                          onClick={cancelEdit}
+                                          className="h-7 px-3 text-xs"
+                                        >
+                                          Cancel
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : getDataType(dataset) === 'markdown' ? (
+                                    // Markdown content display
+                                    <div className="bg-background/50 border rounded p-4">
+                                      <div className="prose prose-sm prose-gray dark:prose-invert max-w-none">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                          {getMarkdownContent(dataset) || 'No content available'}
+                                        </ReactMarkdown>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    // JSON content display
+                                    <div className="bg-background/50 border rounded p-3">
+                                      <pre className="text-xs font-mono whitespace-pre-wrap overflow-x-auto">
+                                        {JSON.stringify(dataset.data, null, 2)}
+                                      </pre>
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { useParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "next-themes"
 import { useAuth } from "@/lib/auth-context"
+import { logVerbose, logError } from "@/lib/logger"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +31,12 @@ import {
 } from "@/components/ui/popover"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
+import { remarkTemplateVariables } from '@/lib/remark-template-variables'
+import { TemplateVariable } from '@/components/TemplateVariable'
+import { TemplateVariableLoadingProvider, useTemplateVariableLoading } from '@/lib/template-variable-loading-context'
+import { motion, AnimatePresence } from 'framer-motion'
+import { MarkdownLoadingSkeleton } from '@/components/loading-skeleton'
+import { SharedContentViewer } from '@/components/share/SharedContentViewer'
 
 interface Pin {
   id: string
@@ -261,6 +268,177 @@ function TableOfContents({ content, isVisible, onToggle }: { content: string, is
   )
 }
 
+// Live indicator component for real-time connection status
+function LiveIndicator() {
+  const { anyConnected } = useTemplateVariableLoading()
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded border text-xs ${anyConnected ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' : 'bg-muted text-muted-foreground border-border'}`}>
+      <span className={`w-2 h-2 rounded-full ${anyConnected ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground/50'}`} />
+      {anyConnected ? 'Live' : 'Offline'}
+    </span>
+  )
+}
+
+// Metadata row component that includes LiveIndicator within loading context
+function MetadataRow({ pin }: { pin: Pin }) {
+  return (
+    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+      <div className="flex items-center gap-1">
+        <Calendar className="h-4 w-4" />
+        <span>Created {new Date(pin.metadata.created_at).toLocaleDateString()}</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Clock className="h-4 w-4" />
+        <span>Updated {new Date(pin.metadata.updated_at).toLocaleDateString()}</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <FileText className="h-4 w-4" />
+        <span>{pin.blocks.length} block{pin.blocks.length !== 1 ? 's' : ''}</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Globe className="h-4 w-4" />
+        <span>{pin.metadata.is_public ? 'Public' : 'Private'}</span>
+      </div>
+      <LiveIndicator />
+    </div>
+  )
+}
+
+
+
+// Share page content component with template variable support
+function SharePageContent({ template, pinData, theme }: { template: string, pinData: Pin, theme: string | undefined }) {
+  const { isInitialLoadComplete, seedVariables } = useTemplateVariableLoading()
+
+  // Seed expected variables from template so we wait for them before reveal
+  useEffect(() => {
+    const matches = Array.from(template.matchAll(/\{\{(dataset\.[^}]+)\}\}/g))
+    const ids: string[] = matches.map(m => m[1])
+    if (ids.length > 0) seedVariables(ids)
+  }, [template, seedVariables])
+
+  // Memoize the template variable component creator to prevent infinite loops
+  const createTemplateVariableComponent = useCallback((props: any) => {
+    return (
+      <TemplateVariable
+        variableType={props.variableType || props['variable-type']}
+        datasetId={props.datasetId || props['data-set-id']}
+        pinId={props.pinId || props['pin-id']}
+        jsonPath={props.jsonPath || props['json-path']}
+        fullPath={props.fullPath || props['full-path']}
+        currentPinId={pinData?.id}
+      />
+    )
+  }, [pinData?.id])
+
+  // Memoize the ReactMarkdown components to prevent re-creation
+  const markdownComponents = useMemo(() => ({
+    ...(({
+      'template-variable': createTemplateVariableComponent,
+      'templateVariableBlock': createTemplateVariableComponent
+    }) as any),
+    h1: ({ children }: any) => {
+      const text = String(children)
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      return <h1 id={id} className="text-3xl font-bold mb-6 mt-8 first:mt-0">{children}</h1>
+    },
+    h2: ({ children }: any) => {
+      const text = String(children)
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      return <h2 id={id} className="text-2xl font-semibold mb-4 mt-8 first:mt-0">{children}</h2>
+    },
+    h3: ({ children }: any) => {
+      const text = String(children)
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      return <h3 id={id} className="text-xl font-medium mb-3 mt-6 first:mt-0">{children}</h3>
+    },
+    p: ({ children }: any) => <p className="mb-4 leading-7">{children}</p>,
+    ul: ({ children }: any) => <ul className="mb-4 ml-6 list-disc space-y-1">{children}</ul>,
+    ol: ({ children }: any) => <ol className="mb-4 ml-6 list-decimal space-y-1">{children}</ol>,
+    li: ({ children }: any) => <li className="leading-7">{children}</li>,
+    blockquote: ({ children }: any) => (
+      <blockquote className="border-l-4 border-muted-foreground/20 pl-4 italic my-4">
+        {children}
+      </blockquote>
+    ),
+    table: ({ children }: any) => (
+      <div className="overflow-x-auto my-6">
+        <table className="w-full border-collapse border border-border">
+          {children}
+        </table>
+      </div>
+    ),
+    th: ({ children }: any) => (
+      <th className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-4 py-2 text-left font-medium text-neutral-900 dark:text-neutral-100">
+        {children}
+      </th>
+    ),
+    td: ({ children }: any) => (
+      <td className="border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-neutral-900 dark:text-neutral-100">
+        {children}
+      </td>
+    ),
+    code: ({ className, children, ...props }: any) => {
+      const match = /language-(\w+)/.exec(className || '')
+      return match ? (
+        <div className="not-prose">
+          <SyntaxHighlighter
+            style={theme === 'dark' ? (oneDark as any) : (oneLight as any)}
+            language={match[1]}
+            PreTag="div"
+            className="rounded-lg my-4"
+          >
+            {String(children).replace(/\n$/, '')}
+          </SyntaxHighlighter>
+        </div>
+      ) : (
+        <code className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+          {children}
+        </code>
+      )
+    },
+    pre: ({ children }: any) => (
+      <pre className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 p-4 rounded-lg overflow-x-auto my-4 shadow-sm [&_*]:bg-transparent [&_*]:!bg-transparent [&_code]:bg-transparent [&_code]:p-0 [&_span]:bg-transparent [&_span]:!bg-transparent">
+        {children}
+      </pre>
+    ),
+  }), [createTemplateVariableComponent, theme])
+
+  return (
+    <div className="prose prose-gray dark:prose-invert max-w-none">
+      <AnimatePresence mode="wait">
+        <>
+          {!isInitialLoadComplete && (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <MarkdownLoadingSkeleton />
+            </motion.div>
+          )}
+          <motion.div
+            key="content"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: isInitialLoadComplete ? 1 : 0, y: isInitialLoadComplete ? 0 : 20 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className={`${!isInitialLoadComplete ? 'invisible absolute -z-10' : ''}`}
+          >
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm, remarkMath, remarkTemplateVariables]}
+              rehypePlugins={[rehypeKatex]}
+              components={markdownComponents}
+            >
+              {template}
+            </ReactMarkdown>
+          </motion.div>
+        </>
+      </AnimatePresence>
+    </div>
+  )
+}
+
 function AskAI({ pinContent }: { pinContent: string }) {
   const [question, setQuestion] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -388,8 +566,8 @@ export default function SharePinPage() {
         
         // Get auth token if user is logged in
         const token = await getAuthToken()
-        console.log('Auth token retrieved:', token ? 'YES' : 'NO')
-        console.log('User state:', user ? 'LOGGED_IN' : 'NOT_LOGGED_IN')
+        logVerbose('Auth token retrieved', 'SharePinPage', { hasToken: token ? 'YES' : 'NO' })
+        logVerbose('User state', 'SharePinPage', { userState: user ? 'LOGGED_IN' : 'NOT_LOGGED_IN' })
         
         const headers: HeadersInit = {
           'Content-Type': 'application/json'
@@ -398,9 +576,9 @@ export default function SharePinPage() {
         // Add auth header if token exists
         if (token) {
           headers['Authorization'] = `Bearer ${token}`
-          console.log('Sending auth token:', token.substring(0, 20) + '...')
+          logVerbose('Sending auth token', 'SharePinPage', { token: token.substring(0, 20) + '...' })
         } else {
-          console.log('No auth token available - this might cause access issues for private pins')
+          logVerbose('No auth token available - this might cause access issues for private pins', 'SharePinPage')
         }
         
         const response = await fetch(`http://localhost:8000/api/public/pins/${pinId}`, {
@@ -417,10 +595,10 @@ export default function SharePinPage() {
         }
         
         const data = await response.json()
-        console.log('Pin response data:', data)
+        logVerbose('Pin response data', 'SharePinPage', data)
         setPin(data.data.pin)
       } catch (err) {
-        console.error('Error fetching pin:', err)
+        logError('Error fetching pin', 'SharePinPage', err)
         setError(err instanceof Error ? err.message : 'Failed to load pin')
       } finally {
         setIsLoading(false)
@@ -589,132 +767,11 @@ export default function SharePinPage() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card className="border-0 shadow-none bg-transparent">
-          <CardHeader className="pb-6 bg-transparent">
-            <div className="space-y-4">
-              <CardTitle className="text-3xl font-bold leading-tight">{pin.metadata.title}</CardTitle>
-              <p className="text-muted-foreground text-lg">{pin.metadata.description}</p>
-              
-              {/* Metadata */}
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>Created {new Date(pin.metadata.created_at).toLocaleDateString()}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  <span>Updated {new Date(pin.metadata.updated_at).toLocaleDateString()}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <FileText className="h-4 w-4" />
-                  <span>{pin.blocks.length} block{pin.blocks.length !== 1 ? 's' : ''}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Globe className="h-4 w-4" />
-                  <span>{pin.metadata.is_public ? 'Public' : 'Private'}</span>
-                </div>
-              </div>
-
-              {/* Tags */}
-              {pin.metadata.tags && pin.metadata.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {pin.metadata.tags.map((tag, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-
-            </div>
-          </CardHeader>
-          
-          <CardContent className="bg-transparent">
-            {/* Blocks Content */}
-            <div className="space-y-8">
-              {pin.blocks
-                .sort((a, b) => a.order - b.order)
-                .map((block) => (
-                  <div key={block.id} className="block-content">
-            <div className="prose prose-gray dark:prose-invert max-w-none">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm, remarkMath]}
-                rehypePlugins={[rehypeKatex]}
-                components={{
-                  h1: ({ children }) => {
-                    const text = String(children)
-                    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-                    return <h1 id={id} className="text-3xl font-bold mb-6 mt-8 first:mt-0">{children}</h1>
-                  },
-                  h2: ({ children }) => {
-                    const text = String(children)
-                    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-                    return <h2 id={id} className="text-2xl font-semibold mb-4 mt-8 first:mt-0">{children}</h2>
-                  },
-                  h3: ({ children }) => {
-                    const text = String(children)
-                    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
-                    return <h3 id={id} className="text-xl font-medium mb-3 mt-6 first:mt-0">{children}</h3>
-                  },
-                  p: ({ children }) => <p className="mb-4 leading-7">{children}</p>,
-                  ul: ({ children }) => <ul className="mb-4 ml-6 list-disc space-y-1">{children}</ul>,
-                  ol: ({ children }) => <ol className="mb-4 ml-6 list-decimal space-y-1">{children}</ol>,
-                  li: ({ children }) => <li className="leading-7">{children}</li>,
-                  blockquote: ({ children }) => (
-                    <blockquote className="border-l-4 border-muted-foreground/20 pl-4 italic my-4">
-                      {children}
-                    </blockquote>
-                  ),
-                  table: ({ children }) => (
-                    <div className="overflow-x-auto my-6">
-                      <table className="w-full border-collapse border border-border">
-                        {children}
-                      </table>
-                    </div>
-                  ),
-                  th: ({ children }) => (
-                    <th className="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 px-4 py-2 text-left font-medium text-neutral-900 dark:text-neutral-100">
-                      {children}
-                    </th>
-                  ),
-                  td: ({ children }) => (
-                    <td className="border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-neutral-900 dark:text-neutral-100">
-                      {children}
-                    </td>
-                  ),
-                  code: ({ node, inline, className, children, ...props }) => {
-                    const match = /language-(\w+)/.exec(className || '')
-                    return !inline && match ? (
-                      <SyntaxHighlighter
-                        style={theme === 'dark' ? oneDark : oneLight}
-                        language={match[1]}
-                        PreTag="div"
-                        className="rounded-lg my-4"
-                        {...props}
-                      >
-                        {String(children).replace(/\n$/, '')}
-                      </SyntaxHighlighter>
-                    ) : (
-                      <code className="bg-neutral-100 dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
-                        {children}
-                      </code>
-                    )
-                  },
-                  pre: ({ children }) => (
-                    <pre className="bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 p-4 rounded-lg overflow-x-auto my-4 shadow-sm [&_*]:bg-transparent [&_*]:!bg-transparent [&_code]:bg-transparent [&_code]:p-0 [&_span]:bg-transparent [&_span]:!bg-transparent">
-                      {children}
-                    </pre>
-                  ),
-                }}
-              >
-                        {block.template}
-              </ReactMarkdown>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </CardContent>
-        </Card>
+        <SharedContentViewer
+          pin={pin}
+          isModal={false}
+          currentPinId={pin.id}
+        />
       </main>
 
       {/* Table of Contents */}

@@ -5,10 +5,10 @@ import { useRouter, useParams, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Copy, Clock, Eye, Edit, Sparkles, Save, Check, Loader2 } from "lucide-react"
+import { ArrowLeft, Copy, Clock, Eye, Edit, Save, Check, Loader2 } from "lucide-react"
 import { ForwardRefEditor } from "@/components/ForwardRefEditor"
 import { type MDXEditorMethods } from '@mdxeditor/editor'
-import { AIEditModal } from "@/components/ai-edit-modal"
+
 import { useAuth } from "@/lib/auth-context"
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -65,7 +65,7 @@ export default function BlockEditPage() {
   const [blockData, setBlockData] = useState<BlockItem | null>(null)
   const [pinData, setPinData] = useState<Pin | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isAIEditModalOpen, setIsAIEditModalOpen] = useState(false)
+
   const [error, setError] = useState<string | null>(null)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
 
@@ -274,10 +274,18 @@ export default function BlockEditPage() {
     toast.success("Block ID copied to clipboard!")
   }
 
-  const handleAIEdit = (editedContent: string) => {
-    setTemplate(editedContent)
-    setIsAIEditModalOpen(false)
-    // In real app, this would also save to backend
+  const handleAIEdit = (prompt: string, selectedDocs: any[], researchData: any[]) => {
+    // Here you would integrate with your AI service
+    console.log("AI Edit Request:", { prompt, selectedDocs, researchData })
+    
+    // For now, let's append a placeholder to the template
+    const aiSuggestion = `\n\n<!-- AI Generated Content based on: "${prompt}" -->\n${prompt}\n`
+    setTemplate(template + aiSuggestion)
+    
+    // If using MDX editor, update it as well
+    if (mdxEditorRef.current) {
+      mdxEditorRef.current.setMarkdown(template + aiSuggestion)
+    }
   }
 
   const handleCopyTemplate = async () => {
@@ -406,15 +414,6 @@ export default function BlockEditPage() {
               </Button>
             </div>
 
-            <Button 
-              size="sm" 
-              onClick={() => setIsAIEditModalOpen(true)} 
-              className="px-2 sm:px-3 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 hover:from-violet-600 hover:via-purple-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer"
-            >
-              <Sparkles className="h-4 w-4 sm:mr-2 animate-pulse fill-current" />
-              <span className="hidden sm:inline">AI Edit</span>
-            </Button>
-
             <Button variant="outline" size="sm" onClick={handleCopyTemplate} className="px-2 cursor-pointer hover:bg-muted hover:border-muted-foreground/50 transition-colors duration-200">
               <Copy className="h-4 w-4" />
             </Button>
@@ -489,15 +488,6 @@ export default function BlockEditPage() {
               </Button>
             </div>
 
-            <Button 
-              size="sm" 
-              onClick={() => setIsAIEditModalOpen(true)} 
-              className="px-2 sm:px-3 bg-gradient-to-r from-violet-500 via-purple-500 to-indigo-500 hover:from-violet-600 hover:via-purple-600 hover:to-indigo-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 cursor-pointer"
-            >
-              <Sparkles className="h-4 w-4 sm:mr-2 animate-pulse fill-current" />
-              <span className="hidden sm:inline">AI Edit</span>
-            </Button>
-
             <Button variant="outline" size="sm" onClick={handleCopyTemplate} className="px-2 cursor-pointer hover:bg-muted hover:border-muted-foreground/50 transition-colors duration-200">
               <Copy className="h-4 w-4" />
             </Button>
@@ -526,6 +516,8 @@ export default function BlockEditPage() {
               onChange={setTemplate}
               placeholder="Enter your markdown template with {{variable}} placeholders..."
               className="h-full min-h-0"
+              onAIEdit={handleAIEdit}
+              currentPinId={pinId}
             />
           </div>
         ) : (
@@ -539,12 +531,7 @@ export default function BlockEditPage() {
         )}
       </div>
 
-      {/* AI Edit Modal */}
-      <AIEditModal
-        isOpen={isAIEditModalOpen}
-        onOpenChange={setIsAIEditModalOpen}
-        onSubmit={handleAIEdit}
-      />
+
     </div>
   )
 }
