@@ -37,18 +37,6 @@ export const MarkdownLoadingSkeleton: React.FC = () => {
         <div className="h-4 bg-muted animate-pulse rounded w-full" />
         <div className="h-4 bg-muted animate-pulse rounded w-3/4" />
       </div>
-
-      {/* Variable placeholders */}
-      <div className="space-y-3">
-        <div className="flex items-center space-x-2">
-          <span className="text-muted-foreground">Template data:</span>
-          <div className="h-5 w-24 bg-muted animate-pulse rounded" />
-        </div>
-        <div className="flex items-center space-x-2">
-          <span className="text-muted-foreground">Status:</span>
-          <div className="h-5 w-16 bg-muted animate-pulse rounded" />
-        </div>
-      </div>
     </div>
   )
 }

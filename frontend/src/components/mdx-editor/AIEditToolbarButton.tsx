@@ -40,7 +40,7 @@ export function AIEditToolbarButton({ onAIEdit }: AIEditToolbarButtonProps) {
         title="AI Edit"
       >
         <Sparkles className="h-3.5 w-3.5" />
-        <span className="ml-1.5">AI Edit</span>
+        <span className="ml-1.5 hidden xl:inline">AI Edit</span>
       </Button>
 
       <AIEditModal

@@ -51,7 +51,6 @@ export async function publicPinRoutes(fastify: FastifyInstance) {
       
       // Get blocks for this pin
       const blocks = await fastify.firebase.getPinBlocks(pid);
-      fastify.log.info(`Blocks: ${JSON.stringify(blocks, null, 2)}`);
       
       // Format response
       const publicPinData = {

@@ -71,7 +71,7 @@ function LiveIndicator() {
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-1 rounded border text-xs ${anyConnected ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30' : 'bg-muted text-muted-foreground border-border'}`}>
       <span className={`w-2 h-2 rounded-full ${anyConnected ? 'bg-emerald-500 animate-pulse' : 'bg-muted-foreground/50'}`} />
-      {anyConnected ? 'Live' : 'Offline'}
+      {anyConnected ? 'Live' : 'No Datasets Used'}
     </span>
   )
 }

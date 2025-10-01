@@ -82,6 +82,23 @@ export const TemplateVariableLoadingProvider: React.FC<TemplateVariableLoadingPr
 
   // Check if all variables are loaded
   useEffect(() => {
+    // If no variables were seeded/registered after a short delay, mark as complete
+    if (!hasStartedLoading) {
+      const noVarsTimeout = setTimeout(() => {
+        setIsInitialLoadComplete(true)
+      }, 300)
+      return () => clearTimeout(noVarsTimeout)
+    }
+    
+    // If started loading but no variables exist (plain markdown), mark as complete
+    if (hasStartedLoading && variables.size === 0) {
+      const t = setTimeout(() => {
+        setIsInitialLoadComplete(true)
+      }, 100)
+      return () => clearTimeout(t)
+    }
+    
+    // If variables exist and all are loaded, mark as complete
     if (hasStartedLoading && variables.size > 0 && loadedVariables.size === variables.size) {
       const t = setTimeout(() => {
         setIsInitialLoadComplete(true)

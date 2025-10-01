@@ -375,52 +375,10 @@ export default function BlockEditPage() {
 
   return (
     <div className="h-full flex flex-col min-h-0">
-      {/* Header */}
-      <div className="p-3 sm:p-4 border-b border-border bg-card">
-        {/* Mobile: Only back button and action buttons */}
-        <div className="flex md:hidden items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={handleBack} className="h-8 w-8 p-0 cursor-pointer">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          
-          <div className="flex items-center gap-1">
-            <div className="flex items-center border rounded-md bg-muted/30">
-              <Button
-                variant={activeView === "edit" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => handleViewChange("edit")}
-                className="h-8 px-2 rounded-r-none border-r cursor-pointer"
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={activeView === "preview" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => handleViewChange("preview")}
-                className="h-8 px-2 rounded-l-none cursor-pointer"
-              >
-                <Eye className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <Button variant="outline" size="sm" onClick={handleCopyTemplate} className="px-2 cursor-pointer hover:bg-muted hover:border-muted-foreground/50 transition-colors duration-200">
-              <Copy className="h-4 w-4" />
-            </Button>
-
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleSave} 
-              disabled={saveStatus === 'saving'}
-              className="px-2 cursor-pointer hover:bg-muted hover:border-muted-foreground/50 transition-colors duration-200"
-            >
-              {getSaveButtonIcon()}
-            </Button>
-          </div>
-        </div>
-
+      {/* Header - Hidden on mobile/tablet */}
+      <div className="hidden lg:block p-3 sm:p-4 border-b border-border bg-card">
         {/* Desktop: Full information display */}
-        <div className="hidden md:flex flex-col lg:flex-row lg:items-center justify-between gap-2 lg:gap-4">
+        <div className="hidden lg:flex flex-col lg:flex-row lg:items-center justify-between gap-2 lg:gap-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" onClick={handleBack} className="h-6 w-6 p-0 cursor-pointer">
@@ -496,7 +454,7 @@ export default function BlockEditPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden pb-0 lg:pb-0 mb-20 lg:mb-0">
         {activeView === "edit" ? (
                       <div className="h-full min-h-0 overflow-auto editor-scroll">
             <ForwardRefEditor
@@ -548,6 +506,50 @@ export default function BlockEditPage() {
         )}
       </div>
 
+      {/* Mobile/Tablet Bottom Bar */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card border-t border-border p-3 flex items-center justify-between z-50 safe-area-bottom">
+        <Button variant="ghost" size="sm" onClick={handleBack} className="h-10 px-3 cursor-pointer">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          <span className="text-sm">Back</span>
+        </Button>
+        
+        <div className="flex items-center gap-2">
+          <div className="flex items-center border rounded-md bg-muted/30">
+            <Button
+              variant={activeView === "edit" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => handleViewChange("edit")}
+              className="h-10 px-3 rounded-r-none border-r cursor-pointer"
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              <span className="text-sm">Edit</span>
+            </Button>
+            <Button
+              variant={activeView === "preview" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => handleViewChange("preview")}
+              className="h-10 px-3 rounded-l-none cursor-pointer"
+            >
+              <Eye className="h-4 w-4 mr-2" />
+              <span className="text-sm">Preview</span>
+            </Button>
+          </div>
+
+          <Button variant="outline" size="sm" onClick={handleCopyTemplate} className="h-10 px-3 cursor-pointer hover:bg-muted hover:border-muted-foreground/50 transition-colors duration-200">
+            <Copy className="h-4 w-4" />
+          </Button>
+
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSave} 
+            disabled={saveStatus === 'saving'}
+            className="h-10 px-3 cursor-pointer hover:bg-muted hover:border-muted-foreground/50 transition-colors duration-200"
+          >
+            {getSaveButtonIcon()}
+          </Button>
+        </div>
+      </div>
 
     </div>
   )

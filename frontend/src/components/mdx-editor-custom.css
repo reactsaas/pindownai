@@ -11,6 +11,12 @@
   transition: all 0.2s ease !important;
 }
 
+/* Base icon size - slightly smaller */
+.mdxeditor-toolbar svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
 .mdxeditor-toolbar button:hover {
   background-color: hsl(var(--accent)) !important;
   color: hsl(var(--accent-foreground)) !important;
@@ -30,52 +36,115 @@
   overflow-y: visible !important;
   white-space: normal !important;
   display: flex !important;
-  align-items: flex-start !important;
-
-
-  flex-wrap: wrap !important;
+  align-items: center !important;
+  min-height: 56px !important;
+  height: auto !important;
+  flex-wrap: nowrap !important;
 }
 
 /* Responsive toolbar for mobile */
 @media (max-width: 640px) {
   .mdxeditor-toolbar {
-    padding: 10px 12px !important;
+    padding: 8px 10px !important;
     gap: 2px !important;
-    min-height: 70px !important;
-    height: auto !important;
-    max-height: none !important;
+    min-height: 48px !important;
+    height: 48px !important;
     overflow-x: visible !important;
     overflow-y: visible !important;
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
   }
   
   .mdxeditor-toolbar button {
-    padding: 5px 7px !important;
-    height: 32px !important;
-    min-width: 32px !important;
+    padding: 4px 6px !important;
+    height: 28px !important;
+    min-width: 28px !important;
     font-size: 11px !important;
   }
   
+  .mdxeditor-toolbar svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  
   /* Make toolbar groups more compact */
-  .mdxeditor-toolbar > div > div {
+  .mdxeditor-toolbar > div {
+    gap: 2px !important;
+  }
+}
+
+/* Medium screens - further reduction */
+@media (max-width: 768px) {
+  .mdxeditor-toolbar button {
+    padding: 4px 5px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+  }
+  
+  .mdxeditor-toolbar svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+}
+
+/* Space saving mode below 620px */
+@media (max-width: 620px) {
+  .mdxeditor-toolbar {
+    min-height: 44px !important;
+    height: 44px !important;
+    padding: 6px 8px !important;
+  }
+  
+  /* Make block type dropdown much smaller */
+  .mdxeditor-toolbar select,
+  .mdxeditor-toolbar [role="combobox"],
+  .mdxeditor-toolbar [data-radix-select-trigger] {
+    min-width: 60px !important;
+    max-width: 80px !important;
+    height: 24px !important;
+    font-size: 9px !important;
+    padding: 2px 4px !important;
+  }
+  
+  .mdxeditor-toolbar button {
+    padding: 3px 4px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    font-size: 9px !important;
+  }
+  
+  /* Smaller icon sizes */
+  .mdxeditor-toolbar svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+  
+  /* Make gap between items smaller */
+  .mdxeditor-toolbar > div {
     gap: 1px !important;
   }
 }
 
-/* Third row support around 580px */
+/* Extra small screens */
 @media (max-width: 600px) {
   .mdxeditor-toolbar {
-    min-height: 110px !important;
+    min-height: 44px !important;
+    height: 44px !important;
   }
   
   /* Compact dropdown/select elements */
   .mdxeditor-toolbar select,
   .mdxeditor-toolbar [role="combobox"],
   .mdxeditor-toolbar [data-radix-select-trigger] {
-    min-width: 28px !important;
+    min-width: 24px !important;
+    height: 22px !important;
+    font-size: 9px !important;
+    padding: 2px 3px !important;
+  }
+  
+  .mdxeditor-toolbar button {
+    padding: 3px 4px !important;
     height: 24px !important;
-    font-size: 10px !important;
-    padding: 2px 4px !important;
+    min-width: 24px !important;
   }
   
   /* Compact icon sizes */
@@ -88,14 +157,14 @@
 /* Extra small screens */
 @media (max-width: 480px) {
   .mdxeditor-toolbar {
-    padding: 8px 10px !important;
+    padding: 6px 8px !important;
+    min-height: 40px !important;
+    height: 40px !important;
     overflow-x: visible !important;
     overflow-y: visible !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
-
-  
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
   }
   
   .mdxeditor-toolbar::-webkit-scrollbar {
@@ -103,15 +172,15 @@
   }
   
   .mdxeditor-toolbar button {
-    padding: 4px 5px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-    font-size: 10px !important;
+    padding: 3px 4px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    font-size: 9px !important;
   }
   
   .mdxeditor-toolbar svg {
-    width: 14px !important;
-    height: 14px !important;
+    width: 11px !important;
+    height: 11px !important;
   }
 }
 
@@ -753,6 +822,177 @@ html.dark .mdxeditor::-webkit-scrollbar-thumb:hover {
   overflow: visible !important;
 }
 
+/* Overflow menu styling */
+.mdxeditor-toolbar details summary {
+  height: 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 32px !important;
+}
+
+.mdxeditor-toolbar details summary svg {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.mdxeditor-toolbar details[open] summary {
+  background-color: hsl(var(--accent)) !important;
+}
+
+.mdxeditor-toolbar details > div {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Overflow menu item styling */
+.mdxeditor-toolbar .toolbar-menu-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.mdxeditor-toolbar .toolbar-menu-item:hover {
+  background-color: hsl(var(--accent)) !important;
+}
+
+.mdxeditor-toolbar .toolbar-menu-item button {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: auto !important;
+  min-height: auto !important;
+  pointer-events: none !important;
+}
+
+.mdxeditor-toolbar .toolbar-menu-item span {
+  font-size: 14px !important;
+  color: hsl(var(--foreground)) !important;
+  font-weight: 500 !important;
+  pointer-events: none !important;
+}
+
+/* Dark mode text color for dropdown items */
+html.dark .mdxeditor-toolbar .toolbar-menu-item span,
+.dark .mdxeditor-toolbar .toolbar-menu-item span {
+  color: #ffffff !important;
+}
+
+html.dark .mdxeditor-toolbar .toolbar-menu-item button svg,
+.dark .mdxeditor-toolbar .toolbar-menu-item button svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Make the whole menu item clickable */
+.mdxeditor-toolbar .toolbar-menu-item {
+  position: relative !important;
+}
+
+.mdxeditor-toolbar .toolbar-menu-item::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  cursor: pointer !important;
+}
+
+/* Responsive overflow menu */
+@media (max-width: 768px) {
+  .mdxeditor-toolbar details summary {
+    height: 26px !important;
+    min-width: 26px !important;
+  }
+  
+  .mdxeditor-toolbar details summary svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .mdxeditor-toolbar details summary {
+    height: 28px !important;
+    min-width: 28px !important;
+  }
+  
+  .mdxeditor-toolbar details summary svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  
+  .mdxeditor-toolbar .toolbar-overflow-menu > div > div {
+    padding: 4px 8px !important;
+  }
+  
+  .mdxeditor-toolbar .toolbar-overflow-menu > div > div span {
+    font-size: 11px !important;
+  }
+}
+
+/* Extra compact mode at 620px */
+@media (max-width: 620px) {
+  /* Overflow menu even smaller */
+  .mdxeditor-toolbar details summary {
+    height: 24px !important;
+    min-width: 24px !important;
+    padding: 2px !important;
+  }
+  
+  .mdxeditor-toolbar details summary svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+  
+  /* Special buttons smaller */
+  .mdxeditor-toolbar button[title*="Insert Template Variable"],
+  .mdxeditor-toolbar button[title*="AI Edit"] {
+    padding: 2px 4px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+  }
+  
+  .mdxeditor-toolbar button[title*="Insert Template Variable"] svg,
+  .mdxeditor-toolbar button[title*="AI Edit"] svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .mdxeditor-toolbar details summary {
+    height: 22px !important;
+    min-width: 22px !important;
+  }
+  
+  .mdxeditor-toolbar details summary svg {
+    width: 11px !important;
+    height: 11px !important;
+  }
+  
+  .mdxeditor-toolbar .toolbar-overflow-menu > div > div {
+    padding: 3px 6px !important;
+  }
+  
+  .mdxeditor-toolbar .toolbar-overflow-menu > div > div span {
+    font-size: 10px !important;
+  }
+}
+
 /* Enhanced Insert Variable Button Styling - Strong background */
 .mdxeditor-toolbar button[title*="Insert Template Variable"] {
   background: #e2e8f0 !important;
@@ -769,6 +1009,14 @@ html.dark .mdxeditor::-webkit-scrollbar-thumb:hover {
   height: 32px !important;
   width: auto !important;
   min-width: auto !important;
+}
+
+/* Icon-only mode on smaller screens (below 1280px) */
+@media (max-width: 1280px) {
+  .mdxeditor-toolbar button[title*="Insert Template Variable"] {
+    padding: 6px 8px !important;
+    min-width: 32px !important;
+  }
 }
 
 .mdxeditor-toolbar button[title*="Insert Template Variable"]:hover {
@@ -802,14 +1050,26 @@ html.dark .mdxeditor::-webkit-scrollbar-thumb:hover {
 html.dark .mdxeditor-toolbar button[title*="Insert Template Variable"],
 .dark .mdxeditor-toolbar button[title*="Insert Template Variable"] {
   background: #374151 !important;
-  color: hsl(var(--foreground)) !important;
+  color: #ffffff !important;
   border: 1px solid hsl(var(--border)) !important;
 }
 
 html.dark .mdxeditor-toolbar button[title*="Insert Template Variable"]:hover,
 .dark .mdxeditor-toolbar button[title*="Insert Template Variable"]:hover {
   background: #4b5563 !important;
-  color: hsl(var(--foreground)) !important;
+  color: #ffffff !important;
+}
+
+html.dark .mdxeditor-toolbar button[title*="Insert Template Variable"] svg,
+.dark .mdxeditor-toolbar button[title*="Insert Template Variable"] svg {
+  color: #ffffff !important;
+  fill: none !important;
+  stroke: #ffffff !important;
+}
+
+html.dark .mdxeditor-toolbar button[title*="Insert Template Variable"] span,
+.dark .mdxeditor-toolbar button[title*="Insert Template Variable"] span {
+  color: #ffffff !important;
 }
 
 /* Enhanced AI Edit Button Styling - Similar to Insert Variable */
@@ -875,12 +1135,45 @@ html.dark .mdxeditor-toolbar button[title*="AI Edit"] span,
 }
 
 /* Responsive adjustments for the enhanced buttons */
+@media (max-width: 768px) {
+  .mdxeditor-toolbar button[title*="Insert Template Variable"],
+  .mdxeditor-toolbar button[title*="AI Edit"] {
+    padding: 4px 8px !important;
+    font-size: 10px !important;
+    height: 26px !important;
+    gap: 3px !important;
+  }
+  
+  .mdxeditor-toolbar button[title*="Insert Template Variable"] svg,
+  .mdxeditor-toolbar button[title*="AI Edit"] svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+}
+
 @media (max-width: 640px) {
   .mdxeditor-toolbar button[title*="Insert Template Variable"],
   .mdxeditor-toolbar button[title*="AI Edit"] {
     padding: 3px 6px !important;
     font-size: 9px !important;
+    height: 28px !important;
+    gap: 2px !important;
+  }
+  
+  .mdxeditor-toolbar button[title*="Insert Template Variable"] svg,
+  .mdxeditor-toolbar button[title*="AI Edit"] svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .mdxeditor-toolbar button[title*="Insert Template Variable"],
+  .mdxeditor-toolbar button[title*="AI Edit"] {
+    padding: 3px 5px !important;
+    font-size: 8px !important;
     height: 24px !important;
+    gap: 2px !important;
   }
   
   .mdxeditor-toolbar button[title*="Insert Template Variable"] svg,
@@ -895,13 +1188,13 @@ html.dark .mdxeditor-toolbar button[title*="AI Edit"] span,
   .mdxeditor-toolbar button[title*="AI Edit"] {
     padding: 2px 4px !important;
     font-size: 8px !important;
-    height: 20px !important;
+    height: 22px !important;
     gap: 1px !important;
   }
   
   .mdxeditor-toolbar button[title*="Insert Template Variable"] svg,
   .mdxeditor-toolbar button[title*="AI Edit"] svg {
-    width: 10px !important;
-    height: 10px !important;
+    width: 11px !important;
+    height: 11px !important;
   }
 }

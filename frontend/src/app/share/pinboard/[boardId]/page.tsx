@@ -717,12 +717,33 @@ export default function SharePinboardPage() {
             <motion.div
               key={pin.id}
               layoutId={`pin-${pin.id}`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ 
+                scale: 1.03,
+                y: -8,
+                rotateX: 5,
+                transition: { 
+                  type: "spring", 
+                  stiffness: 400, 
+                  damping: 25,
+                  duration: 0.3
+                }
+              }}
+              whileTap={{ 
+                scale: 0.97,
+                y: 2,
+                transition: { duration: 0.1 }
+              }}
               className="cursor-pointer"
               onClick={() => handlePinClick(pin)}
+              style={{
+                transformStyle: "preserve-3d",
+                perspective: "1000px"
+              }}
             >
-              <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-border/50 bg-white dark:bg-neutral-800 shadow-sm dark:shadow-neutral-800/20 hover:border-primary/20">
+              <Card className={cn(
+                "group overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-border/50 bg-white dark:bg-neutral-800 shadow-sm dark:shadow-neutral-800/20 hover:border-primary/20",
+                isLoadingPin && selectedPin?.id === pin.id && "ring-2 ring-primary/50 animate-pulse"
+              )}>
                 {/* Compact header row with title and icon */}
                 <CardHeader className="pb-2 pt-4">
                   <div className="flex items-center justify-between">

@@ -22,8 +22,8 @@ export const TemplateVariableToolbarButton: React.FC<TemplateVariableToolbarButt
         title="Insert Template Variable - Click to add dynamic data placeholders"
         type="button"
       >
-        <Variable className="h-4 w-4 mr-1.5" />
-        <span className="text-xs">Insert Variable</span>
+        <Variable className="h-4 w-4 xl:mr-1.5" />
+        <span className="text-xs hidden xl:inline">Insert Variable</span>
       </Button>
       {isModalOpen && (
         <TemplateVariableModal 

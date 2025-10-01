@@ -34,7 +34,7 @@ declare module 'fastify' {
   }
 }
 
-const firebasePlugin: FastifyPluginAsync = async (fastify: FastifyInstance<ZodTypeProvider>) => {
+const firebasePlugin: FastifyPluginAsync = async (fastify) => {
   // Initialize Firebase Admin
   if (!getApps().length) {
     initializeApp({
@@ -165,12 +165,14 @@ const firebasePlugin: FastifyPluginAsync = async (fastify: FastifyInstance<ZodTy
       const firebaseId = blockRef.key!; // Firebase generates key like: -N1234567890abcdef
       const blockId = `b${firebaseId}`; // Add 'b' prefix: b-N1234567890abcdef
       
+      const now = Date.now();
+      
       // Update blockData with the generated ID and timestamps
       const blockWithId = {
         ...blockData,
         id: blockId,
-        created_at: { '.sv': 'timestamp' },
-        updated_at: { '.sv': 'timestamp' }
+        created_at: now,
+        updated_at: now
       };
       
       await db.ref(`pin_blocks/${pinId}/${blockId}`).set(blockWithId);
@@ -187,22 +189,38 @@ const firebasePlugin: FastifyPluginAsync = async (fastify: FastifyInstance<ZodTy
       }
 
       const blocks = snapshot.val();
-      // Include the block ID in each block object
-      return Object.entries(blocks)
-        .map(([blockId, blockData]: [string, any]) => ({
-          ...blockData,
-          id: blockId
-        }))
+      
+      // Include the block ID in each block object and ensure required fields
+      const processedBlocks = Object.entries(blocks)
+        .map(([blockId, blockData]: [string, any]) => {
+          const now = Date.now();
+          return {
+            ...blockData,
+            id: blockId,
+            // Ensure created_at and updated_at always exist
+            created_at: blockData.created_at || blockData.updated_at || now,
+            updated_at: blockData.updated_at || now
+          };
+        })
         .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      
+      return processedBlocks;
     },
 
     async updateBlock(pinId: string, blockId: string, blockData: any): Promise<void> {
+      // Fetch existing block to preserve created_at
+      const existingBlockRef = db.ref(`pin_blocks/${pinId}/${blockId}`);
+      const existingSnapshot = await existingBlockRef.once('value');
+      const existingBlock = existingSnapshot.val();
+      
       const updates: Record<string, any> = {};
       
-      // Add updated_at timestamp
+      // Add updated_at timestamp and preserve created_at
       const blockWithTimestamp = {
         ...blockData,
-        updated_at: { '.sv': 'timestamp' }
+        id: blockId, // Ensure ID is always present
+        created_at: existingBlock?.created_at || Date.now(),
+        updated_at: Date.now()
       };
       
       updates[`pin_blocks/${pinId}/${blockId}`] = blockWithTimestamp;
